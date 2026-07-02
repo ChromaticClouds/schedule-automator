@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import { CORS_ORIGINS } from '@/config/env';
+import { CORS_ORIGINS } from './config/env.js';
 
 export const buildApp = async () => {
   const app = Fastify({ logger: true });
