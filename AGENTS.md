@@ -12,7 +12,7 @@ Use Conventional Commit style:
 
 ```txt
 <type>(<scope>): <summary>
-````
+```
 
 Allowed types:
 

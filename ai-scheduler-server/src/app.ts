@@ -15,7 +15,7 @@ export const buildApp = async () => {
 
   app.get('/health', async () => ({
     ok: true,
-    service: 'ai-scheduler-serveer',
+    service: 'ai-scheduler-server',
   }));
 
   return app;
