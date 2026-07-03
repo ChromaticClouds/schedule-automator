@@ -13,9 +13,30 @@ const envSchema = z.object({
 
   MONGO_URL: z.string().min(1),
 
-  JWT_SECRET: z.string().min(16),
-  SESSION_SECRET: z.string().min(16),
-  ENCRYPTION_KEY: z.string().min(16),
+  JWT_SECRET: z.string().min(32),
+  SESSION_SECRET: z.string().min(32),
+  ENCRYPTION_KEY: z.string().min(32),
+  REFRESH_TOKEN_PEPPER: z.string().min(32),
+  JWT_ISSUER: z.string().min(1).default("ai-scheduler-server"),
+  JWT_AUDIENCE: z.string().min(1).default("ai-scheduler-mobile"),
+  JWT_ACCESS_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(60)
+    .max(3600)
+    .default(900),
+  AUTH_REFRESH_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(3600)
+    .max(7776000)
+    .default(2592000),
+  AUTH_HANDOFF_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(30)
+    .max(300)
+    .default(60),
 
   GEMINI_API_KEY: z.string().min(1),
   GEMINI_MODEL: z.string().min(1).default("gemini-2.5-flash"),
@@ -36,7 +57,12 @@ const envSchema = z.object({
   DAILY_PLAN_JOB_ENABLED: z.coerce.boolean().default(true),
   REVIEW_REMINDER_TIME: z.string().default("22:30"),
 
-  REDIS_URL: z.string().min(1),
+  REDIS_URL: z.url().refine(
+    (value) =>
+      value.startsWith("redis://") || value.startsWith("rediss://"),
+    "REDIS_URL must use redis:// or rediss://",
+  ),
+  REDIS_KEY_PREFIX: z.string().min(1).default("ai-scheduler:"),
   QUEUE_NAME: z.string().min(1),
 
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("debug"),
