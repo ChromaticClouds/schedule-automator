@@ -15,6 +15,7 @@ import {
 } from './api';
 
 export const planningKeys = {
+  dailyReview: (date: string) => ['planning', 'daily-review', date] as const,
   goals: ['planning', 'goals'] as const,
   scheduleDraft: (date: string) => ['planning', 'schedule-draft', date] as const,
   tasks: ['planning', 'tasks'] as const,
