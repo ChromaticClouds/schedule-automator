@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
+import { registerAuthCacheReset } from '@/features/auth/session';
 
 export function QueryProvider({ children }: PropsWithChildren) {
   const [client] = useState(
@@ -12,6 +13,14 @@ export function QueryProvider({ children }: PropsWithChildren) {
           },
         },
       }),
+  );
+
+  useEffect(
+    () =>
+      registerAuthCacheReset(() => {
+        client.removeQueries({ queryKey: ['planning'] });
+      }),
+    [client],
   );
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;

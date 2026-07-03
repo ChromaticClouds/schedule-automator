@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -8,7 +7,6 @@ import { signInWithGoogle } from './oauth';
 import { logoutAuthSession, useAuthStore } from './session';
 
 export function AuthPanel() {
-  const queryClient = useQueryClient();
   const status = useAuthStore((state) => state.status);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
@@ -18,7 +16,6 @@ export function AuthPanel() {
     setError(undefined);
     try {
       await action();
-      await queryClient.invalidateQueries();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Authentication failed');
     } finally {

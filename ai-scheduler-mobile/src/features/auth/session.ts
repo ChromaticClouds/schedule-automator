@@ -25,14 +25,34 @@ export const useAuthStore = create<AuthState>(() => ({
 let activeSession: AuthSession | null = null;
 let refreshPromise: Promise<AuthSession | null> | null = null;
 let sessionVersion = 0;
+let storageMutation = Promise.resolve();
+let resetAuthCache = () => {};
+
+const mutateStoredSession = <T>(operation: () => Promise<T>) => {
+  const result = storageMutation.then(operation, operation);
+  storageMutation = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+};
 
 const commitSession = (session: AuthSession | null) => {
+  const crossedAuthBoundary = Boolean(activeSession) !== Boolean(session);
   sessionVersion += 1;
   activeSession = session;
+  if (crossedAuthBoundary) resetAuthCache();
   useAuthStore.setState({
     session,
     status: session ? 'authenticated' : 'anonymous',
   });
+};
+
+export const registerAuthCacheReset = (reset: () => void) => {
+  resetAuthCache = reset;
+  return () => {
+    if (resetAuthCache === reset) resetAuthCache = () => {};
+  };
 };
 
 export const getAuthSession = () => activeSession;
@@ -45,20 +65,37 @@ export const hydrateAuthSession = async () => {
   }
 };
 
-export const saveAuthSession = async (response: AuthSessionResponse) => {
+export const saveAuthSession = (
+  response: AuthSessionResponse,
+  expectedVersion?: number,
+) => mutateStoredSession(async () => {
+  if (
+    expectedVersion !== undefined &&
+    expectedVersion !== sessionVersion
+  ) {
+    return null;
+  }
   const session = toAuthSession(response);
   await writeStoredSession(session);
   commitSession(session);
   return session;
-};
+});
 
-export const clearAuthSession = async () => {
-  try {
-    await clearStoredSession();
-  } finally {
-    commitSession(null);
-  }
-};
+export const clearAuthSession = (expectedVersion?: number) =>
+  mutateStoredSession(async () => {
+    if (
+      expectedVersion !== undefined &&
+      expectedVersion !== sessionVersion
+    ) {
+      return false;
+    }
+    try {
+      await clearStoredSession();
+    } finally {
+      commitSession(null);
+    }
+    return true;
+  });
 
 export const refreshAuthSession = () => {
   if (refreshPromise) return refreshPromise;
@@ -70,13 +107,9 @@ export const refreshAuthSession = () => {
     '/auth/session/refresh',
     { method: 'POST', body: { refreshToken } },
   )
-    .then((response) =>
-      startedAtVersion === sessionVersion
-        ? saveAuthSession(response)
-        : null,
-    )
+    .then((response) => saveAuthSession(response, startedAtVersion))
     .catch(async () => {
-      await clearAuthSession();
+      await clearAuthSession(startedAtVersion);
       return null;
     })
     .finally(() => {
@@ -88,16 +121,13 @@ export const refreshAuthSession = () => {
 
 export const logoutAuthSession = async () => {
   const refreshToken = activeSession?.refreshToken;
-  try {
-    if (refreshToken) {
-      await rawApiRequest('/auth/session/logout', {
+  const revokePromise = refreshToken
+    ? rawApiRequest('/auth/session/logout', {
         method: 'POST',
         body: { refreshToken },
-      });
-    }
-  } catch {
-    // Local credentials must still be cleared when the server is unavailable.
-  } finally {
-    await clearAuthSession();
-  }
+      }).catch(() => undefined)
+    : Promise.resolve();
+
+  await clearAuthSession();
+  await revokePromise;
 };

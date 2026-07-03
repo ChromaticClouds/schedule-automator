@@ -61,7 +61,9 @@ const readSource = (path) => readFileSync(join(sourceRoot, path), 'utf8');
 const planningApi = readSource('features/planning/api.ts');
 const apiClient = readSource('api/client.ts');
 const authStorage = readSource('features/auth/storage.ts');
+const authSession = readSource('features/auth/session.ts');
 const oauthFlow = readSource('features/auth/oauth.ts');
+const queryProvider = readSource('components/query-provider.tsx');
 
 if (planningApi.includes('x-user-id')) {
   fail('planning API still uses temporary x-user-id auth');
@@ -76,6 +78,21 @@ if (
 
 if (!authStorage.includes('expo-secure-store')) {
   fail('auth session storage does not use Expo SecureStore');
+}
+
+if (
+  !authSession.includes('saveAuthSession(response, startedAtVersion)') ||
+  !authSession.includes('clearAuthSession(startedAtVersion)') ||
+  !authSession.includes('mutateStoredSession')
+) {
+  fail('refresh persistence is missing stale-session guards');
+}
+
+if (
+  !queryProvider.includes('registerAuthCacheReset') ||
+  !queryProvider.includes("queryKey: ['planning']")
+) {
+  fail('planning cache is not cleared across auth boundaries');
 }
 
 if (
