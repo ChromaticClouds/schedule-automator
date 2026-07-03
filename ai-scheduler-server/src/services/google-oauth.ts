@@ -1,11 +1,10 @@
 import { google } from 'googleapis';
-import { Types } from 'mongoose';
-import { encryptSecret } from '../auth/security.js';
-import { ENV } from '../config/env.js';
+import { encryptSecret } from '@/auth/security.js';
+import { ENV } from '@/config/env.js';
 import {
   GoogleConnectionModel,
   UserModel,
-} from '../models/index.js';
+} from '@/models/index.js';
 
 const configuredScopes = ENV.GOOGLE_CALENDAR_SCOPES.split(/[\s,]+/).filter(
   Boolean,
@@ -28,10 +27,7 @@ export const createGoogleAuthorizationUrl = (state: string) =>
     state,
   });
 
-export const connectGoogleAccount = async (
-  userId: Types.ObjectId,
-  code: string,
-) => {
+export const connectGoogleAccount = async (code: string) => {
   const client = createClient();
   const { tokens } = await client.getToken(code);
 
@@ -49,21 +45,29 @@ export const connectGoogleAccount = async (
   }
 
   const email = profile.email.trim().toLowerCase();
-  await UserModel.findByIdAndUpdate(
-    userId,
-    {
-      $set: {
-        displayName: profile.name ?? undefined,
-        email,
-      },
-    },
-    {
-      new: true,
-      runValidators: true,
-      setDefaultsOnInsert: true,
-      upsert: true,
-    },
-  );
+  const existingConnection = await GoogleConnectionModel.findOne({
+    googleSub: profile.id,
+  });
+  const user = existingConnection
+    ? await UserModel.findByIdAndUpdate(
+        existingConnection.userId,
+        { $set: { displayName: profile.name ?? undefined, email } },
+        { new: true, runValidators: true },
+      )
+    : await UserModel.findOneAndUpdate(
+        { email },
+        { $set: { displayName: profile.name ?? undefined, email } },
+        {
+          new: true,
+          runValidators: true,
+          setDefaultsOnInsert: true,
+          upsert: true,
+        },
+      );
+
+  if (!user) {
+    throw new Error('Google account user could not be resolved');
+  }
 
   const connectionFields: Record<string, unknown> = {
     accessTokenEncrypted: encryptSecret(
@@ -85,11 +89,11 @@ export const connectGoogleAccount = async (
     );
   }
 
-  return GoogleConnectionModel.findOneAndUpdate(
-    { userId },
+  await GoogleConnectionModel.findOneAndUpdate(
+    { userId: user._id },
     {
       $set: connectionFields,
-      $setOnInsert: { userId },
+      $setOnInsert: { userId: user._id },
     },
     {
       new: true,
@@ -98,4 +102,6 @@ export const connectGoogleAccount = async (
       upsert: true,
     },
   );
+
+  return user._id.toString();
 };

@@ -14,4 +14,21 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+  {
+    files: ['src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^\\.\\./|^\\./[^/]+/',
+              message:
+                'Use the @/* path alias for imports outside the current directory.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

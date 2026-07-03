@@ -1,6 +1,6 @@
 import { buildApp } from './app.js';
-import { ENV } from './config/env.js';
-import { connectMongo, disconnectMongo } from './db/connection.js';
+import { ENV } from '@/config/env.js';
+import { connectMongo, disconnectMongo } from '@/db/connection.js';
 
 (async () => {
   await connectMongo();

@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify';
-import { ProtectedTimeModel } from '../models/index.js';
+import { ProtectedTimeModel } from '@/models/index.js';
 import {
   createProtectedTimeSchema,
   objectIdParamSchema,
   updateProtectedTimeSchema,
-} from '../schemas/planning.js';
+} from '@/schemas/planning.js';
 import { notFound, parseBody, parseParams, requireUserId } from './http.js';
 
 export const registerProtectedTimeRoutes = async (app: FastifyInstance) => {

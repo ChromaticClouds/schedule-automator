@@ -1,12 +1,32 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import { CORS_ORIGINS } from './config/env.js';
-import { HttpError } from './routes/http.js';
-import { registerPlanningRoutes } from './routes/index.js';
+import jwt from '@fastify/jwt';
+import redis from '@fastify/redis';
+import { CORS_ORIGINS, ENV } from '@/config/env.js';
+import { HttpError } from '@/routes/http.js';
+import { registerPlanningRoutes } from '@/routes/index.js';
 
 export const buildApp = async () => {
   const app = Fastify({ logger: true });
+
+  await app.register(jwt, {
+    secret: ENV.JWT_SECRET,
+    sign: {
+      aud: ENV.JWT_AUDIENCE,
+      expiresIn: ENV.JWT_ACCESS_TTL_SECONDS,
+      iss: ENV.JWT_ISSUER,
+    },
+    verify: {
+      allowedAud: ENV.JWT_AUDIENCE,
+      allowedIss: ENV.JWT_ISSUER,
+    },
+  });
+
+  await app.register(redis, {
+    closeClient: true,
+    url: ENV.REDIS_URL,
+  });
 
   await app.register(helmet);
 
@@ -22,6 +42,19 @@ export const buildApp = async () => {
         error: error.message,
         details: error.details,
       });
+    }
+
+    const errorCode =
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      typeof error.code === 'string'
+        ? error.code
+        : undefined;
+
+    if (errorCode?.startsWith('FST_JWT_')) {
+      request.log.warn({ code: errorCode }, 'access token rejected');
+      return reply.code(401).send({ error: 'Unauthorized' });
     }
 
     request.log.error(error);
