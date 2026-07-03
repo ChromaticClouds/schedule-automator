@@ -1,6 +1,7 @@
 export type ScheduleContext = {
   busy: { end: string; source: string; start: string; title: string }[];
   date: string;
+  maxDailyWorkMinutes: number;
   protected: { end: string; start: string; title: string }[];
   tasks: {
     estimatedMinutes: number;

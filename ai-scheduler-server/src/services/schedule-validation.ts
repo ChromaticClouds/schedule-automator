@@ -4,8 +4,6 @@ import type { ScheduleContext } from './schedule-contract.js';
 
 type Interval = { end: string; start: string };
 
-const maxDailyTaskMinutes = 480;
-
 const toMs = (value: string) => Date.parse(value);
 
 const minutesBetween = (start: string, end: string) =>
@@ -15,7 +13,7 @@ const overlaps = (left: Interval, right: Interval) =>
   toMs(left.start) < toMs(right.end) && toMs(right.start) < toMs(left.end);
 
 const inDay = (date: string, block: Interval) =>
-  block.start.startsWith(date) && block.end.startsWith(date);
+  block.start.startsWith(date);
 
 export const validateScheduleDraft = (
   output: ScheduleDraftOutput,
@@ -51,7 +49,7 @@ export const validateScheduleDraft = (
     if (block.type === 'task') taskMinutes += minutesBetween(block.start, block.end);
   }
 
-  if (taskMinutes > maxDailyTaskMinutes) {
+  if (taskMinutes > context.maxDailyWorkMinutes) {
     return { ok: false as const, reason: 'daily_work_limit_exceeded' };
   }
 

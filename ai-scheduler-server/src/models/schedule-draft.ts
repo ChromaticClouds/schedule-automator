@@ -46,6 +46,15 @@ const scheduleDraftSchema = new Schema(
 );
 
 scheduleDraftSchema.index({ userId: 1, date: 1, status: 1 });
+scheduleDraftSchema.index(
+  { userId: 1, date: 1 },
+  {
+    partialFilterExpression: {
+      status: { $in: ['draft', 'approved', 'synced'] },
+    },
+    unique: true,
+  },
+);
 scheduleDraftSchema.index({ 'blocks.calendarEventId': 1 }, { sparse: true });
 
 export type ScheduleDraft = InferSchemaType<typeof scheduleDraftSchema>;
