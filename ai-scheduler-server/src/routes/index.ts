@@ -4,6 +4,7 @@ import { registerGoalRoutes } from './goals.js';
 import { registerGoogleAuthRoutes } from './google-auth.js';
 import { registerProtectedTimeRoutes } from './protected-times.js';
 import { registerTaskRoutes } from './tasks.js';
+import { registerTaskBreakdownRoutes } from './task-breakdowns.js';
 
 export const registerPlanningRoutes = async (app: FastifyInstance) => {
   await registerGoogleAuthRoutes(app);
@@ -15,6 +16,7 @@ export const registerPlanningRoutes = async (app: FastifyInstance) => {
     await registerCalendarRoutes(protectedApp);
     await registerGoalRoutes(protectedApp);
     await registerTaskRoutes(protectedApp);
+    await registerTaskBreakdownRoutes(protectedApp);
     await registerProtectedTimeRoutes(protectedApp);
   });
 };

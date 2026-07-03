@@ -23,6 +23,8 @@ const taskSchema = new Schema(
     postponedCount: { type: Number, required: true, default: 0, min: 0 },
     energyLevel: { type: String, enum: energyLevels, required: true },
     status: { type: String, enum: taskStatuses, required: true, default: 'todo' },
+    breakdownRequestId: { type: String },
+    breakdownItemIndex: { type: Number, min: 0 },
   },
   { timestamps: true },
 );
@@ -30,6 +32,16 @@ const taskSchema = new Schema(
 taskSchema.index({ userId: 1, status: 1 });
 taskSchema.index({ userId: 1, deadline: 1 });
 taskSchema.index({ goalId: 1 });
+taskSchema.index(
+  { userId: 1, goalId: 1, breakdownRequestId: 1, breakdownItemIndex: 1 },
+  {
+    partialFilterExpression: {
+      breakdownItemIndex: { $type: 'number' },
+      breakdownRequestId: { $type: 'string' },
+    },
+    unique: true,
+  },
+);
 
 export type Task = InferSchemaType<typeof taskSchema>;
 
