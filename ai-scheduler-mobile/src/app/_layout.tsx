@@ -4,6 +4,7 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { AuthBootstrap } from '@/components/auth-bootstrap';
 import { QueryProvider } from '@/components/query-provider';
 import '@/config/env';
 
@@ -14,8 +15,10 @@ export default function TabLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryProvider>
-        <AnimatedSplashOverlay />
-        <AppTabs />
+        <AuthBootstrap>
+          <AnimatedSplashOverlay />
+          <AppTabs />
+        </AuthBootstrap>
       </QueryProvider>
     </ThemeProvider>
   );

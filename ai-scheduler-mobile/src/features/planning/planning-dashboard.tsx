@@ -4,6 +4,8 @@ import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { AuthPanel } from '@/features/auth/auth-panel';
+import { useAuthStore } from '@/features/auth/session';
 import {
   useCreateGoal,
   useCreateProtectedTime,
@@ -15,6 +17,9 @@ import {
 import { PlanningSection } from './planning-section';
 
 export function PlanningDashboard() {
+  const authenticated = useAuthStore(
+    (state) => state.status === 'authenticated',
+  );
   const [goalTitle, setGoalTitle] = useState('');
   const [taskTitle, setTaskTitle] = useState('');
   const [protectedTitle, setProtectedTitle] = useState('');
@@ -65,19 +70,21 @@ export function PlanningDashboard() {
         </ThemedText>
       </ThemedView>
 
-      <PlanningSection {...sectionState('Goals', goals)}>
+      <AuthPanel />
+
+      {authenticated && <PlanningSection {...sectionState('Goals', goals)}>
         <CreateRow value={goalTitle} onChange={setGoalTitle} onSubmit={submitGoal} />
         {goals.data?.map((goal) => <Item key={goal._id} text={goal.title} />)}
-      </PlanningSection>
+      </PlanningSection>}
 
-      <PlanningSection {...sectionState('Tasks', tasks)}>
+      {authenticated && <PlanningSection {...sectionState('Tasks', tasks)}>
         <CreateRow value={taskTitle} onChange={setTaskTitle} onSubmit={submitTask} />
         {tasks.data?.map((task) => (
           <Item key={task._id} text={`${task.title} - ${task.estimatedMinutes}m`} />
         ))}
-      </PlanningSection>
+      </PlanningSection>}
 
-      <PlanningSection {...sectionState('Protected time', protectedTimes)}>
+      {authenticated && <PlanningSection {...sectionState('Protected time', protectedTimes)}>
         <CreateRow
           value={protectedTitle}
           onChange={setProtectedTitle}
@@ -86,7 +93,7 @@ export function PlanningDashboard() {
         {protectedTimes.data?.map((block) => (
           <Item key={block._id} text={`${block.title} ${block.startTime}-${block.endTime}`} />
         ))}
-      </PlanningSection>
+      </PlanningSection>}
     </ScrollView>
   );
 }

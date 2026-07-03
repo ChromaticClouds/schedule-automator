@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/features/auth/session';
 
 import {
   createGoal,
@@ -19,18 +20,21 @@ export const useGoals = () =>
   useQuery({
     queryKey: planningKeys.goals,
     queryFn: listGoals,
+    enabled: useAuthStore((state) => state.status === 'authenticated'),
   });
 
 export const useTasks = () =>
   useQuery({
     queryKey: planningKeys.tasks,
     queryFn: listTasks,
+    enabled: useAuthStore((state) => state.status === 'authenticated'),
   });
 
 export const useProtectedTimes = () =>
   useQuery({
     queryKey: planningKeys.protectedTimes,
     queryFn: listProtectedTimes,
+    enabled: useAuthStore((state) => state.status === 'authenticated'),
   });
 
 export const useCreateGoal = () => {

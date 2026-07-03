@@ -57,6 +57,35 @@ if (!apiBaseUrl) {
   }
 }
 
+const readSource = (path) => readFileSync(join(sourceRoot, path), 'utf8');
+const planningApi = readSource('features/planning/api.ts');
+const apiClient = readSource('api/client.ts');
+const authStorage = readSource('features/auth/storage.ts');
+const oauthFlow = readSource('features/auth/oauth.ts');
+
+if (planningApi.includes('x-user-id')) {
+  fail('planning API still uses temporary x-user-id auth');
+}
+
+if (
+  !apiClient.includes('Authorization') ||
+  !apiClient.includes('refreshAuthSession')
+) {
+  fail('API client is missing Bearer auth or refresh retry');
+}
+
+if (!authStorage.includes('expo-secure-store')) {
+  fail('auth session storage does not use Expo SecureStore');
+}
+
+if (
+  !oauthFlow.includes('codeChallenge') ||
+  !oauthFlow.includes('handoffCode') ||
+  !oauthFlow.includes('openAuthSessionAsync')
+) {
+  fail('OAuth flow is missing PKCE, handoff, or browser session handling');
+}
+
 const tsc = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
 
 if (!existsSync(tsc)) {

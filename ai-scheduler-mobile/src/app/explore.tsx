@@ -11,8 +11,8 @@ const sections = [
     body: 'Weekly goals, tasks, and protected time now share a mobile planning surface.',
   },
   {
-    title: 'Temporary auth',
-    body: 'Requests use a fixed MVP x-user-id until Google OAuth is implemented.',
+    title: 'Secure auth',
+    body: 'Google sign-in now exchanges short-lived access and rotating refresh credentials.',
   },
   {
     title: 'Next layer',
