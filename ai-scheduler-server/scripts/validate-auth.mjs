@@ -14,6 +14,7 @@ import {
   rotateRefreshCredential,
   verifyCodeChallenge,
 } from '../dist/auth/session-security.js';
+import { requireVerifiedGoogleIdentity } from '../dist/auth/google-identity.js';
 
 const secret = 'local-validation-secret-with-enough-entropy';
 const userId = '507f1f77bcf86cd799439011';
@@ -35,6 +36,31 @@ assert.throws(() => decryptSecret(encrypted, `${secret}-wrong`));
 
 assert.equal(verifyCodeChallenge(verifier, challenge), true);
 assert.equal(verifyCodeChallenge(`${verifier}x`, challenge), false);
+
+const identity = requireVerifiedGoogleIdentity({
+  email: ' USER@Example.com ',
+  id: 'google-user-id',
+  name: ' Schedule User ',
+  verified_email: true,
+});
+assert.deepEqual(identity, {
+  displayName: 'Schedule User',
+  email: 'user@example.com',
+  googleSub: 'google-user-id',
+});
+assert.throws(() =>
+  requireVerifiedGoogleIdentity({
+    email: 'user@example.com',
+    id: 'google-user-id',
+    verified_email: false,
+  }),
+);
+assert.throws(() =>
+  requireVerifiedGoogleIdentity({
+    email: 'user@example.com',
+    id: 'google-user-id',
+  }),
+);
 
 const credential = createRefreshCredential(secret);
 const parsed = parseRefreshCredential(credential.token);

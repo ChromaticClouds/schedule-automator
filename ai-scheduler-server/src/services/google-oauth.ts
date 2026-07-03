@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { requireVerifiedGoogleIdentity } from '@/auth/google-identity.js';
 import { encryptSecret } from '@/auth/security.js';
 import { ENV } from '@/config/env.js';
 import {
@@ -40,23 +41,29 @@ export const connectGoogleAccount = async (code: string) => {
     .oauth2({ auth: client, version: 'v2' })
     .userinfo.get();
 
-  if (!profile.id || !profile.email) {
-    throw new Error('Google account identity is incomplete');
-  }
-
-  const email = profile.email.trim().toLowerCase();
+  const identity = requireVerifiedGoogleIdentity(profile);
   const existingConnection = await GoogleConnectionModel.findOne({
-    googleSub: profile.id,
+    googleSub: identity.googleSub,
   });
   const user = existingConnection
     ? await UserModel.findByIdAndUpdate(
         existingConnection.userId,
-        { $set: { displayName: profile.name ?? undefined, email } },
+        {
+          $set: {
+            displayName: identity.displayName,
+            email: identity.email,
+          },
+        },
         { new: true, runValidators: true },
       )
     : await UserModel.findOneAndUpdate(
-        { email },
-        { $set: { displayName: profile.name ?? undefined, email } },
+        { email: identity.email },
+        {
+          $set: {
+            displayName: identity.displayName,
+            email: identity.email,
+          },
+        },
         {
           new: true,
           runValidators: true,
@@ -74,8 +81,8 @@ export const connectGoogleAccount = async (code: string) => {
       tokens.access_token,
       ENV.ENCRYPTION_KEY,
     ),
-    email,
-    googleSub: profile.id,
+    email: identity.email,
+    googleSub: identity.googleSub,
     scopes: tokens.scope?.split(/\s+/).filter(Boolean) ?? requestedScopes,
     tokenExpiryDate: tokens.expiry_date
       ? new Date(tokens.expiry_date)
