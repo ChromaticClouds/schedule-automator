@@ -1,13 +1,14 @@
 # Git Commit & Branch Rules
 
 ## Core Policy
-- Do not commit, push, or force-push unless explicitly requested.
+- Do not force-push unless explicitly requested.
+- After an implementation request, run validation, then commit, push, and open a draft PR unless the user says not to.
 - Before committing, inspect `git status` and changed files.
 - Never commit secrets, env files, keystores, tokens, credentials, or generated caches.
 - Keep commits small, logical, and focused.
 - Do not mix unrelated mobile/server/docs/env changes in one commit.
 - If a secret appears in a diff, stop and warn the user.
-- Keep each source or docs file under 150 lines unless explicitly approved.
+- Keep source and docs files under 150 lines unless approved; `AGENTS.md` has no line limit.
 - Follow `docs/issue-pr-templates.md` when opening issues or PRs.
 
 ## Commit Format
@@ -52,12 +53,12 @@ Examples: `chore/env-split-mobile-server`, `feat/server-google-oauth`, `feat/mob
 1. Run `git status`.
 2. Review changed files.
 3. Ensure secret/env files are not staged.
-4. Group changes into logical commits.
-5. Suggest a commit message.
-6. Commit only after explicit approval.
+4. Run relevant build, lint, and typecheck commands; report any skipped checks.
+5. Group changes into logical commits.
+6. Use a Conventional Commit message.
 
 ## Before Push
 1. Confirm current branch name and remote target.
 2. Confirm there are no uncommitted changes.
 3. Ensure branch name follows the convention.
-4. Push only after explicit approval.
+4. Push and open a draft PR for implemented changes unless told otherwise.
