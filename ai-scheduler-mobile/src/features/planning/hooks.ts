@@ -2,16 +2,21 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/features/auth/session';
 
 import {
+  approveScheduleDraft,
   createGoal,
   createProtectedTime,
   createTask,
+  generateScheduleDraft,
+  getScheduleDraft,
   listGoals,
   listProtectedTimes,
   listTasks,
+  rejectScheduleDraft,
 } from './api';
 
 export const planningKeys = {
   goals: ['planning', 'goals'] as const,
+  scheduleDraft: (date: string) => ['planning', 'schedule-draft', date] as const,
   tasks: ['planning', 'tasks'] as const,
   protectedTimes: ['planning', 'protected-times'] as const,
 };
@@ -37,6 +42,14 @@ export const useProtectedTimes = () =>
     enabled: useAuthStore((state) => state.status === 'authenticated'),
   });
 
+export const useScheduleDraft = (date: string) =>
+  useQuery({
+    queryKey: planningKeys.scheduleDraft(date),
+    queryFn: () => getScheduleDraft(date),
+    enabled: useAuthStore((state) => state.status === 'authenticated'),
+    retry: false,
+  });
+
 export const useCreateGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -59,5 +72,42 @@ export const useCreateProtectedTime = () => {
     mutationFn: createProtectedTime,
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: planningKeys.protectedTimes }),
+  });
+};
+
+export const useGenerateScheduleDraft = (date: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (idempotencyKey: string) =>
+      generateScheduleDraft(date, idempotencyKey),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: planningKeys.scheduleDraft(date),
+      }),
+  });
+};
+
+export const useApproveScheduleDraft = (date: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: approveScheduleDraft,
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: planningKeys.scheduleDraft(date),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
+    },
+  });
+};
+
+export const useRejectScheduleDraft = (date: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: rejectScheduleDraft,
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: planningKeys.scheduleDraft(date),
+      }),
   });
 };
