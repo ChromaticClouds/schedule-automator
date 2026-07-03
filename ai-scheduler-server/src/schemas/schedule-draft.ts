@@ -18,6 +18,10 @@ export const scheduleDraftRequestSchema = z.object({
   date: isoDate,
 });
 
+export const scheduleDraftQuerySchema = z.object({
+  date: isoDate.optional(),
+});
+
 export const scheduleBlockOutputSchema = z
   .object({
     end: z.string().datetime({ offset: true }),
