@@ -4,6 +4,8 @@ import {
   scheduleDraftRequestSchema,
   scheduleIdempotencyKeySchema,
 } from '../dist/schemas/schedule-draft.js';
+import { ScheduleDraftModel } from '../dist/models/index.js';
+import { createDeterministicCalendarEventWriter } from '../dist/services/calendar-writer.js';
 import { createDeterministicScheduleGenerator } from '../dist/services/schedule-contract.js';
 import { zonedDayRange } from '../dist/services/schedule-time.js';
 import { validateScheduleDraft } from '../dist/services/schedule-validation.js';
@@ -126,5 +128,24 @@ const fake = createDeterministicScheduleGenerator(output);
 const generated = await fake.generate(context);
 generated.blocks[0].title = 'mutated';
 assert.equal((await fake.generate(context)).blocks[0].title, output.blocks[0].title);
+
+const uniqueActiveDraftIndex = ScheduleDraftModel.schema.indexes().some(
+  ([keys, options]) =>
+    options.unique === true &&
+    Object.hasOwn(keys, 'userId') &&
+    Object.hasOwn(keys, 'date'),
+);
+assert.equal(uniqueActiveDraftIndex, true);
+
+const { writer, writes } = createDeterministicCalendarEventWriter();
+assert.equal((await writer.createEvent('calendar-1', {
+  end: new Date('2026-07-03T09:45:00.000Z'),
+  start: new Date('2026-07-03T09:00:00.000Z'),
+  title: 'Implement schedule draft',
+})).eventId, 'event-1');
+assert.deepEqual(writes, [{
+  calendarId: 'calendar-1',
+  title: 'Implement schedule draft',
+}]);
 
 console.log('schedule draft validation passed');
