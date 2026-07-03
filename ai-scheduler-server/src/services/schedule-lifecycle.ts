@@ -36,15 +36,6 @@ export const rejectScheduleDraft = async (
   userId: Types.ObjectId,
   draftId: Types.ObjectId,
 ) => {
-  const draft = await ScheduleDraftModel.findOne({ _id: draftId, userId });
-  if (!draft) {
-    return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
-  }
-  if (!canRejectScheduleDraft(draft.status)) {
-    fail('Schedule draft cannot be rejected', 409, 'INVALID_DRAFT_STATE');
-  }
-  if (draft.status === 'rejected') return { draft, replayed: true };
-
   const rejected = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, userId, status: 'draft' },
     { $set: { status: 'rejected' } },
@@ -53,7 +44,10 @@ export const rejectScheduleDraft = async (
   if (rejected) return { draft: rejected, replayed: false };
 
   const current = await ScheduleDraftModel.findOne({ _id: draftId, userId });
-  if (current?.status === 'rejected') {
+  if (!current) {
+    return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
+  }
+  if (current.status === 'rejected') {
     return { draft: current, replayed: true };
   }
   return fail(
