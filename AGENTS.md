@@ -8,7 +8,7 @@
 - Keep commits small, logical, and focused.
 - Do not mix unrelated mobile/server/docs/env changes in one commit.
 - If a secret appears in a diff, stop and warn the user.
-- Keep each source or docs file under 150 lines unless explicitly approved.
+- Keep source and docs files under 150 lines unless approved; `AGENTS.md` has no line limit.
 - Follow `docs/issue-pr-templates.md` when opening issues or PRs.
 
 ## Commit Format
