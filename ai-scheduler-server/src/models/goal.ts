@@ -25,4 +25,4 @@ goalSchema.index({ userId: 1, weekStartDate: 1, weekEndDate: 1 });
 
 export type Goal = InferSchemaType<typeof goalSchema>;
 
-export const GoalModel = model('Goal', goalSchema);
+export const GoalModel = model('Goal', goalSchema, 'goals');

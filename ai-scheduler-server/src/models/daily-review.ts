@@ -23,4 +23,8 @@ dailyReviewSchema.index({ userId: 1, date: 1 }, { unique: true });
 
 export type DailyReview = InferSchemaType<typeof dailyReviewSchema>;
 
-export const DailyReviewModel = model('DailyReview', dailyReviewSchema);
+export const DailyReviewModel = model(
+  'DailyReview',
+  dailyReviewSchema,
+  'dailyReviews',
+);

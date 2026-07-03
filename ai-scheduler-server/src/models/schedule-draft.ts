@@ -50,4 +50,8 @@ scheduleDraftSchema.index({ 'blocks.calendarEventId': 1 }, { sparse: true });
 
 export type ScheduleDraft = InferSchemaType<typeof scheduleDraftSchema>;
 
-export const ScheduleDraftModel = model('ScheduleDraft', scheduleDraftSchema);
+export const ScheduleDraftModel = model(
+  'ScheduleDraft',
+  scheduleDraftSchema,
+  'scheduleDrafts',
+);

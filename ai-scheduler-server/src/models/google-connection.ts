@@ -22,4 +22,5 @@ export type GoogleConnection = InferSchemaType<typeof googleConnectionSchema>;
 export const GoogleConnectionModel = model(
   'GoogleConnection',
   googleConnectionSchema,
+  'googleConnections',
 );

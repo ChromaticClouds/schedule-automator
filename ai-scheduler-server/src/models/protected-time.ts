@@ -29,4 +29,8 @@ protectedTimeSchema.index({ userId: 1, category: 1 });
 
 export type ProtectedTime = InferSchemaType<typeof protectedTimeSchema>;
 
-export const ProtectedTimeModel = model('ProtectedTime', protectedTimeSchema);
+export const ProtectedTimeModel = model(
+  'ProtectedTime',
+  protectedTimeSchema,
+  'protectedTimes',
+);

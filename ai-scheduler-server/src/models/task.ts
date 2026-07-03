@@ -33,4 +33,4 @@ taskSchema.index({ goalId: 1 });
 
 export type Task = InferSchemaType<typeof taskSchema>;
 
-export const TaskModel = model('Task', taskSchema);
+export const TaskModel = model('Task', taskSchema, 'tasks');

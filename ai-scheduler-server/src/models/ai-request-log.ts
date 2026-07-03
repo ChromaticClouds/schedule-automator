@@ -25,4 +25,8 @@ aiRequestLogSchema.index({ type: 1, responseStatus: 1 });
 
 export type AiRequestLog = InferSchemaType<typeof aiRequestLogSchema>;
 
-export const AiRequestLogModel = model('AiRequestLog', aiRequestLogSchema);
+export const AiRequestLogModel = model(
+  'AiRequestLog',
+  aiRequestLogSchema,
+  'aiRequestLogs',
+);
