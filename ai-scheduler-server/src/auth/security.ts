@@ -9,7 +9,7 @@ import {
 import { z } from 'zod';
 
 const stateSchema = z.object({
-  userId: z.string().regex(/^[a-f\d]{24}$/i),
+  codeChallenge: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
   expiresAt: z.number().int().positive(),
   nonce: z.string().min(16),
 });
@@ -21,13 +21,13 @@ const sign = (value: string, secret: string) =>
   createHmac('sha256', secret).update(value).digest('base64url');
 
 export const createOAuthState = (
-  userId: string,
+  codeChallenge: string,
   secret: string,
   now = Date.now(),
 ) => {
   const payload = Buffer.from(
     JSON.stringify({
-      userId,
+      codeChallenge,
       expiresAt: now + 10 * 60 * 1000,
       nonce: randomBytes(18).toString('base64url'),
     }),

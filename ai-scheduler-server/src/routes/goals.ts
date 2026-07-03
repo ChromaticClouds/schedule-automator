@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify';
-import { GoalModel } from '../models/index.js';
+import { GoalModel } from '@/models/index.js';
 import {
   createGoalSchema,
   objectIdParamSchema,
   updateGoalSchema,
-} from '../schemas/planning.js';
+} from '@/schemas/planning.js';
 import { notFound, parseBody, parseParams, requireUserId } from './http.js';
 
 export const registerGoalRoutes = async (app: FastifyInstance) => {

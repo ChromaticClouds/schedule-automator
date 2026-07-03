@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify';
-import { TaskModel } from '../models/index.js';
+import { TaskModel } from '@/models/index.js';
 import {
   createTaskSchema,
   objectIdParamSchema,
   updateTaskSchema,
-} from '../schemas/planning.js';
+} from '@/schemas/planning.js';
 import { notFound, parseBody, parseParams, requireUserId } from './http.js';
 
 export const registerTaskRoutes = async (app: FastifyInstance) => {

@@ -50,14 +50,14 @@ export const parseQuery = <T>(
 };
 
 export const requireUserId = (request: FastifyRequest) => {
-  const raw = request.headers['x-user-id'];
-  const userId = Array.isArray(raw) ? raw[0] : raw;
-
-  if (!userId || !Types.ObjectId.isValid(userId)) {
-    throw new HttpError('Valid x-user-id header is required', 401);
+  if (
+    request.user.type !== 'access' ||
+    !Types.ObjectId.isValid(request.user.sub)
+  ) {
+    throw new HttpError('Valid access token is required', 401);
   }
 
-  return new Types.ObjectId(userId);
+  return new Types.ObjectId(request.user.sub);
 };
 
 export const notFound = (resource: string) => {

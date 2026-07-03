@@ -6,7 +6,13 @@ import { registerTaskRoutes } from './tasks.js';
 
 export const registerPlanningRoutes = async (app: FastifyInstance) => {
   await registerGoogleAuthRoutes(app);
-  await registerGoalRoutes(app);
-  await registerTaskRoutes(app);
-  await registerProtectedTimeRoutes(app);
+  await app.register(async (protectedApp) => {
+    protectedApp.addHook('onRequest', async (request) => {
+      await request.jwtVerify();
+    });
+
+    await registerGoalRoutes(protectedApp);
+    await registerTaskRoutes(protectedApp);
+    await registerProtectedTimeRoutes(protectedApp);
+  });
 };

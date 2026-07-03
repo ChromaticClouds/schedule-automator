@@ -1,11 +1,11 @@
 import { google } from 'googleapis';
-import { Types } from 'mongoose';
-import { encryptSecret } from '../auth/security.js';
-import { ENV } from '../config/env.js';
+import { requireVerifiedGoogleIdentity } from '@/auth/google-identity.js';
+import { encryptSecret } from '@/auth/security.js';
+import { ENV } from '@/config/env.js';
 import {
   GoogleConnectionModel,
   UserModel,
-} from '../models/index.js';
+} from '@/models/index.js';
 
 const configuredScopes = ENV.GOOGLE_CALENDAR_SCOPES.split(/[\s,]+/).filter(
   Boolean,
@@ -28,10 +28,7 @@ export const createGoogleAuthorizationUrl = (state: string) =>
     state,
   });
 
-export const connectGoogleAccount = async (
-  userId: Types.ObjectId,
-  code: string,
-) => {
+export const connectGoogleAccount = async (code: string) => {
   const client = createClient();
   const { tokens } = await client.getToken(code);
 
@@ -44,34 +41,48 @@ export const connectGoogleAccount = async (
     .oauth2({ auth: client, version: 'v2' })
     .userinfo.get();
 
-  if (!profile.id || !profile.email) {
-    throw new Error('Google account identity is incomplete');
-  }
+  const identity = requireVerifiedGoogleIdentity(profile);
+  const existingConnection = await GoogleConnectionModel.findOne({
+    googleSub: identity.googleSub,
+  });
+  const user = existingConnection
+    ? await UserModel.findByIdAndUpdate(
+        existingConnection.userId,
+        {
+          $set: {
+            displayName: identity.displayName,
+            email: identity.email,
+          },
+        },
+        { new: true, runValidators: true },
+      )
+    : await UserModel.findOneAndUpdate(
+        { email: identity.email },
+        {
+          $set: {
+            displayName: identity.displayName,
+            email: identity.email,
+          },
+        },
+        {
+          new: true,
+          runValidators: true,
+          setDefaultsOnInsert: true,
+          upsert: true,
+        },
+      );
 
-  const email = profile.email.trim().toLowerCase();
-  await UserModel.findByIdAndUpdate(
-    userId,
-    {
-      $set: {
-        displayName: profile.name ?? undefined,
-        email,
-      },
-    },
-    {
-      new: true,
-      runValidators: true,
-      setDefaultsOnInsert: true,
-      upsert: true,
-    },
-  );
+  if (!user) {
+    throw new Error('Google account user could not be resolved');
+  }
 
   const connectionFields: Record<string, unknown> = {
     accessTokenEncrypted: encryptSecret(
       tokens.access_token,
       ENV.ENCRYPTION_KEY,
     ),
-    email,
-    googleSub: profile.id,
+    email: identity.email,
+    googleSub: identity.googleSub,
     scopes: tokens.scope?.split(/\s+/).filter(Boolean) ?? requestedScopes,
     tokenExpiryDate: tokens.expiry_date
       ? new Date(tokens.expiry_date)
@@ -85,11 +96,11 @@ export const connectGoogleAccount = async (
     );
   }
 
-  return GoogleConnectionModel.findOneAndUpdate(
-    { userId },
+  await GoogleConnectionModel.findOneAndUpdate(
+    { userId: user._id },
     {
       $set: connectionFields,
-      $setOnInsert: { userId },
+      $setOnInsert: { userId: user._id },
     },
     {
       new: true,
@@ -98,4 +109,6 @@ export const connectGoogleAccount = async (
       upsert: true,
     },
   );
+
+  return user._id.toString();
 };
