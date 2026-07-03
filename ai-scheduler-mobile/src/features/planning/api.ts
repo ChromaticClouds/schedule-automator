@@ -5,6 +5,8 @@ import {
   CreateTaskInput,
   Goal,
   ProtectedTime,
+  ScheduleDraft,
+  ScheduleDraftResult,
   Task,
 } from './types';
 
@@ -33,4 +35,29 @@ export const createProtectedTime = (body: CreateProtectedTimeInput) =>
   apiRequest<ProtectedTime>('/protected-times', {
     method: 'POST',
     body,
+  });
+
+export const getScheduleDraft = (date?: string) =>
+  apiRequest<ScheduleDraft>(
+    `/schedule-drafts${date ? `?date=${encodeURIComponent(date)}` : ''}`,
+  );
+
+export const generateScheduleDraft = (
+  date: string,
+  idempotencyKey: string,
+) =>
+  apiRequest<ScheduleDraftResult>('/schedule-drafts', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: { date },
+  });
+
+export const approveScheduleDraft = (id: string) =>
+  apiRequest<ScheduleDraftResult>(`/schedule-drafts/${id}/approve`, {
+    method: 'POST',
+  });
+
+export const rejectScheduleDraft = (id: string) =>
+  apiRequest<ScheduleDraftResult>(`/schedule-drafts/${id}/reject`, {
+    method: 'POST',
   });
