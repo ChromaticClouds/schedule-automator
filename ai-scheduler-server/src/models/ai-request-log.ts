@@ -31,7 +31,7 @@ const aiRequestLogSchema = new Schema(
 aiRequestLogSchema.index({ userId: 1, createdAt: -1 });
 aiRequestLogSchema.index({ type: 1, responseStatus: 1 });
 aiRequestLogSchema.index(
-  { userId: 1, type: 1, idempotencyKeyHash: 1 },
+  { userId: 1, type: 1, goalId: 1, idempotencyKeyHash: 1 },
   {
     partialFilterExpression: { idempotencyKeyHash: { $type: 'string' } },
     unique: true,

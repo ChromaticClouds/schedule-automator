@@ -64,11 +64,13 @@ export const generateTaskBreakdown = async (
   if (!goal) return fail('Goal not found', 404, 'GOAL_NOT_FOUND');
 
   const parentTasks = await TaskModel.find({
+    generationKeyHash: { $exists: false },
     goalId,
     status: { $ne: 'archived' },
     userId,
   })
     .select({ _id: 1, title: 1 })
+    .sort({ createdAt: 1, _id: 1 })
     .limit(50)
     .lean();
   const context: TaskBreakdownContext = {
@@ -86,7 +88,7 @@ export const generateTaskBreakdown = async (
     },
   };
   const payloadHash = hashValue(JSON.stringify(context));
-  const keyHash = hashValue(`${userId}:${idempotencyKey}`);
+  const keyHash = hashValue(`${userId}:${goalId}:${idempotencyKey}`);
   const claim = await claimTaskBreakdown(
     userId,
     goalId,

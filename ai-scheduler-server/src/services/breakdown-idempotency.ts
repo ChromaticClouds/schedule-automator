@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { AiRequestLogModel, TaskModel } from '@/models/index.js';
 
+const claimLeaseMs = 10 * 60 * 1000;
+
 export const hashValue = (value: string) =>
   createHash('sha256').update(value).digest('hex');
 
@@ -16,8 +18,10 @@ export const claimTaskBreakdown = async (
   idempotencyKeyHash: string,
   payloadHash: string,
 ) => {
+  const now = new Date();
   try {
     const log = await AiRequestLogModel.create({
+      createdAt: now,
       goalId,
       idempotencyKeyHash,
       payloadHash,
@@ -31,6 +35,7 @@ export const claimTaskBreakdown = async (
   }
 
   const existing = await AiRequestLogModel.findOne({
+    goalId,
     idempotencyKeyHash,
     type: 'task_breakdown',
     userId,
@@ -41,21 +46,28 @@ export const claimTaskBreakdown = async (
   if (existing.responseStatus === 'success') {
     const tasks = await TaskModel.find({
       generationKeyHash: idempotencyKeyHash,
+      goalId,
       userId,
     }).sort({ generationIndex: 1 });
     return { kind: 'replay' as const, tasks };
   }
   if (existing.responseStatus === 'in_progress') {
-    return { kind: 'pending' as const };
+    const staleBefore = new Date(now.getTime() - claimLeaseMs);
+    if (existing.createdAt > staleBefore) {
+      return { kind: 'pending' as const };
+    }
   }
 
   const claimed = await AiRequestLogModel.findOneAndUpdate(
     {
       _id: existing._id,
       responseStatus: existing.responseStatus,
+      ...(existing.responseStatus === 'in_progress'
+        ? { createdAt: { $lte: new Date(now.getTime() - claimLeaseMs) } }
+        : {}),
     },
     {
-      $set: { responseStatus: 'in_progress' },
+      $set: { createdAt: now, responseStatus: 'in_progress' },
       $unset: { errorMessage: 1 },
     },
     { returnDocument: 'after' },

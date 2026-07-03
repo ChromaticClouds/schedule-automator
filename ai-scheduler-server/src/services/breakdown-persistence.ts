@@ -1,4 +1,4 @@
-import { startSession, type Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { AiRequestLogModel, TaskModel } from '@/models/index.js';
 import type { TaskBreakdownResponse } from '@/schemas/task-breakdown.js';
 
@@ -7,6 +7,21 @@ type GoalValues = {
   importance: 1 | 2 | 3 | 4 | 5;
 };
 
+const findGeneratedTasks = (
+  userId: Types.ObjectId,
+  goalId: Types.ObjectId,
+  generationKeyHash: string,
+) =>
+  TaskModel.find({ generationKeyHash, goalId, userId }).sort({
+    generationIndex: 1,
+  });
+
+const markSuccess = (logId: Types.ObjectId) =>
+  AiRequestLogModel.updateOne(
+    { _id: logId },
+    { $set: { responseStatus: 'success' }, $unset: { errorMessage: 1 } },
+  );
+
 export const persistTaskBreakdown = async (
   userId: Types.ObjectId,
   goal: GoalValues,
@@ -14,13 +29,11 @@ export const persistTaskBreakdown = async (
   logId: Types.ObjectId,
   output: TaskBreakdownResponse,
 ) => {
-  const session = await startSession();
-
-  try {
-    let tasks: InstanceType<typeof TaskModel>[] = [];
-    await session.withTransaction(async () => {
-      tasks = await TaskModel.insertMany(
-        output.taskBreakdown.map((task, generationIndex) => ({
+  for (const [generationIndex, task] of output.taskBreakdown.entries()) {
+    await TaskModel.updateOne(
+      { generationIndex, generationKeyHash, userId },
+      {
+        $setOnInsert: {
           checklist: task.checklist.map((title) => ({ done: false, title })),
           energyLevel: 'medium',
           estimatedMinutes: task.estimatedMinutes,
@@ -29,23 +42,24 @@ export const persistTaskBreakdown = async (
           goalId: goal._id,
           goalImpact: goal.importance,
           importance: goal.importance,
-          parentTaskId: task.parentTaskId,
+          parentTaskId: task.parentTaskId
+            ? new Types.ObjectId(task.parentTaskId)
+            : undefined,
           postponedCount: 0,
           priorityReason: task.priorityReason,
           status: 'todo',
           title: task.title,
           userId,
-        })),
-        { session },
-      );
-      await AiRequestLogModel.updateOne(
-        { _id: logId },
-        { $set: { responseStatus: 'success' }, $unset: { errorMessage: 1 } },
-        { session },
-      );
-    });
-    return tasks;
-  } finally {
-    await session.endSession();
+        },
+      },
+      { upsert: true },
+    );
   }
+
+  const tasks = await findGeneratedTasks(userId, goal._id, generationKeyHash);
+  if (tasks.length !== output.taskBreakdown.length) {
+    throw new Error('Task breakdown persistence did not save every task');
+  }
+  await markSuccess(logId);
+  return tasks;
 };

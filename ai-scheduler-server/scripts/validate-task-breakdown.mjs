@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { readFileSync } from 'node:fs';
 import {
   hasOnlyAllowedParentTasks,
   idempotencyKeySchema,
@@ -73,6 +74,7 @@ assert.equal(
   hasUniqueIndex(AiRequestLogModel, [
     'userId',
     'type',
+    'goalId',
     'idempotencyKeyHash',
   ]),
   true,
@@ -83,5 +85,15 @@ const first = await fake.generate({ existingTasks: [], goal: {} });
 first.taskBreakdown[0].title = 'mutated';
 const second = await fake.generate({ existingTasks: [], goal: {} });
 assert.equal(second.taskBreakdown[0].title, valid.taskBreakdown[0].title);
+assert.notEqual(
+  hashValue('user:goal-a:request:12345678'),
+  hashValue('user:goal-b:request:12345678'),
+);
+const persistenceSource = readFileSync(
+  'src/services/breakdown-persistence.ts',
+  'utf8',
+);
+assert.equal(persistenceSource.includes('startSession'), false);
+assert.equal(persistenceSource.includes('withTransaction'), false);
 
 console.log('task breakdown validation passed');
