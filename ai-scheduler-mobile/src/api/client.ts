@@ -1,53 +1,40 @@
-import { ENV } from '@/config';
+import {
+  getAuthSession,
+  refreshAuthSession,
+} from '@/features/auth/session';
+import { ApiError, ApiOptions, rawApiRequest } from './transport';
 
-type ApiOptions = Omit<RequestInit, 'body'> & {
-  body?: unknown;
-};
-
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly details?: unknown,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-const buildUrl = (path: string) => {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${ENV.API_BASE_URL}${normalizedPath}`;
-};
-
-export const apiRequest = async <T>(path: string, options: ApiOptions = {}) => {
+const authorizedOptions = (
+  options: ApiOptions,
+  accessToken: string,
+): ApiOptions => {
   const headers = new Headers(options.headers);
+  headers.set('Authorization', `Bearer ${accessToken}`);
+  return { ...options, headers };
+};
 
-  if (options.body !== undefined && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  let response: Response;
+export const apiRequest = async <T>(
+  path: string,
+  options: ApiOptions = {},
+) => {
+  const session = getAuthSession();
+  if (!session) throw new ApiError('Authentication required', 401);
 
   try {
-    response = await fetch(buildUrl(path), {
-      ...options,
-      headers,
-      body:
-        options.body === undefined ? undefined : JSON.stringify(options.body),
-    });
+    return await rawApiRequest<T>(
+      path,
+      authorizedOptions(options, session.accessToken),
+    );
   } catch (error) {
-    throw new ApiError('Network request failed', 0, error);
+    if (!(error instanceof ApiError) || error.status !== 401) throw error;
   }
 
-  const text = await response.text();
-  const data = text.length > 0 ? JSON.parse(text) : undefined;
-
-  if (!response.ok) {
-    throw new ApiError(response.statusText, response.status, data);
-  }
-
-  return data as T;
+  const refreshed = await refreshAuthSession();
+  if (!refreshed) throw new ApiError('Session expired', 401);
+  return rawApiRequest<T>(
+    path,
+    authorizedOptions(options, refreshed.accessToken),
+  );
 };
 
 export type HealthResponse = {
@@ -55,4 +42,6 @@ export type HealthResponse = {
   service: string;
 };
 
-export const getHealth = () => apiRequest<HealthResponse>('/health');
+export const getHealth = () => rawApiRequest<HealthResponse>('/health');
+
+export { ApiError } from './transport';
