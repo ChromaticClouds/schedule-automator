@@ -128,7 +128,6 @@ const fake = createDeterministicScheduleGenerator(output);
 const generated = await fake.generate(context);
 generated.blocks[0].title = 'mutated';
 assert.equal((await fake.generate(context)).blocks[0].title, output.blocks[0].title);
-
 const uniqueActiveDraftIndex = ScheduleDraftModel.schema.indexes().some(
   ([keys, options]) =>
     options.unique === true &&
@@ -147,5 +146,4 @@ assert.deepEqual(writes, [{
   calendarId: 'calendar-1',
   title: 'Implement schedule draft',
 }]);
-
 console.log('schedule draft validation passed');
