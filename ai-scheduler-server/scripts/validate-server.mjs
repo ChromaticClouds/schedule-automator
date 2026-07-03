@@ -72,5 +72,6 @@ run('tsc', ['--noEmit']);
 run('tsc', []);
 run('tsc-alias', []);
 runNode('scripts/validate-auth.mjs');
+runNode('scripts/validate-calendar.mjs');
 runNode('scripts/validate-session.mjs');
 run('eslint', ['.']);
