@@ -74,6 +74,7 @@ run('tsc-alias', []);
 runNode('scripts/validate-auth.mjs');
 runNode('scripts/validate-calendar.mjs');
 runNode('scripts/validate-schedule-draft.mjs');
+runNode('scripts/validate-schedule-lifecycle.mjs');
 runNode('scripts/validate-session.mjs');
 runNode('scripts/validate-task-breakdown.mjs');
 run('eslint', ['.']);
