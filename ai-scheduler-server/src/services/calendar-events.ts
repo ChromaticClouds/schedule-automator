@@ -51,6 +51,7 @@ const listCalendarIds = async (api: calendar_v3.Calendar) => {
       maxResults: 250,
       pageToken,
       showDeleted: false,
+      showHidden: true,
     });
     ids.push(
       ...(data.items ?? []).flatMap((entry) =>
@@ -100,5 +101,7 @@ export const listOccupiedEvents = async (
     }
   }
 
-  return events.sort((left, right) => left.start.localeCompare(right.start));
+  return events.sort(
+    (left, right) => Date.parse(left.start) - Date.parse(right.start),
+  );
 };

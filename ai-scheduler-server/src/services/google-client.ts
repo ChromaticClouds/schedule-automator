@@ -35,6 +35,19 @@ export const requireRefreshToken = (
   return refreshToken;
 };
 
+export const refreshGoogleAccessToken = async (
+  auth: ReturnType<typeof createOAuthClient>,
+) => {
+  try {
+    await auth.getAccessToken();
+  } catch {
+    throw new GoogleConnectionError(
+      'Google account must be reconnected',
+      401,
+    );
+  }
+};
+
 export const createGoogleCalendarClient = async (userId: Types.ObjectId) => {
   const connection = await GoogleConnectionModel.findOne({ userId });
 
@@ -62,7 +75,7 @@ export const createGoogleCalendarClient = async (userId: Types.ObjectId) => {
   requireRefreshToken(needsRefresh, refreshToken);
 
   if (needsRefresh && refreshToken) {
-    await auth.getAccessToken();
+    await refreshGoogleAccessToken(auth);
     const credentials = auth.credentials;
 
     if (!credentials.access_token) {

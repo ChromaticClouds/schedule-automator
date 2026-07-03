@@ -18,14 +18,20 @@ Object.assign(process.env, {
   SESSION_SECRET: 'calendar-validation-session-secret',
 });
 
-const { resolveCalendarId } = await import(
+const {
+  resolveCalendarId,
+  withAiCalendarProvisionLock,
+} = await import(
   '../dist/services/ai-calendar.js'
 );
 const {
   listOccupiedEvents,
   normalizeCalendarEvent,
 } = await import('../dist/services/calendar-events.js');
-const { requireRefreshToken } = await import(
+const {
+  refreshGoogleAccessToken,
+  requireRefreshToken,
+} = await import(
   '../dist/services/google-client.js'
 );
 const { calendarRangeSchema } = await import(
@@ -81,18 +87,30 @@ assert.throws(
   () => requireRefreshToken(true, undefined),
   (error) => error.statusCode === 401,
 );
+await assert.rejects(
+  () =>
+    refreshGoogleAccessToken({
+      getAccessToken: async () => {
+        throw new Error('revoked');
+      },
+    }),
+  (error) => error.statusCode === 401,
+);
 
 let eventPage = 0;
 const eventApi = {
   calendarList: {
-    list: async () => ({
-      data: {
-        items: [
-          { accessRole: 'owner', id: 'primary' },
-          { accessRole: 'none', id: 'inaccessible' },
-        ],
-      },
-    }),
+    list: async ({ showHidden }) => {
+      assert.equal(showHidden, true);
+      return {
+        data: {
+          items: [
+            { accessRole: 'owner', id: 'primary' },
+            { accessRole: 'none', id: 'inaccessible' },
+          ],
+        },
+      };
+    },
   },
   events: {
     list: async ({ calendarId, pageToken }) => {
@@ -102,9 +120,19 @@ const eventApi = {
         data: {
           items: [
             {
-              end: { date: `2026-07-0${eventPage + 1}` },
+              end: {
+                dateTime:
+                  eventPage === 1
+                    ? '2026-07-01T10:00:00-07:00'
+                    : '2026-07-01T11:00:00+09:00',
+              },
               id: `event-${eventPage}`,
-              start: { date: `2026-07-0${eventPage}` },
+              start: {
+                dateTime:
+                  eventPage === 1
+                    ? '2026-07-01T09:00:00-07:00'
+                    : '2026-07-01T10:00:00+09:00',
+              },
             },
           ],
           nextPageToken: pageToken ? undefined : 'next',
@@ -116,6 +144,20 @@ const eventApi = {
 const occupied = await listOccupiedEvents(eventApi, range);
 assert.equal(occupied.length, 2);
 assert.equal(eventPage, 2);
+assert.equal(occupied[0].eventId, 'event-2');
+
+const lockOrder = [];
+await Promise.all([
+  withAiCalendarProvisionLock('user-1', async () => {
+    lockOrder.push('first-start');
+    await Promise.resolve();
+    lockOrder.push('first-end');
+  }),
+  withAiCalendarProvisionLock('user-1', async () => {
+    lockOrder.push('second-start');
+  }),
+]);
+assert.deepEqual(lockOrder, ['first-start', 'first-end', 'second-start']);
 
 let inserted = 0;
 const calendarApi = {

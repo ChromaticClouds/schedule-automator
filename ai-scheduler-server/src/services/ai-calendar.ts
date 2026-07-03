@@ -4,6 +4,7 @@ import { GoogleConnectionModel } from '@/models/index.js';
 import { createGoogleCalendarClient } from './google-client.js';
 
 const maxPages = 20;
+const calendarCreationLocks = new Map<string, Promise<unknown>>();
 
 const responseStatus = (error: unknown) => {
   if (typeof error !== 'object' || !error) return undefined;
@@ -61,22 +62,48 @@ export const resolveCalendarId = async (
   return data.id;
 };
 
+export const withAiCalendarProvisionLock = async <Result>(
+  userId: string,
+  create: () => Promise<Result>,
+) => {
+  const previous = calendarCreationLocks.get(userId);
+  if (previous) await previous.catch(() => undefined);
+
+  const current = create();
+  calendarCreationLocks.set(userId, current);
+
+  try {
+    return await current;
+  } finally {
+    if (calendarCreationLocks.get(userId) === current) {
+      calendarCreationLocks.delete(userId);
+    }
+  }
+};
+
 export const ensureAiCalendar = async (
   userId: Parameters<typeof createGoogleCalendarClient>[0],
 ) => {
-  const { api, connection } = await createGoogleCalendarClient(userId);
-  const calendarId = await resolveCalendarId(
-    api,
-    connection.aiCalendarId ?? undefined,
-    ENV.GOOGLE_CALENDAR_AI_NAME,
-  );
+  const calendarId = await withAiCalendarProvisionLock(
+    userId.toString(),
+    async () => {
+      const { api, connection } = await createGoogleCalendarClient(userId);
+      const resolved = await resolveCalendarId(
+        api,
+        connection.aiCalendarId ?? undefined,
+        ENV.GOOGLE_CALENDAR_AI_NAME,
+      );
 
-  if (calendarId !== connection.aiCalendarId) {
-    await GoogleConnectionModel.updateOne(
-      { _id: connection._id },
-      { $set: { aiCalendarId: calendarId } },
-    );
-  }
+      if (resolved !== connection.aiCalendarId) {
+        await GoogleConnectionModel.updateOne(
+          { _id: connection._id },
+          { $set: { aiCalendarId: resolved } },
+        );
+      }
+
+      return resolved;
+    },
+  );
 
   return {
     calendarId,
