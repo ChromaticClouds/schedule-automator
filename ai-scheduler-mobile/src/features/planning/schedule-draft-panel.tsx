@@ -11,11 +11,7 @@ import {
   useRejectScheduleDraft,
   useScheduleDraft,
 } from './hooks';
-
-const toDateKey = (date = new Date()) => {
-  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 10);
-};
+import { toScheduleDateKey } from './schedule-date';
 
 const detailCode = (error: unknown) => {
   if (
@@ -41,7 +37,7 @@ const draftErrorMessage = (error: Error | null) => {
 };
 
 export function ScheduleDraftPanel() {
-  const date = toDateKey();
+  const date = toScheduleDateKey();
   const draftQuery = useScheduleDraft(date);
   const generateDraft = useGenerateScheduleDraft(date);
   const approveDraft = useApproveScheduleDraft(date);

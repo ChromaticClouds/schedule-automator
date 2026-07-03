@@ -91,11 +91,12 @@ export const useApproveScheduleDraft = (date: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: approveScheduleDraft,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
+    onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),
-      });
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
     },
   });
 };
