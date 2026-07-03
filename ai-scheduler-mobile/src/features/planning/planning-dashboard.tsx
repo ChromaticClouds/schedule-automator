@@ -15,6 +15,7 @@ import {
   useTasks,
 } from './hooks';
 import { PlanningSection } from './planning-section';
+import { ScheduleDraftPanel } from './schedule-draft-panel';
 
 export function PlanningDashboard() {
   const authenticated = useAuthStore(
@@ -71,6 +72,8 @@ export function PlanningDashboard() {
       </ThemedView>
 
       <AuthPanel />
+
+      {authenticated && <ScheduleDraftPanel />}
 
       {authenticated && <PlanningSection {...sectionState('Goals', goals)}>
         <CreateRow value={goalTitle} onChange={setGoalTitle} onSubmit={submitGoal} />
