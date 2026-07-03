@@ -1,10 +1,36 @@
 import { strict as assert } from 'node:assert';
-import { resolveCalendarId } from '../dist/services/ai-calendar.js';
-import {
+
+Object.assign(process.env, {
+  APP_ORIGIN: 'aischedulermobile://',
+  CORS_ORIGIN: 'http://localhost:8081',
+  ENCRYPTION_KEY: 'calendar-validation-encryption-key',
+  GEMINI_API_KEY: 'calendar-validation-gemini-key',
+  GOOGLE_CALENDAR_SCOPES: 'https://www.googleapis.com/auth/calendar',
+  GOOGLE_CLIENT_ID: 'calendar-validation-client',
+  GOOGLE_CLIENT_SECRET: 'calendar-validation-secret',
+  GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/google/callback',
+  JWT_SECRET: 'calendar-validation-jwt-secret-32-chars',
+  MONGO_URL: 'mongodb://localhost:27017/schedule_automator_validation',
+  QUEUE_NAME: 'calendar-validation',
+  REDIS_URL: 'redis://localhost:6379',
+  REFRESH_TOKEN_PEPPER: 'calendar-validation-refresh-pepper',
+  SERVER_BASE_URL: 'http://localhost:3000',
+  SESSION_SECRET: 'calendar-validation-session-secret',
+});
+
+const { resolveCalendarId } = await import(
+  '../dist/services/ai-calendar.js'
+);
+const {
   listOccupiedEvents,
   normalizeCalendarEvent,
-} from '../dist/services/calendar-events.js';
-import { calendarRangeSchema } from '../dist/schemas/calendar.js';
+} = await import('../dist/services/calendar-events.js');
+const { requireRefreshToken } = await import(
+  '../dist/services/google-client.js'
+);
+const { calendarRangeSchema } = await import(
+  '../dist/schemas/calendar.js'
+);
 
 const range = {
   timeMin: '2026-07-01T00:00:00+09:00',
@@ -42,14 +68,35 @@ assert.equal(
   }),
   null,
 );
+assert.equal(
+  normalizeCalendarEvent('primary', {
+    attendees: [{ responseStatus: 'declined', self: true }],
+    end: { dateTime: '2026-07-01T10:00:00+09:00' },
+    id: 'declined',
+    start: { dateTime: '2026-07-01T09:00:00+09:00' },
+  }),
+  null,
+);
+assert.throws(
+  () => requireRefreshToken(true, undefined),
+  (error) => error.statusCode === 401,
+);
 
 let eventPage = 0;
 const eventApi = {
   calendarList: {
-    list: async () => ({ data: { items: [{ id: 'primary' }] } }),
+    list: async () => ({
+      data: {
+        items: [
+          { accessRole: 'owner', id: 'primary' },
+          { accessRole: 'none', id: 'inaccessible' },
+        ],
+      },
+    }),
   },
   events: {
-    list: async ({ pageToken }) => {
+    list: async ({ calendarId, pageToken }) => {
+      assert.equal(calendarId, 'primary');
       eventPage += 1;
       return {
         data: {
@@ -77,7 +124,12 @@ const calendarApi = {
       throw { response: { status: 404 } };
     },
     list: async () => ({
-      data: { items: [{ accessRole: 'owner', id: 'existing', summary: 'AI Schedule' }] },
+      data: {
+        items: [
+          { accessRole: 'writer', id: 'shared', summary: 'AI Schedule' },
+          { accessRole: 'owner', id: 'existing', summary: 'AI Schedule' },
+        ],
+      },
     }),
   },
   calendars: {

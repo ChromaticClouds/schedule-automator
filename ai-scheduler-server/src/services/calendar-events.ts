@@ -17,11 +17,16 @@ export const normalizeCalendarEvent = (
 ): OccupiedCalendarEvent | null => {
   const start = event.start?.dateTime ?? event.start?.date;
   const end = event.end?.dateTime ?? event.end?.date;
+  const declined = event.attendees?.some(
+    (attendee) =>
+      attendee.self === true && attendee.responseStatus === 'declined',
+  );
 
   if (
     !event.id ||
     !start ||
     !end ||
+    declined ||
     event.status === 'cancelled' ||
     event.transparency === 'transparent'
   ) {
@@ -49,7 +54,9 @@ const listCalendarIds = async (api: calendar_v3.Calendar) => {
     });
     ids.push(
       ...(data.items ?? []).flatMap((entry) =>
-        entry.id && !entry.deleted ? [entry.id] : [],
+        entry.id && !entry.deleted && entry.accessRole !== 'none'
+          ? [entry.id]
+          : [],
       ),
     );
     pageToken = data.nextPageToken ?? undefined;

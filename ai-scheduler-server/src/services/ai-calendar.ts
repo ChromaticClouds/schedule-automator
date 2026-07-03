@@ -43,7 +43,7 @@ export const resolveCalendarId = async (
       (entry) =>
         entry.id &&
         entry.summary === name &&
-        ['owner', 'writer'].includes(entry.accessRole ?? ''),
+        entry.accessRole === 'owner',
     );
     if (match?.id) return match.id;
 
