@@ -1,6 +1,11 @@
 import { Types } from 'mongoose';
-import { ScheduleDraftModel } from '@/models/index.js';
+import {
+  ScheduleDraftModel,
+  TaskModel,
+} from '@/models/index.js';
 import { ensureAiCalendar } from './ai-calendar.js';
+import { buildScheduleContext } from './schedule-context.js';
+import { validateScheduleDraft } from './schedule-validation.js';
 import {
   createGoogleCalendarClient,
   type GoogleConnectionError,
@@ -47,31 +52,84 @@ const syncBlocks = async (
   return wrote;
 };
 
+const validateCurrentContext = async (
+  draft: NonNullable<Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>>,
+) => {
+  const context = await buildScheduleContext(draft.userId, draft.date);
+  const output = {
+    assumptions: draft.assumptions,
+    blocks: draft.blocks
+      .filter((block) => block.source === 'ai')
+      .filter((block) => ['task', 'break'].includes(block.type))
+      .map((block) => ({
+        end: block.end.toISOString(),
+        ...(block.reason ? { reason: block.reason } : {}),
+        start: block.start.toISOString(),
+        ...(block.taskId ? { taskId: block.taskId.toString() } : {}),
+        title: block.title,
+        type: block.type as 'task' | 'break',
+      })),
+    summary: draft.summary ?? 'Approved schedule draft',
+    warnings: draft.warnings,
+  };
+
+  const valid = validateScheduleDraft(output, context);
+  if (!valid.ok) {
+    draft.status = 'expired';
+    await draft.save();
+    return fail(valid.reason, 409, 'STALE_DRAFT_CONTEXT');
+  }
+};
+
+const markTasksScheduled = async (
+  draft: NonNullable<Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>>,
+) => {
+  const taskIds = draft.blocks
+    .filter((block) => block.type === 'task' && block.calendarEventId)
+    .map((block) => block.taskId)
+    .filter((taskId): taskId is Types.ObjectId => taskId instanceof Types.ObjectId);
+
+  if (taskIds.length === 0) return;
+  await TaskModel.updateMany(
+    { _id: { $in: taskIds }, userId: draft.userId },
+    { $set: { status: 'scheduled' } },
+  );
+};
+
 export const approveScheduleDraft = async (
   userId: Types.ObjectId,
   draftId: Types.ObjectId,
   writer?: CalendarEventWriter,
 ) => {
-  const draft = await ScheduleDraftModel.findOne({ _id: draftId, userId });
-  if (!draft) return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
-  if (!['draft', 'approved', 'synced'].includes(draft.status)) {
+  const now = new Date();
+  const draft = await ScheduleDraftModel.findOneAndUpdate(
+    { _id: draftId, status: 'draft', userId },
+    {
+      $set: {
+        approvedAt: now,
+        status: 'approved',
+        'blocks.$[block].status': 'approved',
+      },
+    },
+    {
+      arrayFilters: [{ 'block.status': 'draft' }],
+      new: true,
+    },
+  );
+  if (!draft) {
+    const current = await ScheduleDraftModel.findOne({ _id: draftId, userId });
+    if (!current) return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
+    if (current.status === 'synced') return { draft: current, replayed: true };
     return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
   }
-  if (draft.status === 'synced') return { draft, replayed: true };
 
+  await validateCurrentContext(draft);
   const { calendarId } = await ensureAiCalendar(userId);
   const { api } = await createGoogleCalendarClient(userId);
   const activeWriter = writer ?? createGoogleCalendarEventWriter(api);
-  const now = new Date();
-
-  draft.status = 'approved';
-  draft.approvedAt ??= now;
-  for (const block of draft.blocks) {
-    if (block.status === 'draft') block.status = 'approved';
-  }
-  await draft.save();
 
   await syncBlocks(draft, calendarId, activeWriter);
+  await markTasksScheduled(draft);
   draft.status = 'synced';
   draft.syncedAt = new Date();
   await draft.save();
