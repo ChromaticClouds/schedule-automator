@@ -36,6 +36,19 @@ export const parseParams = <T>(
   return result.data;
 };
 
+export const parseQuery = <T>(
+  schema: z.ZodType<T>,
+  request: FastifyRequest,
+) => {
+  const result = schema.safeParse(request.query);
+
+  if (!result.success) {
+    throw new HttpError('Invalid query parameters', 400, result.error.flatten());
+  }
+
+  return result.data;
+};
+
 export const requireUserId = (request: FastifyRequest) => {
   const raw = request.headers['x-user-id'];
   const userId = Array.isArray(raw) ? raw[0] : raw;

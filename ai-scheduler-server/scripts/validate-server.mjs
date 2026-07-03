@@ -40,6 +40,17 @@ const run = (name, args) => {
   }
 };
 
+const runNode = (script) => {
+  const result = spawnSync(process.execPath, [join(root, script)], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+
+  if (result.status !== 0) {
+    fail(`node ${script} failed`);
+  }
+};
+
 const sourceFiles = walk(sourceRoot).filter((file) =>
   ['.ts', '.mts'].includes(extname(file)),
 );
@@ -60,4 +71,5 @@ for (const file of sourceFiles) {
 run('tsc', ['--noEmit']);
 run('tsc', []);
 run('tsc-alias', []);
+runNode('scripts/validate-auth.mjs');
 run('eslint', ['.']);
