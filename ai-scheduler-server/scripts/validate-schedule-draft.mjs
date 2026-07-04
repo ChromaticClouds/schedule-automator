@@ -37,6 +37,7 @@ const context = {
       title: 'Implement schedule draft',
     },
   ],
+  timezone: 'UTC',
 };
 const output = {
   assumptions: [],

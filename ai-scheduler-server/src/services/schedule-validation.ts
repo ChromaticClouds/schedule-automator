@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import type { ScheduleDraftOutput } from '@/schemas/schedule-draft.js';
 import type { ScheduleContext } from './schedule-contract.js';
+import { addDays, zonedDateTime } from './schedule-time.js';
 
 type Interval = { end: string; start: string };
 
@@ -12,8 +13,17 @@ const minutesBetween = (start: string, end: string) =>
 const overlaps = (left: Interval, right: Interval) =>
   toMs(left.start) < toMs(right.end) && toMs(right.start) < toMs(left.end);
 
-const inDay = (date: string, block: Interval) =>
-  block.start.startsWith(date);
+const inDay = (
+  date: string,
+  timezone: string,
+  block: Interval,
+) => {
+  const start = toMs(zonedDateTime(date, '00:00:00.000', timezone));
+  const end = toMs(
+    zonedDateTime(addDays(date, 1), '00:00:00.000', timezone),
+  );
+  return toMs(block.start) >= start && toMs(block.end) <= end;
+};
 
 export const validateScheduleDraft = (
   output: ScheduleDraftOutput,
@@ -31,7 +41,10 @@ export const validateScheduleDraft = (
   );
 
   for (const [index, block] of sorted.entries()) {
-    if (!inDay(context.date, block) || toMs(block.end) <= toMs(block.start)) {
+    if (
+      !inDay(context.date, context.timezone, block) ||
+      toMs(block.end) <= toMs(block.start)
+    ) {
       return { ok: false as const, reason: 'invalid_time_range' };
     }
     if (block.taskId && !allowedTasks.has(block.taskId)) {

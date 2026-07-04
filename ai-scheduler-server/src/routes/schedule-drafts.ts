@@ -2,6 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import { Types } from 'mongoose';
 import { objectIdParamSchema } from '@/schemas/planning.js';
 import {
+  scheduleBlockEditParamsSchema,
+  scheduleBlockEditSchema,
   scheduleDraftQuerySchema,
   scheduleDraftRequestSchema,
   scheduleIdempotencyKeySchema,
@@ -14,6 +16,10 @@ import {
   generateDailyScheduleDraft,
   ScheduleDraftError,
 } from '@/services/schedule-draft.js';
+import {
+  editScheduleDraftBlock,
+  ScheduleEditError,
+} from '@/services/schedule-edit.js';
 import {
   getScheduleDraft,
   rejectScheduleDraft,
@@ -31,6 +37,7 @@ import {
 const mapScheduleError = (error: unknown): never => {
   if (
     error instanceof ScheduleDraftError ||
+    error instanceof ScheduleEditError ||
     error instanceof ScheduleApprovalError ||
     error instanceof ScheduleLifecycleError
   ) {
@@ -99,6 +106,26 @@ export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
 
     try {
       return await rejectScheduleDraft(userId, new Types.ObjectId(id));
+    } catch (error) {
+      return mapScheduleError(error);
+    }
+  });
+
+  app.patch('/schedule-drafts/:draftId/blocks/:blockId', async (request) => {
+    const userId = requireUserId(request);
+    const { blockId, draftId } = parseParams(
+      scheduleBlockEditParamsSchema,
+      request,
+    );
+    const body = parseBody(scheduleBlockEditSchema, request);
+
+    try {
+      return await editScheduleDraftBlock(
+        userId,
+        new Types.ObjectId(draftId),
+        new Types.ObjectId(blockId),
+        body,
+      );
     } catch (error) {
       return mapScheduleError(error);
     }

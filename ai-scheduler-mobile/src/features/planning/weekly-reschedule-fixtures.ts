@@ -23,6 +23,7 @@ const placedResult: WeeklyRescheduleResult = {
     generatedAt: '2026-07-03T22:00:00+09:00',
     status: 'draft',
     summary: 'One missed task moved to Saturday.',
+    updatedAt: '2026-07-03T22:00:00+09:00',
     userId: 'user-1',
     warnings: [],
   }],

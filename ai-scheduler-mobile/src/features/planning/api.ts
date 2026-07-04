@@ -7,6 +7,7 @@ import {
   Goal,
   GoalBreakdownResult,
   ProtectedTime,
+  ScheduleBlockEditInput,
   ScheduleDraft,
   ScheduleDraftResult,
   SaveDailyReviewInput,
@@ -79,6 +80,16 @@ export const rejectScheduleDraft = (id: string) =>
   apiRequest<ScheduleDraftResult>(`/schedule-drafts/${id}/reject`, {
     method: 'POST',
   });
+
+export const editScheduleBlock = (
+  draftId: string,
+  blockId: string,
+  body: ScheduleBlockEditInput,
+) =>
+  apiRequest<ScheduleDraftResult>(
+    `/schedule-drafts/${draftId}/blocks/${blockId}`,
+    { body, method: 'PATCH' },
+  );
 
 export const getDailyReview = (date: string) =>
   apiRequest<DailyReviewResult>(
