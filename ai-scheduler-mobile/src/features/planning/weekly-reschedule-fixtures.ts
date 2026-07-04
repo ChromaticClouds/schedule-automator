@@ -1,5 +1,6 @@
 import type { WeeklyRescheduleResult } from './types';
 import type { WeeklyRescheduleViewProps } from './weekly-reschedule-view';
+import { hasUnprocessedMissedTasks } from './weekly-reschedule-state';
 
 type Fixture = Omit<WeeklyRescheduleViewProps, 'onRun'>;
 
@@ -75,4 +76,15 @@ export const weeklyRescheduleFixtures = {
     },
     taskNames: {},
   } satisfies Fixture,
+};
+
+export const weeklyRescheduleRerunFixtures = {
+  newMissedTask: hasUnprocessedMissedTasks(
+    ['task-portfolio', 'task-new'],
+    ['task-portfolio'],
+  ),
+  unchanged: hasUnprocessedMissedTasks(
+    ['task-portfolio'],
+    ['task-portfolio', 'task-overflow'],
+  ),
 };
