@@ -1,4 +1,5 @@
 import type { ScheduleDraft } from './types';
+import type { ScheduleDraftPanelViewProps } from './schedule-draft-panel-view';
 
 const baseDate = '2026-07-04';
 const baseDraft = {
@@ -60,4 +61,54 @@ export const scheduleDraftFixtures = {
   requestInProgressError: 'Draft generation is already running.',
   staleContextError: 'Calendar changed. Generate a fresh draft.',
   synced: withStatus('synced'),
+};
+
+const noop = () => undefined;
+
+const baseView = {
+  busy: false,
+  date: baseDate,
+  errorMessage: undefined,
+  isLoading: false,
+  noDraft: false,
+  onApprove: noop,
+  onEdit: noop,
+  onGenerate: noop,
+  onReject: noop,
+  timezone: 'Asia/Seoul',
+} satisfies Omit<ScheduleDraftPanelViewProps, 'draft'>;
+
+const withDraft = (
+  draft: ScheduleDraft | undefined,
+  props: Partial<ScheduleDraftPanelViewProps> = {},
+): ScheduleDraftPanelViewProps => ({
+  ...baseView,
+  draft,
+  ...props,
+});
+
+export const scheduleDraftPanelFixtures = {
+  blockNotEditableError: withDraft(scheduleDraftFixtures.draft, {
+    errorMessage: 'This block cannot be edited.',
+  }),
+  draft: withDraft(scheduleDraftFixtures.draft),
+  editValidationError: withDraft(scheduleDraftFixtures.draft, {
+    errorMessage: 'Edit conflicts with the current schedule.',
+  }),
+  empty: withDraft(undefined, { noDraft: true }),
+  expired: withDraft(scheduleDraftFixtures.expired),
+  loading: withDraft(undefined, { isLoading: true }),
+  pending: withDraft(scheduleDraftFixtures.draft, { busy: true }),
+  rejected: withDraft(scheduleDraftFixtures.rejected),
+  requestInProgressError: withDraft(undefined, {
+    errorMessage: scheduleDraftFixtures.requestInProgressError,
+    noDraft: true,
+  }),
+  staleContextError: withDraft(scheduleDraftFixtures.draft, {
+    errorMessage: scheduleDraftFixtures.staleContextError,
+  }),
+  staleVersionError: withDraft(scheduleDraftFixtures.draft, {
+    errorMessage: 'Draft changed elsewhere. Review the latest version.',
+  }),
+  synced: withDraft(scheduleDraftFixtures.synced),
 };

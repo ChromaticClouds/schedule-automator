@@ -4,6 +4,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { ScheduleDraftBlocks } from './schedule-draft-blocks';
+import {
+  canGenerateScheduleDraft,
+  canReviewScheduleDraft,
+} from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
 
 export type ScheduleDraftPanelViewProps = {
@@ -37,9 +41,8 @@ export function ScheduleDraftPanelView({
   onReject,
   timezone,
 }: ScheduleDraftPanelViewProps) {
-  const canGenerate =
-    noDraft || draft?.status === 'rejected' || draft?.status === 'expired';
-  const canReview = draft?.status === 'draft';
+  const canGenerate = canGenerateScheduleDraft(draft, noDraft);
+  const reviewDraft = canReviewScheduleDraft(draft) ? draft : undefined;
 
   return (
     <ThemedView type="backgroundElement" style={styles.section}>
@@ -62,17 +65,17 @@ export function ScheduleDraftPanelView({
           timezone={timezone}
         />
       )}
-      {canReview && (
+      {reviewDraft && (
         <ThemedView style={styles.actions}>
           <ActionButton
             disabled={busy}
             label="Approve and sync"
-            onPress={() => onApprove(draft._id)}
+            onPress={() => onApprove(reviewDraft._id)}
           />
           <ActionButton
             disabled={busy}
             label="Reject"
-            onPress={() => onReject(draft._id)}
+            onPress={() => onReject(reviewDraft._id)}
           />
         </ThemedView>
       )}
