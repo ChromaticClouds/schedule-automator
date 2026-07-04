@@ -6,7 +6,9 @@ const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1'
 const readSource = (path) => readFileSync(join(root, 'src', path), 'utf8');
 const readRepo = (path) => readFileSync(join(root, '..', path), 'utf8');
 const appTabs = readSource('components/app-tabs.tsx');
-const explore = readSource('app/explore.tsx');
+const rootLayout = readSource('app/_layout.tsx');
+const tabLayout = readSource('app/(tabs)/_layout.tsx');
+const explore = readSource('app/(tabs)/explore.tsx');
 const previewRoute = readSource('app/planning-preview.tsx');
 const preview = readSource('features/planning/planning-state-preview.tsx');
 const previewLayout = readSource('features/planning/planning-state-preview-layout.tsx');
@@ -18,6 +20,9 @@ assert.match(previewRoute, /__DEV__ \|\| ENV\.ENABLE_DEV_TOOLS/);
 assert.match(explore, /__DEV__ \|\| ENV\.ENABLE_DEV_TOOLS/);
 assert.match(explore, /\/planning-preview/);
 assert.match(explore, /Planning state preview/);
+assert.match(rootLayout, /Stack\.Screen name="\(tabs\)"/);
+assert.match(rootLayout, /Stack\.Screen name="planning-preview"/);
+assert.match(tabLayout, /<AppTabs \/>/);
 assert.equal(appTabs.includes('planning-preview'), false);
 
 for (const group of [
