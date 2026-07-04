@@ -17,6 +17,7 @@ import {
   useTasks,
 } from './hooks';
 import { PlanningSection } from './planning-section';
+import { planningSectionEmptyMessages, planningSectionErrorMessages, type PlanningSectionTitle } from './planning-empty-state';
 import { ScheduleDraftPanel } from './schedule-draft-panel';
 import { TaskSummaryPanel } from './task-summary-panel';
 import { WeeklyReschedulePanel } from './weekly-reschedule-panel';
@@ -109,8 +110,18 @@ export function PlanningDashboard() {
   );
 }
 
-function sectionState(title: string, query: { isLoading: boolean; error: Error | null; data?: unknown[] }) {
-  return { title, isLoading: query.isLoading, error: query.error, empty: (query.data?.length ?? 0) === 0 };
+function sectionState(
+  title: PlanningSectionTitle,
+  query: { isLoading: boolean; error: Error | null; data?: unknown[] },
+) {
+  return {
+    title,
+    isLoading: query.isLoading,
+    error: query.error,
+    errorMessage: planningSectionErrorMessages[title],
+    empty: (query.data?.length ?? 0) === 0,
+    emptyMessage: planningSectionEmptyMessages[title],
+  };
 }
 
 function CreateRow({ value, onChange, onSubmit }: { value: string; onChange: (value: string) => void; onSubmit: () => void }) {
