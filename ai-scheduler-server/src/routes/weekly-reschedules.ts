@@ -17,7 +17,9 @@ const mapRescheduleError = (error: unknown): never => {
     });
   }
   if (error instanceof GoogleConnectionError) {
-    throw new HttpError(error.message, error.statusCode);
+    throw new HttpError(error.message, error.statusCode, {
+      code: error.code,
+    });
   }
   throw error;
 };
