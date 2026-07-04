@@ -6,6 +6,8 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "validate": "node ./scripts/validate-server.mjs",
+    "validate:ci-services": "node ./scripts/validate-ci-services.mjs",
+    "validate:ci": "pnpm validate:ci-services && pnpm validate",
     "worker:daily-schedule": "node dist/workers/daily-schedule.js"
   },
   "dependencies": {
