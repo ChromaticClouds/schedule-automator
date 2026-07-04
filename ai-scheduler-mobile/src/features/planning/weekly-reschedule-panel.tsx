@@ -1,8 +1,10 @@
 import * as Crypto from 'expo-crypto';
+import { useState } from 'react';
 import { ApiError } from '@/api';
 import { useTasks } from './hooks';
 import { toScheduleDateKey } from './schedule-date';
 import { useWeeklyReschedule } from './weekly-reschedule-hooks';
+import { hasUnprocessedMissedTasks } from './weekly-reschedule-state';
 import { WeeklyRescheduleView } from './weekly-reschedule-view';
 
 const errorMessage = (error: Error | null) => {
@@ -20,19 +22,28 @@ export function WeeklyReschedulePanel() {
   const reviewDate = toScheduleDateKey();
   const tasks = useTasks();
   const mutation = useWeeklyReschedule(reviewDate);
+  const [processedTaskIds, setProcessedTaskIds] = useState<string[]>([]);
   const taskNames = Object.fromEntries(
     (tasks.data ?? []).map((task) => [task._id, task.title]),
   );
-  const hasMissedTasks = tasks.data?.some(({ status }) => status === 'missed');
+  const missedTaskIds = (tasks.data ?? [])
+    .filter(({ status }) => status === 'missed')
+    .map(({ _id }) => _id);
+  const canRun = mutation.isSuccess
+    ? hasUnprocessedMissedTasks(missedTaskIds, processedTaskIds)
+    : missedTaskIds.length > 0;
+
+  const run = () => {
+    setProcessedTaskIds(missedTaskIds);
+    mutation.mutate(`weekly-replan:${reviewDate}:${Crypto.randomUUID()}`);
+  };
 
   return (
     <WeeklyRescheduleView
-      disabled={!hasMissedTasks || mutation.isSuccess}
+      disabled={!canRun}
       errorMessage={errorMessage(mutation.error)}
       isPending={mutation.isPending}
-      onRun={() =>
-        mutation.mutate(`weekly-replan:${reviewDate}:${Crypto.randomUUID()}`)
-      }
+      onRun={run}
       result={mutation.data}
       taskNames={taskNames}
     />
