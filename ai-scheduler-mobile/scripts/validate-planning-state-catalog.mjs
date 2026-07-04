@@ -9,14 +9,19 @@ const catalogSource = readFileSync(
 );
 
 const requiredGroups = [
+  'dailyReview',
   'goalBreakdown',
+  'planningCreate',
   'planningSections',
   'scheduleDraft',
   'scheduleSettings',
+  'taskSummary',
   'weeklyReschedule',
 ];
 const requiredStates = {
+  dailyReview: ['loading', 'empty', 'tasks', 'saveError', 'saved'],
   goalBreakdown: ['success', 'replay', 'providerError'],
+  planningCreate: ['idle', 'emptyGuidance', 'pending', 'error'],
   planningSections: [
     'goalsEmpty',
     'tasksEmpty',
@@ -32,6 +37,7 @@ const requiredStates = {
     'staleContextError',
   ],
   scheduleSettings: ['valid', 'invalidTime', 'error'],
+  taskSummary: ['loading', 'empty', 'populated', 'error'],
   weeklyReschedule: [
     'empty',
     'pending',
