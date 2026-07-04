@@ -15,6 +15,7 @@ export const useWeeklyReschedule = (reviewDate: string) => {
         queryClient.invalidateQueries({
           queryKey: planningKeys.scheduleDrafts,
         }),
+        queryClient.invalidateQueries({ queryKey: planningKeys.taskSummary }),
         queryClient.invalidateQueries({ queryKey: planningKeys.tasks }),
       ]),
   });
