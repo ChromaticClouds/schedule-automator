@@ -1,11 +1,9 @@
 import { ENV } from '@/config/env.js';
 import {
+  dueScheduleDate,
   hashKey,
   localParts,
   redisKey,
-  scheduleDateForWakeTarget,
-  targetMinuteOfDay,
-  wakeMinute,
 } from './daily-schedule-helpers.js';
 import { mongoDailyScheduleStore } from './daily-schedule-store.js';
 import type {
@@ -105,14 +103,18 @@ export const runDailyScheduleTick = async (
       continue;
     }
 
-    const targetMinute = wakeMinute(user.wakeTime, user.wakeOffsetMinutes);
-    if (minuteOfDay < targetMinuteOfDay(targetMinute)) {
+    const scheduleDate = dueScheduleDate(
+      dateKey,
+      minuteOfDay,
+      user.wakeTime,
+      user.wakeOffsetMinutes,
+    );
+    if (!scheduleDate) {
       stats.skippedUsers += 1;
       continue;
     }
 
     stats.dueUsers += 1;
-    const scheduleDate = scheduleDateForWakeTarget(dateKey, targetMinute);
     try {
       const created = await scheduleUser(redis, store, user, scheduleDate, now);
       stats.createdSchedules += created ? 1 : 0;

@@ -37,10 +37,18 @@ const addDateDays = (dateKey: string, days: number) => {
   return date.toISOString().slice(0, 10);
 };
 
-export const scheduleDateForWakeTarget = (
+export const dueScheduleDate = (
   dateKey: string,
-  targetMinute: number,
-) => (targetMinute >= 1440 ? addDateDays(dateKey, -1) : dateKey);
+  minuteOfDay: number,
+  wakeTime: string,
+  wakeOffsetMinutes: number,
+) => {
+  const wake = wakeMinute(wakeTime, 0);
+  const target = wake + wakeOffsetMinutes;
+  if (target < 1440) return minuteOfDay >= target ? dateKey : null;
 
-export const targetMinuteOfDay = (targetMinute: number) =>
-  targetMinute % 1440;
+  const wrappedTarget = target - 1440;
+  const previousScheduleIsDue =
+    minuteOfDay >= wrappedTarget && minuteOfDay < wake;
+  return previousScheduleIsDue ? addDateDays(dateKey, -1) : null;
+};
