@@ -13,6 +13,11 @@ export type Task = {
   postponedCount: number;
 };
 
+export type GoalBreakdownResult = {
+  replayed: boolean;
+  tasks: Task[];
+};
+
 export type TaskSummaryStatus = Task['status'];
 
 export type TaskSummaryBucket = {

@@ -103,6 +103,15 @@ if (
   fail('OAuth flow is missing PKCE, handoff, or browser session handling');
 }
 
+const breakdownValidation = spawnSync(
+  process.execPath,
+  [join(root, 'scripts', 'validate-goal-breakdown.mjs')],
+  { cwd: root, stdio: 'inherit' },
+);
+if (breakdownValidation.status !== 0) {
+  fail('goal breakdown state validation failed');
+}
+
 const tsc = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
 
 if (!existsSync(tsc)) {
