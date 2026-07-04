@@ -7,6 +7,7 @@ import { registerProtectedTimeRoutes } from './protected-times.js';
 import { registerScheduleDraftRoutes } from './schedule-drafts.js';
 import { registerTaskRoutes } from './tasks.js';
 import { registerTaskBreakdownRoutes } from './task-breakdown.js';
+import { registerWeeklyRescheduleRoutes } from './weekly-reschedules.js';
 
 export const registerPlanningRoutes = async (app: FastifyInstance) => {
   await registerGoogleAuthRoutes(app);
@@ -22,5 +23,6 @@ export const registerPlanningRoutes = async (app: FastifyInstance) => {
     await registerTaskBreakdownRoutes(protectedApp);
     await registerTaskRoutes(protectedApp);
     await registerProtectedTimeRoutes(protectedApp);
+    await registerWeeklyRescheduleRoutes(protectedApp);
   });
 };
