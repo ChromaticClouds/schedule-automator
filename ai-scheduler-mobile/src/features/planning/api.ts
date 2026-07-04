@@ -10,6 +10,8 @@ import {
   ScheduleDraftResult,
   SaveDailyReviewInput,
   Task,
+  WeeklyRescheduleInput,
+  WeeklyRescheduleResult,
 } from './types';
 
 export const listGoals = () =>
@@ -77,3 +79,13 @@ export const saveDailyReview = (
     `/daily-reviews/${encodeURIComponent(date)}`,
     { method: 'PUT', body },
   );
+
+export const runWeeklyReschedule = ({
+  idempotencyKey,
+  reviewDate,
+}: WeeklyRescheduleInput) =>
+  apiRequest<WeeklyRescheduleResult>('/weekly-reschedules', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: { reviewDate },
+  });
