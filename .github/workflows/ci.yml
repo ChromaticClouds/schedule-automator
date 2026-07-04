@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  server:
+    name: Server validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ai-scheduler-server
+
+    env:
+      NODE_ENV: test
+      MONGO_URL: mongodb://localhost:27017/schedule_automator_ci?replicaSet=rs0
+      REDIS_URL: redis://localhost:6379
+      SERVER_BASE_URL: http://localhost:3000
+      APP_ORIGIN: http://localhost:3000
+      CORS_ORIGIN: http://localhost:3000
+      JWT_SECRET: test-jwt-secret-at-least-32-characters
+      SESSION_SECRET: test-session-secret-at-least-32-characters
+      ENCRYPTION_KEY: "00000000000000000000000000000000"
+      REFRESH_TOKEN_PEPPER: test-refresh-token-pepper-at-least-32-characters
+      GEMINI_API_KEY: test-gemini-key
+      GOOGLE_CLIENT_ID: test-google-client-id
+      GOOGLE_CLIENT_SECRET: test-google-client-secret
+      GOOGLE_REDIRECT_URI: http://localhost:3000/auth/google/callback
+      GOOGLE_CALENDAR_SCOPES: openid email https://www.googleapis.com/auth/calendar
+      QUEUE_NAME: daily-schedule-ci
+      DAILY_PLAN_JOB_ENABLED: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Start local CI services
+        run: docker compose -f docker-compose.ci.yml up -d
+        working-directory: .
+
+      - name: Initialize MongoDB replica set
+        run: |
+          for i in {1..30}; do
+            if docker compose -f docker-compose.ci.yml exec -T mongo mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok"; then
+              break
+            fi
+
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+
+          docker compose -f docker-compose.ci.yml exec -T mongo mongosh --quiet --eval '
+            try {
+              const status = rs.status();
+              printjson({ ok: status.ok, state: status.myState });
+            } catch (error) {
+              print("Initializing replica set...");
+              rs.initiate({
+                _id: "rs0",
+                members: [
+                  { _id: 0, host: "localhost:27017" }
+                ]
+              });
+            }
+          '
+
+          for i in {1..30}; do
+            if docker compose -f docker-compose.ci.yml exec -T mongo mongosh --quiet --eval "rs.status().ok" | grep -q 1; then
+              echo "MongoDB replica set is ready."
+              exit 0
+            fi
+
+            echo "Waiting for MongoDB replica set..."
+            sleep 2
+          done
+
+          echo "MongoDB replica set was not ready in time."
+          docker compose -f docker-compose.ci.yml logs mongo
+          exit 1
+        working-directory: .
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ai-scheduler-server/pnpm-lock.yaml
+
+      - name: Install server dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate server with local DB
+        run: pnpm validate:ci
+
+      - name: Print service logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.ci.yml logs
+        working-directory: .
+
+      - name: Stop local CI services
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down -v
+        working-directory: .
+
+  mobile:
+    name: Mobile validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ai-scheduler-mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ai-scheduler-mobile/pnpm-lock.yaml
+
+      - name: Install mobile dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate mobile
+        run: pnpm validate
