@@ -78,6 +78,7 @@ runNode('scripts/validate-schedule-draft.mjs');
 runNode('scripts/validate-schedule-lifecycle.mjs');
 runNode('scripts/validate-schedule-preferences.mjs');
 runNode('scripts/validate-session.mjs');
+runNode('scripts/validate-task-summary.mjs');
 runNode('scripts/validate-task-breakdown.mjs');
 runNode('scripts/validate-weekly-reschedule.mjs');
 run('eslint', ['.']);
