@@ -7,6 +7,7 @@ import {
   rescheduleMissedTasks,
   WeeklyRescheduleError,
 } from '@/services/weekly-reschedule.js';
+import { GoogleConnectionError } from '@/services/google-client.js';
 import { HttpError, parseBody, requireUserId } from './http.js';
 
 const mapRescheduleError = (error: unknown): never => {
@@ -14,6 +15,9 @@ const mapRescheduleError = (error: unknown): never => {
     throw new HttpError(error.message, error.statusCode, {
       code: error.code,
     });
+  }
+  if (error instanceof GoogleConnectionError) {
+    throw new HttpError(error.message, error.statusCode);
   }
   throw error;
 };

@@ -22,6 +22,7 @@ const context = {
     date: '2026-07-04',
     maxDailyWorkMinutes: 120,
     scheduledTaskMinutes: 0,
+    scheduledTaskIds: [],
   }],
   reviewDate: '2026-07-03',
   tasks: [{

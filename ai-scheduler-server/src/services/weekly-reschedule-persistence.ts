@@ -63,11 +63,6 @@ export const persistWeeklyReschedule = async (
 
   const placedTaskIds = output.placements.map(({ taskId }) => taskId);
   await TaskModel.updateMany(
-    { _id: { $in: placedTaskIds }, status: 'missed', userId },
-    { $set: { status: 'scheduled' } },
-    { session },
-  );
-  await TaskModel.updateMany(
     { _id: { $in: output.overflowTaskIds }, status: 'missed', userId },
     { $set: { status: 'overflow' } },
     { session },

@@ -30,11 +30,11 @@ export const claimWeeklyReschedule = async (
     type: 'weekly_replan',
     userId,
   });
-  if (existing?.responseStatus === 'success') {
-    return { kind: 'replayed' as const };
-  }
   if (!existing || existing.payloadHash !== payloadHash) {
     return { kind: 'conflict' as const };
+  }
+  if (existing.responseStatus === 'success') {
+    return { kind: 'replayed' as const };
   }
   if (existing.responseStatus === 'in_progress') {
     return { kind: 'pending' as const };

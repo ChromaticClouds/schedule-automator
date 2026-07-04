@@ -40,6 +40,9 @@ const buildDay = async (
     date,
     maxDailyWorkMinutes: context.maxDailyWorkMinutes,
     scheduledTaskMinutes,
+    scheduledTaskIds: (draft?.blocks ?? [])
+      .filter(({ type, taskId }) => type === 'task' && taskId)
+      .map(({ taskId }) => taskId!.toString()),
   };
 };
 
@@ -59,18 +62,23 @@ export const buildWeeklyRescheduleContext = async (
     .limit(40)
     .lean();
 
+  const days = await Promise.all(
+    remainingWeekDates(reviewDate).map((date) => buildDay(userId, date)),
+  );
+  const draftedTaskIds = new Set(days.flatMap(
+    ({ scheduledTaskIds }) => scheduledTaskIds,
+  ));
   return {
-    days: await Promise.all(
-      remainingWeekDates(reviewDate).map((date) => buildDay(userId, date)),
-    ),
+    days,
     reviewDate,
-    tasks: tasks.map((task) => ({
+    tasks: tasks.filter((task) => !draftedTaskIds.has(task._id.toString()))
+      .map((task) => ({
       estimatedMinutes: task.estimatedMinutes,
       goalImpact: task.goalImpact,
       id: task._id.toString(),
       importance: task.importance,
       postponedCount: task.postponedCount,
       title: task.title,
-    })),
+      })),
   };
 };

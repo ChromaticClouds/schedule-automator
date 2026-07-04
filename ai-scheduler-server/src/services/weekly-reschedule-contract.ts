@@ -13,6 +13,7 @@ export type WeeklyRescheduleDay = {
   date: string;
   maxDailyWorkMinutes: number;
   scheduledTaskMinutes: number;
+  scheduledTaskIds: string[];
 };
 
 export type WeeklyRescheduleContext = {
