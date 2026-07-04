@@ -114,6 +114,7 @@ const runValidation = (script, message) => {
 };
 
 runValidation('validate-goal-breakdown.mjs', 'goal breakdown state validation failed');
+runValidation('validate-planning-create-flow.mjs', 'planning create flow validation failed');
 runValidation('validate-planning-state-catalog.mjs', 'planning state catalog validation failed');
 runValidation('validate-schedule-draft-ui.mjs', 'schedule draft UI validation failed');
 runValidation('validate-weekly-reschedule-ui.mjs', 'weekly reschedule UI validation failed');
