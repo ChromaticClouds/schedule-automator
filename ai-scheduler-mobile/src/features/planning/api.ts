@@ -3,10 +3,12 @@ import {
   CreateGoalInput,
   CreateProtectedTimeInput,
   CreateTaskInput,
+  DailyReviewResult,
   Goal,
   ProtectedTime,
   ScheduleDraft,
   ScheduleDraftResult,
+  SaveDailyReviewInput,
   Task,
 } from './types';
 
@@ -61,3 +63,17 @@ export const rejectScheduleDraft = (id: string) =>
   apiRequest<ScheduleDraftResult>(`/schedule-drafts/${id}/reject`, {
     method: 'POST',
   });
+
+export const getDailyReview = (date: string) =>
+  apiRequest<DailyReviewResult>(
+    `/daily-reviews?date=${encodeURIComponent(date)}`,
+  );
+
+export const saveDailyReview = (
+  date: string,
+  body: SaveDailyReviewInput,
+) =>
+  apiRequest<DailyReviewResult>(
+    `/daily-reviews/${encodeURIComponent(date)}`,
+    { method: 'PUT', body },
+  );

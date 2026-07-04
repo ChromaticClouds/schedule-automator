@@ -61,6 +61,25 @@ export type ScheduleDraftResult = {
   replayed: boolean;
 };
 
+export type DailyReview = {
+  _id: string;
+  date: string;
+  completedTaskIds: string[];
+  missedTaskIds: string[];
+  notes?: string;
+};
+
+export type DailyReviewResult = {
+  review: DailyReview | null;
+  tasks: Task[];
+};
+
+export type SaveDailyReviewInput = {
+  completedTaskIds: string[];
+  missedTaskIds: string[];
+  notes?: string;
+};
+
 export type CreateGoalInput = {
   title: string;
   importance: 1 | 2 | 3 | 4 | 5;

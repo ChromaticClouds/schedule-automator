@@ -6,6 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { useAuthStore } from '@/features/auth/session';
+import { DailyReviewPanel } from './daily-review-panel';
 import {
   useCreateGoal,
   useCreateProtectedTime,
@@ -74,6 +75,7 @@ export function PlanningDashboard() {
       <AuthPanel />
 
       {authenticated && <ScheduleDraftPanel />}
+      {authenticated && <DailyReviewPanel />}
 
       {authenticated && <PlanningSection {...sectionState('Goals', goals)}>
         <CreateRow value={goalTitle} onChange={setGoalTitle} onSubmit={submitGoal} />

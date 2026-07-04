@@ -15,6 +15,7 @@ import {
 } from './api';
 
 export const planningKeys = {
+  dailyReview: (date: string) => ['planning', 'daily-review', date] as const,
   goals: ['planning', 'goals'] as const,
   scheduleDraft: (date: string) => ['planning', 'schedule-draft', date] as const,
   tasks: ['planning', 'tasks'] as const,
@@ -80,10 +81,14 @@ export const useGenerateScheduleDraft = (date: string) => {
   return useMutation({
     mutationFn: (idempotencyKey: string) =>
       generateScheduleDraft(date, idempotencyKey),
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),
-      }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: planningKeys.dailyReview(date),
+      });
+    },
   });
 };
 
@@ -92,9 +97,14 @@ export const useApproveScheduleDraft = (date: string) => {
   return useMutation({
     mutationFn: approveScheduleDraft,
     onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: planningKeys.scheduleDraft(date),
-      }),
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: planningKeys.dailyReview(date),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: planningKeys.scheduleDraft(date),
+        }),
+      ]),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
     },
@@ -105,9 +115,13 @@ export const useRejectScheduleDraft = (date: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: rejectScheduleDraft,
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),
-      }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: planningKeys.dailyReview(date),
+      });
+    },
   });
 };
