@@ -7,6 +7,7 @@ import {
 const preferences = {
   maxDailyWorkMinutes: 480,
   timezone: 'Asia/Seoul',
+  wakeOffsetMinutes: 10,
   wakeTime: '07:00',
 };
 
@@ -29,6 +30,14 @@ assert.equal(
 );
 assert.equal(
   updateSchedulePreferencesSchema.safeParse({ maxDailyWorkMinutes: 721 }).success,
+  false,
+);
+assert.equal(
+  updateSchedulePreferencesSchema.safeParse({ wakeOffsetMinutes: 240 }).success,
+  true,
+);
+assert.equal(
+  updateSchedulePreferencesSchema.safeParse({ wakeOffsetMinutes: 241 }).success,
   false,
 );
 assert.equal(updateSchedulePreferencesSchema.safeParse({}).success, false);

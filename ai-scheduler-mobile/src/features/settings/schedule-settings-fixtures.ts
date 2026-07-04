@@ -6,6 +6,7 @@ import type { SchedulePreferencesForm } from './types';
 export const validScheduleSettings: SchedulePreferencesForm = {
   maxDailyWorkMinutes: '480',
   timezone: 'Asia/Seoul',
+  wakeOffsetMinutes: '10',
   wakeTime: '07:00',
 };
 
@@ -14,6 +15,10 @@ export const scheduleSettingsFixtures = {
   invalidMinutes: {
     ...validScheduleSettings,
     maxDailyWorkMinutes: '30',
+  },
+  invalidOffset: {
+    ...validScheduleSettings,
+    wakeOffsetMinutes: '241',
   },
   invalidTime: {
     ...validScheduleSettings,

@@ -9,16 +9,19 @@ import { notFound, parseBody, requireUserId } from './http.js';
 const selectPreferences = {
   maxDailyWorkMinutes: 1,
   timezone: 1,
+  wakeOffsetMinutes: 1,
   wakeTime: 1,
 };
 
 const normalizePreferences = (user: {
   maxDailyWorkMinutes: number;
   timezone: string;
+  wakeOffsetMinutes: number;
   wakeTime: string;
 }) => schedulePreferencesSchema.parse({
   maxDailyWorkMinutes: user.maxDailyWorkMinutes,
   timezone: user.timezone,
+  wakeOffsetMinutes: user.wakeOffsetMinutes,
   wakeTime: user.wakeTime,
 });
 

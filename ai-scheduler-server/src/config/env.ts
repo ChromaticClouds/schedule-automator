@@ -55,6 +55,24 @@ const envSchema = z.object({
   WAKE_OFFSET_MINUTES: z.coerce.number().int().min(0).max(180).default(10),
   MAX_DAILY_WORK_MINUTES: z.coerce.number().int().min(60).max(720).default(480),
   DAILY_PLAN_JOB_ENABLED: z.coerce.boolean().default(true),
+  DAILY_SCHEDULE_LOCK_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(30)
+    .max(86400)
+    .default(900),
+  DAILY_SCHEDULE_RETRY_DELAY_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(86400000)
+    .default(300000),
+  DAILY_SCHEDULE_POLL_INTERVAL_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(3600000)
+    .default(60000),
   REVIEW_REMINDER_TIME: z.string().default("22:30"),
 
   REDIS_URL: z.url().refine(

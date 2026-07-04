@@ -9,17 +9,22 @@ import type { SchedulePreferencesForm } from './types';
 const emptyForm: SchedulePreferencesForm = {
   maxDailyWorkMinutes: '',
   timezone: '',
+  wakeOffsetMinutes: '',
   wakeTime: '',
 };
 
 export const validScheduleSettingsForm = (form: SchedulePreferencesForm) => {
   const minutes = Number(form.maxDailyWorkMinutes);
+  const offset = Number(form.wakeOffsetMinutes);
   return (
     /^([01]\d|2[0-3]):[0-5]\d$/.test(form.wakeTime) &&
     form.timezone.trim().length > 0 &&
     Number.isInteger(minutes) &&
     minutes >= 60 &&
-    minutes <= 720
+    minutes <= 720 &&
+    Number.isInteger(offset) &&
+    offset >= 0 &&
+    offset <= 240
   );
 };
 
@@ -33,6 +38,7 @@ export function ScheduleSettingsPanel() {
     setForm({
       maxDailyWorkMinutes: String(query.data.maxDailyWorkMinutes),
       timezone: query.data.timezone,
+      wakeOffsetMinutes: String(query.data.wakeOffsetMinutes),
       wakeTime: query.data.wakeTime,
     });
   }, [query.data]);
@@ -44,6 +50,7 @@ export function ScheduleSettingsPanel() {
   const save = () => update.mutate({
     maxDailyWorkMinutes: Number(form.maxDailyWorkMinutes),
     timezone: form.timezone.trim(),
+    wakeOffsetMinutes: Number(form.wakeOffsetMinutes),
     wakeTime: form.wakeTime,
   });
 
