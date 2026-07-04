@@ -79,6 +79,7 @@ const baseView = {
   onApprove: noop,
   onEdit: noop,
   onGenerate: noop,
+  onReconnect: noop,
   onRegenerate: noop,
   onReject: noop,
   timezone: 'Asia/Seoul',
@@ -115,12 +116,15 @@ export const scheduleDraftPanelFixtures = {
     errorMessage: 'Draft state changed. Refresh and try again.',
   }),
   googleReconnectError: withDraft(scheduleDraftFixtures.draft, {
+    errorCode: 'GOOGLE_RECONNECT_REQUIRED',
     errorMessage: 'Google Calendar connection expired. Reconnect Google.',
   }),
   googleSyncError: withDraft(scheduleDraftFixtures.approved, {
+    errorCode: 'GOOGLE_CALENDAR_SYNC_FAILED',
     errorMessage: 'Google Calendar sync failed. Try again later.',
   }),
   staleContextError: withDraft(scheduleDraftFixtures.draft, {
+    errorCode: 'STALE_DRAFT_CONTEXT',
     errorMessage: scheduleDraftFixtures.staleContextError,
   }),
   staleVersionError: withDraft(scheduleDraftFixtures.draft, {
