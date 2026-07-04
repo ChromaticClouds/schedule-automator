@@ -112,6 +112,15 @@ if (breakdownValidation.status !== 0) {
   fail('goal breakdown state validation failed');
 }
 
+const scheduleDraftUiValidation = spawnSync(
+  process.execPath,
+  [join(root, 'scripts', 'validate-schedule-draft-ui.mjs')],
+  { cwd: root, stdio: 'inherit' },
+);
+if (scheduleDraftUiValidation.status !== 0) {
+  fail('schedule draft UI validation failed');
+}
+
 const tsc = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
 
 if (!existsSync(tsc)) {
