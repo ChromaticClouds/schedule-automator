@@ -6,50 +6,25 @@ import {
   scheduleBlockEditSchema,
   scheduleDraftQuerySchema,
   scheduleDraftRequestSchema,
-  scheduleIdempotencyKeySchema,
 } from '@/schemas/schedule-draft.js';
-import {
-  approveScheduleDraft,
-  ScheduleApprovalError,
-} from '@/services/schedule-approval.js';
-import {
-  generateDailyScheduleDraft,
-  ScheduleDraftError,
-} from '@/services/schedule-draft.js';
-import {
-  editScheduleDraftBlock,
-  ScheduleEditError,
-} from '@/services/schedule-edit.js';
+import { approveScheduleDraft } from '@/services/schedule-approval.js';
+import { generateDailyScheduleDraft } from '@/services/schedule-draft.js';
+import { editScheduleDraftBlock } from '@/services/schedule-edit.js';
 import {
   getScheduleDraft,
   rejectScheduleDraft,
-  ScheduleLifecycleError,
 } from '@/services/schedule-lifecycle.js';
-import { GoogleConnectionError } from '@/services/google-client.js';
+import { regenerateScheduleDraft } from '@/services/schedule-regenerate.js';
 import {
-  HttpError,
   parseBody,
   parseParams,
   parseQuery,
   requireUserId,
 } from './http.js';
-
-const mapScheduleError = (error: unknown): never => {
-  if (
-    error instanceof ScheduleDraftError ||
-    error instanceof ScheduleEditError ||
-    error instanceof ScheduleApprovalError ||
-    error instanceof ScheduleLifecycleError
-  ) {
-    throw new HttpError(error.message, error.statusCode, {
-      code: error.code,
-    });
-  }
-  if (error instanceof GoogleConnectionError) {
-    throw new HttpError(error.message, error.statusCode);
-  }
-  throw error;
-};
+import {
+  mapScheduleError,
+  requireIdempotencyKey,
+} from './schedule-draft-route-utils.js';
 
 export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
   app.get('/schedule-drafts', async (request) => {
@@ -66,18 +41,13 @@ export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
   app.post('/schedule-drafts', async (request, reply) => {
     const userId = requireUserId(request);
     const body = parseBody(scheduleDraftRequestSchema, request);
-    const key = scheduleIdempotencyKeySchema.safeParse(
-      request.headers['idempotency-key'],
-    );
-    if (!key.success) {
-      throw new HttpError('Valid Idempotency-Key header is required', 400);
-    }
+    const key = requireIdempotencyKey(request);
 
     try {
       const result = await generateDailyScheduleDraft(
         userId,
         body.date,
-        key.data,
+        key,
       );
       return reply.code(result.replayed ? 200 : 201).send(result);
     } catch (error) {
@@ -106,6 +76,23 @@ export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
 
     try {
       return await rejectScheduleDraft(userId, new Types.ObjectId(id));
+    } catch (error) {
+      return mapScheduleError(error);
+    }
+  });
+
+  app.post('/schedule-drafts/:id/regenerate', async (request, reply) => {
+    const userId = requireUserId(request);
+    const { id } = parseParams(objectIdParamSchema, request);
+    const key = requireIdempotencyKey(request);
+
+    try {
+      const result = await regenerateScheduleDraft(
+        userId,
+        new Types.ObjectId(id),
+        key,
+      );
+      return reply.code(result.replayed ? 200 : 201).send(result);
     } catch (error) {
       return mapScheduleError(error);
     }

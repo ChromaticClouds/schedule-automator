@@ -19,6 +19,9 @@ const fail = (message: string, statusCode: number, code: string): never => {
 export const canRejectScheduleDraft = (status: string) =>
   status === 'draft' || status === 'rejected';
 
+export const canRegenerateScheduleDraft = (status: string) =>
+  status === 'draft' || status === 'rejected' || status === 'expired';
+
 export const getScheduleDraft = async (
   userId: Types.ObjectId,
   date?: string,
