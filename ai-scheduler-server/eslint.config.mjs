@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import tsParser from '@typescript-eslint/parser';
 
 export default tseslint.config(
   {
@@ -12,6 +13,16 @@ export default tseslint.config(
     files: ['src/**/*.ts', 'scripts/**/*.mjs', 'eslint.config.mjs'],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  {
+    files: ['src/**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
   {
