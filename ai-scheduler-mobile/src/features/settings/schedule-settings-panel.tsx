@@ -19,6 +19,7 @@ export const validScheduleSettingsForm = (form: SchedulePreferencesForm) => {
   return (
     /^([01]\d|2[0-3]):[0-5]\d$/.test(form.wakeTime) &&
     form.timezone.trim().length > 0 &&
+    form.wakeOffsetMinutes.trim().length > 0 &&
     Number.isInteger(minutes) &&
     minutes >= 60 &&
     minutes <= 720 &&

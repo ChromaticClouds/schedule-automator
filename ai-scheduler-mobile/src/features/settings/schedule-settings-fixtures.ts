@@ -20,6 +20,10 @@ export const scheduleSettingsFixtures = {
     ...validScheduleSettings,
     wakeOffsetMinutes: '241',
   },
+  invalidOffsetEmpty: {
+    ...validScheduleSettings,
+    wakeOffsetMinutes: '',
+  },
   invalidTime: {
     ...validScheduleSettings,
     wakeTime: '24:00',

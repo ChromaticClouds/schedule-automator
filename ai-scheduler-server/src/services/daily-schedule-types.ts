@@ -21,24 +21,12 @@ export type CandidateTask = {
   title: string;
 };
 
-export type DailyScheduleDocument = {
-  checklist: Array<{ done: boolean; title: string }>;
-  deadline: Date;
-  description: string;
-  energyLevel: 'medium';
-  estimatedMinutes: number;
-  generationIndex: 0;
-  generationKeyHash: string;
-  goalImpact: 3;
-  importance: 3;
-  status: 'scheduled';
-  title: string;
-  userId: string;
-};
-
 export type DailyScheduleStore = {
-  createDailySchedule(document: DailyScheduleDocument): Promise<void>;
-  hasDailySchedule(userId: string, generationKeyHash: string): Promise<boolean>;
+  createDailySchedule(
+    userId: string,
+    date: string,
+    idempotencyKey: string,
+  ): Promise<{ replayed: boolean }>;
   hasGoogleConnection(userId: string): Promise<boolean>;
   listCandidateTasks(userId: string): Promise<CandidateTask[]>;
   listUsers(): Promise<SchedulerUser[]>;

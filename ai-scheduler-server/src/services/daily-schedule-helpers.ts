@@ -1,10 +1,5 @@
 import { createHash } from 'node:crypto';
 import { ENV } from '@/config/env.js';
-import type {
-  CandidateTask,
-  DailyScheduleDocument,
-  SchedulerUser,
-} from './daily-schedule-types.js';
 
 export const hashKey = (value: string) =>
   createHash('sha256').update(value).digest('hex');
@@ -33,28 +28,5 @@ export const localParts = (date: Date, timezone: string) => {
 
 export const wakeMinute = (wakeTime: string, wakeOffsetMinutes: number) => {
   const [hour = '0', minute = '0'] = wakeTime.split(':');
-  return Number(hour) * 60 + Number(minute) + wakeOffsetMinutes;
+  return (Number(hour) * 60 + Number(minute) + wakeOffsetMinutes) % 1440;
 };
-
-export const dailyDocument = (
-  user: SchedulerUser,
-  tasks: CandidateTask[],
-  dateKey: string,
-  generationKeyHash: string,
-): DailyScheduleDocument => ({
-  checklist: tasks.map((task) => ({ done: false, title: task.title })),
-  deadline: new Date(`${dateKey}T23:59:00.000Z`),
-  description: `Generated from ${tasks.length} pending tasks.`,
-  energyLevel: 'medium',
-  estimatedMinutes: Math.min(
-    user.maxDailyWorkMinutes,
-    tasks.reduce((sum, task) => sum + task.estimatedMinutes, 0),
-  ),
-  generationIndex: 0,
-  generationKeyHash,
-  goalImpact: 3,
-  importance: 3,
-  status: 'scheduled',
-  title: `Daily schedule for ${dateKey}`,
-  userId: user._id,
-});

@@ -1,21 +1,15 @@
-import {
-  GoogleConnectionModel,
-  TaskModel,
-  UserModel,
-} from '@/models/index.js';
+import { Types } from 'mongoose';
+import { GoogleConnectionModel, TaskModel, UserModel } from '@/models/index.js';
+import { generateDailyScheduleDraft } from './schedule-draft.js';
 import type { DailyScheduleStore } from './daily-schedule-types.js';
 
 export const mongoDailyScheduleStore: DailyScheduleStore = {
-  async createDailySchedule(document) {
-    await TaskModel.create(document);
-  },
-  async hasDailySchedule(userId, generationKeyHash) {
-    const existing = await TaskModel.exists({
-      generationIndex: 0,
-      generationKeyHash,
-      userId,
-    });
-    return Boolean(existing);
+  async createDailySchedule(userId, date, idempotencyKey) {
+    return generateDailyScheduleDraft(
+      new Types.ObjectId(userId),
+      date,
+      idempotencyKey,
+    );
   },
   async hasGoogleConnection(userId) {
     return Boolean(await GoogleConnectionModel.exists({ userId }));

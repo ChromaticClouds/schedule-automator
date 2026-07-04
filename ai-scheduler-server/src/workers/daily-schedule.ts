@@ -6,15 +6,22 @@ import { runDailyScheduleTick } from '@/services/daily-schedule-service.js';
 import type { KeyValueStore } from '@/services/daily-schedule-types.js';
 
 let shouldStop = false;
+const shutdown = new AbortController();
 
 const stop = () => {
   shouldStop = true;
+  shutdown.abort();
 };
 
 process.once('SIGINT', stop);
 process.once('SIGTERM', stop);
 
 const runWorker = async () => {
+  if (!ENV.DAILY_PLAN_JOB_ENABLED) {
+    console.info('daily schedule worker disabled');
+    return;
+  }
+
   await connectMongo();
   const app = await buildApp();
 
@@ -24,7 +31,13 @@ const runWorker = async () => {
     while (!shouldStop) {
       const stats = await runDailyScheduleTick(redis);
       app.log.info({ stats }, 'daily schedule worker tick finished');
-      await delay(ENV.DAILY_SCHEDULE_POLL_INTERVAL_MS);
+      await delay(
+        ENV.DAILY_SCHEDULE_POLL_INTERVAL_MS,
+        undefined,
+        { signal: shutdown.signal },
+      ).catch((error: unknown) => {
+        if ((error as { name?: string }).name !== 'AbortError') throw error;
+      });
     }
   } finally {
     await app.close();

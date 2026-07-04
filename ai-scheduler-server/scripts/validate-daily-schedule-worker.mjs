@@ -25,6 +25,9 @@ Object.assign(process.env, {
 const { runDailyScheduleTick } = await import(
   '../dist/services/daily-schedule-service.js'
 );
+const { wakeMinute } = await import(
+  '../dist/services/daily-schedule-helpers.js'
+);
 
 class FakeRedis {
   data = new Map();
@@ -52,11 +55,12 @@ const user = {
   wakeTime: '07:00',
 };
 
-let createdDocument = null;
+let generatedDraft = null;
 const redis = new FakeRedis();
 const store = {
-  async createDailySchedule(document) {
-    createdDocument = document;
+  async createDailySchedule(userId, date, idempotencyKey) {
+    generatedDraft = { date, idempotencyKey, userId };
+    return { replayed: false };
   },
   async hasDailySchedule() {
     return false;
@@ -82,9 +86,8 @@ assert.equal(first.scannedUsers, 1);
 assert.equal(first.dueUsers, 1);
 assert.equal(first.createdSchedules, 1);
 assert.equal(first.failedUsers, 0);
-assert.equal(createdDocument.title, 'Daily schedule for 2026-07-04');
-assert.equal(createdDocument.estimatedMinutes, 180);
-assert.equal(createdDocument.checklist.length, 2);
+assert.equal(generatedDraft.date, '2026-07-04');
+assert.equal(generatedDraft.userId, 'user-1');
 assert.equal(
   await redis.get('test:scheduler:daily:user-1:2026-07-04:done'),
   '1',
@@ -93,13 +96,27 @@ assert.equal(
   await redis.get('test:scheduler:daily:user-1:2026-07-04:lock'),
   null,
 );
+assert.equal(wakeMinute('23:00', 120), 60);
 
-createdDocument = null;
+generatedDraft = null;
 const second = await runDailyScheduleTick(redis, now, store);
 
 assert.equal(second.createdSchedules, 0);
 assert.equal(second.skippedUsers, 1);
-assert.equal(createdDocument, null);
+assert.equal(generatedDraft, null);
+
+const replayRedis = new FakeRedis();
+const replayStore = {
+  ...store,
+  async createDailySchedule(userId, date, idempotencyKey) {
+    generatedDraft = { date, idempotencyKey, userId };
+    return { replayed: true };
+  },
+};
+const replayed = await runDailyScheduleTick(replayRedis, now, replayStore);
+
+assert.equal(replayed.createdSchedules, 0);
+assert.equal(replayed.skippedUsers, 1);
 
 const failingRedis = new FakeRedis();
 const failingStore = {

@@ -1,6 +1,5 @@
 import { ENV } from '@/config/env.js';
 import {
-  dailyDocument,
   hashKey,
   localParts,
   redisKey,
@@ -60,19 +59,15 @@ const scheduleUser = async (
   if (lock !== 'OK') return false;
 
   try {
-    if (await store.hasDailySchedule(user._id, idempotency)) {
-      await redis.set(doneKey, '1', 'EX', 172800);
-      return false;
-    }
     if (!(await store.hasGoogleConnection(user._id))) return false;
 
     const tasks = await store.listCandidateTasks(user._id);
     if (tasks.length === 0) return false;
 
-    await store.createDailySchedule(dailyDocument(user, tasks, dateKey, idempotency));
+    const result = await store.createDailySchedule(user._id, dateKey, idempotency);
     await redis.del(retryKey);
     await redis.set(doneKey, '1', 'EX', 172800);
-    return true;
+    return !result.replayed;
   } catch {
     await deferRetry(redis, retryKey, now);
     throw new Error('daily schedule generation failed');
