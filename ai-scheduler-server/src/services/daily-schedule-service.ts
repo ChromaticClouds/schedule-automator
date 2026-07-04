@@ -1,8 +1,10 @@
 import { ENV } from '@/config/env.js';
 import {
+  createLockToken,
   dueScheduleDate,
   hashKey,
   localParts,
+  releaseOwnedLock,
   redisKey,
 } from './daily-schedule-helpers.js';
 import { mongoDailyScheduleStore } from './daily-schedule-store.js';
@@ -48,6 +50,7 @@ const scheduleUser = async (
   const doneKey = redisKey(user._id, dateKey, 'done');
   const lockKey = redisKey(user._id, dateKey, 'lock');
   const retryKey = redisKey(user._id, dateKey, 'retry');
+  const lockToken = createLockToken();
   const attempt = Number(await redis.get(attemptKey)) || 0;
   const idempotency = hashKey(
     `daily-schedule:${user._id}:${dateKey}:${attempt}`,
@@ -58,7 +61,7 @@ const scheduleUser = async (
 
   const lock = await redis.set(
     lockKey,
-    '1',
+    lockToken,
     'EX',
     ENV.DAILY_SCHEDULE_LOCK_TTL_SECONDS,
     'NX',
@@ -80,7 +83,7 @@ const scheduleUser = async (
     await deferRetry(redis, attemptKey, retryKey, now);
     throw new Error('daily schedule generation failed');
   } finally {
-    await redis.del(lockKey);
+    await releaseOwnedLock(redis, lockKey, lockToken);
   }
 };
 

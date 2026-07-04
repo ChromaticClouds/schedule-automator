@@ -59,6 +59,18 @@ assert.equal(second.createdSchedules, 0);
 assert.equal(second.skippedUsers, 1);
 assert.equal(harness.getGeneratedDraft(), null);
 
+const lockRedis = new FakeRedis();
+const lockHarness = createHarness();
+const lockKey = 'test:scheduler:daily:user-1:2026-07-04:lock';
+const lockStore = {
+  ...lockHarness.store,
+  async createDailySchedule(...args) {
+    await lockRedis.set(lockKey, 'new-owner');
+    return lockHarness.store.createDailySchedule(...args);
+  },
+};
+await runDailyScheduleTick(lockRedis, now, lockStore);
+assert.equal(await lockRedis.get(lockKey), 'new-owner');
 const failingRedis = new FakeRedis();
 let failedIdempotencyKey = null;
 const failingStore = {
