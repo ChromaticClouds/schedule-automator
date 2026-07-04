@@ -1,17 +1,23 @@
 import { scheduleSettingsFixtures } from '@/features/settings/schedule-settings-fixtures';
+import { dailyReviewFixtures } from './daily-review-fixtures';
 import { goalBreakdownFixtures } from './goal-breakdown-fixtures';
+import { planningCreateFixtures } from './planning-create-fixtures';
 import {
   planningSectionEmptyMessages,
   planningSectionErrorMessages,
 } from './planning-empty-state';
 import { scheduleDraftPanelFixtures } from './schedule-draft-fixtures';
+import { taskSummaryFixtures } from './task-summary-fixtures';
 import { weeklyRescheduleFixtures } from './weekly-reschedule-fixtures';
 
 type CatalogGroup =
+  | 'dailyReview'
   | 'goalBreakdown'
+  | 'planningCreate'
   | 'planningSections'
   | 'scheduleDraft'
   | 'scheduleSettings'
+  | 'taskSummary'
   | 'weeklyReschedule';
 
 export type PlanningStateCatalogEntry<TProps = unknown> = {
@@ -34,10 +40,23 @@ const entry = <TProps>(
 });
 
 export const planningStateCatalog = {
+  dailyReview: [
+    entry('dailyReview', 'loading', 'Daily review loading state.', dailyReviewFixtures.loading),
+    entry('dailyReview', 'empty', 'No scheduled tasks to review.', dailyReviewFixtures.empty),
+    entry('dailyReview', 'tasks', 'Tasks can be marked done or missed.', dailyReviewFixtures.tasks),
+    entry('dailyReview', 'saveError', 'Daily review save failure.', dailyReviewFixtures.saveError),
+    entry('dailyReview', 'saved', 'Daily review saved success.', dailyReviewFixtures.saved),
+  ],
   goalBreakdown: [
     entry('goalBreakdown', 'success', 'Generated tasks are ready.', goalBreakdownFixtures.success),
     entry('goalBreakdown', 'replay', 'Idempotent replay result.', goalBreakdownFixtures.replay),
     entry('goalBreakdown', 'providerError', 'AI provider failure copy.', goalBreakdownFixtures.providerError),
+  ],
+  planningCreate: [
+    entry('planningCreate', 'idle', 'Create row idle state.', planningCreateFixtures.idle),
+    entry('planningCreate', 'emptyGuidance', 'Create row empty input guidance.', planningCreateFixtures.emptyGuidance),
+    entry('planningCreate', 'pending', 'Create row pending state.', planningCreateFixtures.pending),
+    entry('planningCreate', 'error', 'Create row mutation error.', planningCreateFixtures.error),
   ],
   planningSections: [
     entry('planningSections', 'goalsEmpty', 'Goals empty state copy.', planningSectionEmptyMessages.Goals),
@@ -57,6 +76,12 @@ export const planningStateCatalog = {
     entry('scheduleSettings', 'valid', 'Valid schedule preferences.', scheduleSettingsFixtures.valid),
     entry('scheduleSettings', 'invalidTime', 'Invalid wake time form.', scheduleSettingsFixtures.invalidTime),
     entry('scheduleSettings', 'error', 'Settings save error copy.', scheduleSettingsFixtures.errorMessage),
+  ],
+  taskSummary: [
+    entry('taskSummary', 'loading', 'Task summary loading state.', taskSummaryFixtures.loading),
+    entry('taskSummary', 'empty', 'Task summary empty state.', taskSummaryFixtures.empty),
+    entry('taskSummary', 'populated', 'Task summary with grouped statuses.', taskSummaryFixtures.populated),
+    entry('taskSummary', 'error', 'Task summary error state.', taskSummaryFixtures.error),
   ],
   weeklyReschedule: [
     entry('weeklyReschedule', 'empty', 'No missed tasks are ready.', weeklyRescheduleFixtures.empty),

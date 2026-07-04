@@ -5,13 +5,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 
-type PlanningCreateRowProps = {
+export type PlanningCreateRowProps = {
   emptyMessage: string;
   errorMessage?: string;
   isPending: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
   placeholder: string;
+  showEmptyMessage?: boolean;
   value: string;
 };
 
@@ -22,21 +23,23 @@ export function PlanningCreateRow({
   onChange,
   onSubmit,
   placeholder,
+  showEmptyMessage,
   value,
 }: PlanningCreateRowProps) {
-  const [showEmptyMessage, setShowEmptyMessage] = useState(false);
+  const [localEmptyMessage, setLocalEmptyMessage] = useState(false);
+  const shouldShowEmptyMessage = showEmptyMessage || localEmptyMessage;
 
   const handleChange = (nextValue: string) => {
-    if (nextValue.trim()) setShowEmptyMessage(false);
+    if (nextValue.trim()) setLocalEmptyMessage(false);
     onChange(nextValue);
   };
 
   const handleSubmit = () => {
     if (!value.trim()) {
-      setShowEmptyMessage(true);
+      setLocalEmptyMessage(true);
       return;
     }
-    setShowEmptyMessage(false);
+    setLocalEmptyMessage(false);
     onSubmit();
   };
 
@@ -60,7 +63,7 @@ export function PlanningCreateRow({
           </ThemedText>
         </Pressable>
       </ThemedView>
-      {showEmptyMessage && (
+      {shouldShowEmptyMessage && (
         <ThemedText type="small" themeColor="textSecondary">
           {emptyMessage}
         </ThemedText>
