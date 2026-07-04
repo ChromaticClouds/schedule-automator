@@ -12,6 +12,7 @@ Object.assign(process.env, {
   GOOGLE_CLIENT_ID: 'google-client-id',
   GOOGLE_CLIENT_SECRET: 'google-client-secret',
   GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/google/callback',
+  DAILY_PLAN_JOB_ENABLED: 'false',
   JWT_SECRET: 'x'.repeat(32),
   MONGO_URL: 'mongodb://localhost:27017/test',
   QUEUE_NAME: 'test-queue',
@@ -25,9 +26,16 @@ Object.assign(process.env, {
 const { runDailyScheduleTick } = await import(
   '../dist/services/daily-schedule-service.js'
 );
-const { wakeMinute } = await import(
+const { ENV } = await import('../dist/config/env.js');
+const {
+  scheduleDateForWakeTarget,
+  targetMinuteOfDay,
+  wakeMinute,
+} = await import(
   '../dist/services/daily-schedule-helpers.js'
 );
+
+assert.equal(ENV.DAILY_PLAN_JOB_ENABLED, false);
 
 class FakeRedis {
   data = new Map();
@@ -62,9 +70,6 @@ const store = {
     generatedDraft = { date, idempotencyKey, userId };
     return { replayed: false };
   },
-  async hasDailySchedule() {
-    return false;
-  },
   async hasGoogleConnection() {
     return true;
   },
@@ -96,7 +101,9 @@ assert.equal(
   await redis.get('test:scheduler:daily:user-1:2026-07-04:lock'),
   null,
 );
-assert.equal(wakeMinute('23:00', 120), 60);
+assert.equal(wakeMinute('23:00', 120), 1500);
+assert.equal(targetMinuteOfDay(1500), 60);
+assert.equal(scheduleDateForWakeTarget('2026-07-05', 1500), '2026-07-04');
 
 generatedDraft = null;
 const second = await runDailyScheduleTick(redis, now, store);
@@ -119,9 +126,11 @@ assert.equal(replayed.createdSchedules, 0);
 assert.equal(replayed.skippedUsers, 1);
 
 const failingRedis = new FakeRedis();
+let failedIdempotencyKey = null;
 const failingStore = {
   ...store,
-  async createDailySchedule() {
+  async createDailySchedule(userId, date, idempotencyKey) {
+    failedIdempotencyKey = idempotencyKey;
     throw new Error('database unavailable');
   },
 };
@@ -131,5 +140,41 @@ assert.equal(failed.failedUsers, 1);
 assert.ok(
   await failingRedis.get('test:scheduler:daily:user-1:2026-07-04:retry'),
 );
+
+generatedDraft = null;
+const recovered = await runDailyScheduleTick(
+  failingRedis,
+  new Date('2026-07-04T07:16:00.000Z'),
+  store,
+);
+
+assert.equal(recovered.createdSchedules, 1);
+assert.notEqual(generatedDraft.idempotencyKey, failedIdempotencyKey);
+
+const midnightRedis = new FakeRedis();
+const midnightStore = {
+  ...store,
+  async listUsers() {
+    return [{ ...user, wakeOffsetMinutes: 120, wakeTime: '23:00' }];
+  },
+};
+generatedDraft = null;
+const midnight = await runDailyScheduleTick(
+  midnightRedis,
+  new Date('2026-07-05T01:00:00.000Z'),
+  midnightStore,
+);
+
+assert.equal(midnight.createdSchedules, 1);
+assert.equal(generatedDraft.date, '2026-07-04');
+
+const badTimezone = await runDailyScheduleTick(redis, now, {
+  ...store,
+  async listUsers() {
+    return [{ ...user, timezone: 'Mars/Olympus' }];
+  },
+});
+
+assert.equal(badTimezone.failedUsers, 1);
 
 console.log('daily schedule worker validation passed');

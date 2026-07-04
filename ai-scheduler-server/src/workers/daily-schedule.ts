@@ -22,10 +22,11 @@ const runWorker = async () => {
     return;
   }
 
-  await connectMongo();
-  const app = await buildApp();
+  let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
   try {
+    await connectMongo();
+    app = await buildApp();
     app.log.info('daily schedule worker started');
     const redis = app.redis as unknown as KeyValueStore;
     while (!shouldStop) {
@@ -40,7 +41,7 @@ const runWorker = async () => {
       });
     }
   } finally {
-    await app.close();
+    await app?.close();
     await disconnectMongo();
   }
 };

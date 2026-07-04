@@ -28,5 +28,19 @@ export const localParts = (date: Date, timezone: string) => {
 
 export const wakeMinute = (wakeTime: string, wakeOffsetMinutes: number) => {
   const [hour = '0', minute = '0'] = wakeTime.split(':');
-  return (Number(hour) * 60 + Number(minute) + wakeOffsetMinutes) % 1440;
+  return Number(hour) * 60 + Number(minute) + wakeOffsetMinutes;
 };
+
+const addDateDays = (dateKey: string, days: number) => {
+  const date = new Date(`${dateKey}T00:00:00.000Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+
+export const scheduleDateForWakeTarget = (
+  dateKey: string,
+  targetMinute: number,
+) => (targetMinute >= 1440 ? addDateDays(dateKey, -1) : dateKey);
+
+export const targetMinuteOfDay = (targetMinute: number) =>
+  targetMinute % 1440;

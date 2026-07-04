@@ -16,7 +16,7 @@ export const mongoDailyScheduleStore: DailyScheduleStore = {
   },
   async listCandidateTasks(userId) {
     const tasks = await TaskModel.find({
-      status: { $in: ['todo', 'overflow'] },
+      status: { $in: ['todo', 'missed'] },
       userId,
     })
       .sort({ deadline: 1, importance: -1 })

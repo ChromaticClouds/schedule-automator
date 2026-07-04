@@ -1,6 +1,14 @@
 import "dotenv/config";
 import { z } from "zod";
 
+const booleanEnv = z.preprocess((value) => {
+  if (typeof value !== "string") return value;
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) return true;
+  if (["0", "false", "no", "off"].includes(normalized)) return false;
+  return value;
+}, z.boolean());
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -54,7 +62,7 @@ const envSchema = z.object({
   APP_TIMEZONE: z.string().min(1).default("Asia/Seoul"),
   WAKE_OFFSET_MINUTES: z.coerce.number().int().min(0).max(180).default(10),
   MAX_DAILY_WORK_MINUTES: z.coerce.number().int().min(60).max(720).default(480),
-  DAILY_PLAN_JOB_ENABLED: z.coerce.boolean().default(true),
+  DAILY_PLAN_JOB_ENABLED: booleanEnv.default(true),
   DAILY_SCHEDULE_LOCK_TTL_SECONDS: z.coerce
     .number()
     .int()
