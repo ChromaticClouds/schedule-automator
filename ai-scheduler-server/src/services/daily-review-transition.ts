@@ -9,6 +9,15 @@ export type TaskReviewUpdate = {
   taskId: string;
 };
 
+export const collectReviewTaskIds = (
+  scheduledTaskIds: string[],
+  review: ReviewState,
+) => [...new Set([
+  ...scheduledTaskIds,
+  ...review.completedTaskIds,
+  ...review.missedTaskIds,
+])];
+
 export const buildTaskReviewUpdates = (
   previous: ReviewState,
   next: ReviewState,

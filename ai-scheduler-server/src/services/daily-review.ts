@@ -1,11 +1,14 @@
-import { connection, Types } from 'mongoose';
+import { connection, Types, type ClientSession } from 'mongoose';
 import {
   DailyReviewModel,
   ScheduleDraftModel,
   TaskModel,
 } from '@/models/index.js';
 import type { SaveDailyReviewInput } from '@/schemas/daily-review.js';
-import { buildTaskReviewUpdates } from './daily-review-transition.js';
+import {
+  buildTaskReviewUpdates,
+  collectReviewTaskIds,
+} from './daily-review-transition.js';
 
 export class DailyReviewError extends Error {
   constructor(
@@ -18,10 +21,16 @@ export class DailyReviewError extends Error {
   }
 }
 
-const taskIdsForDate = async (userId: Types.ObjectId, date: string) => {
-  const draft = await ScheduleDraftModel.findOne({ userId, date }).sort({
+const taskIdsForDate = async (
+  userId: Types.ObjectId,
+  date: string,
+  session?: ClientSession,
+) => {
+  const query = ScheduleDraftModel.findOne({ userId, date }).sort({
     generatedAt: -1,
   });
+  if (session) query.session(session);
+  const draft = await query;
   return (draft?.blocks ?? [])
     .filter((block) => block.type === 'task' && block.taskId)
     .map((block) => block.taskId as Types.ObjectId);
@@ -32,10 +41,14 @@ export const getDailyReview = async (
   date: string,
 ) => {
   const review = await DailyReviewModel.findOne({ userId, date });
-  const ids = new Set((await taskIdsForDate(userId, date)).map(String));
-  for (const id of review?.completedTaskIds ?? []) ids.add(String(id));
-  for (const id of review?.missedTaskIds ?? []) ids.add(String(id));
-  const tasks = await TaskModel.find({ _id: { $in: [...ids] }, userId });
+  const ids = collectReviewTaskIds(
+    (await taskIdsForDate(userId, date)).map(String),
+    {
+      completedTaskIds: (review?.completedTaskIds ?? []).map(String),
+      missedTaskIds: (review?.missedTaskIds ?? []).map(String),
+    },
+  );
+  const tasks = await TaskModel.find({ _id: { $in: ids }, userId });
   return { review, tasks };
 };
 
@@ -89,5 +102,13 @@ export const saveDailyReview = async (
     { $set: input },
     { new: true, runValidators: true, session, upsert: true },
   );
-  return { review, tasks: await TaskModel.find({ _id: { $in: requestedIds }, userId }).session(session) };
+  const responseIds = collectReviewTaskIds(
+    (await taskIdsForDate(userId, date, session)).map(String),
+    input,
+  );
+  const tasks = await TaskModel.find({
+    _id: { $in: responseIds },
+    userId,
+  }).session(session);
+  return { review, tasks };
 });

@@ -3,7 +3,10 @@ import {
   dailyReviewParamsSchema,
   saveDailyReviewSchema,
 } from '../dist/schemas/daily-review.js';
-import { buildTaskReviewUpdates } from '../dist/services/daily-review-transition.js';
+import {
+  buildTaskReviewUpdates,
+  collectReviewTaskIds,
+} from '../dist/services/daily-review-transition.js';
 
 const first = '507f1f77bcf86cd799439011';
 const second = '507f1f77bcf86cd799439012';
@@ -15,6 +18,14 @@ assert.equal(
 assert.equal(
   dailyReviewParamsSchema.safeParse({ date: '2026-02-31' }).success,
   false,
+);
+assert.equal(
+  saveDailyReviewSchema.parse({
+    completedTaskIds: [],
+    missedTaskIds: [],
+    notes: '',
+  }).notes,
+  '',
 );
 assert.equal(
   saveDailyReviewSchema.safeParse({
@@ -67,6 +78,13 @@ assert.deepEqual(
     { postponedDelta: 1, status: 'missed', taskId: first },
     { postponedDelta: -1, status: 'done', taskId: second },
   ],
+);
+assert.deepEqual(
+  collectReviewTaskIds(
+    [first, second],
+    { completedTaskIds: [first], missedTaskIds: [] },
+  ),
+  [first, second],
 );
 
 console.log('daily review validation passed');

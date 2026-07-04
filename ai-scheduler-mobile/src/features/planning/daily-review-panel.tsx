@@ -37,7 +37,7 @@ export function DailyReviewPanel() {
   const submit = () => save.mutate({
     completedTaskIds: selectedIds(states, 'completed'),
     missedTaskIds: selectedIds(states, 'missed'),
-    ...(notes.trim() ? { notes: notes.trim() } : {}),
+    notes: notes.trim(),
   });
 
   return (
