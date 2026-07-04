@@ -8,6 +8,7 @@ import {
   createTask,
   generateScheduleDraft,
   getScheduleDraft,
+  getTaskSummary,
   listGoals,
   listProtectedTimes,
   listTasks,
@@ -19,6 +20,7 @@ export const planningKeys = {
   goals: ['planning', 'goals'] as const,
   scheduleDraft: (date: string) => ['planning', 'schedule-draft', date] as const,
   scheduleDrafts: ['planning', 'schedule-draft'] as const,
+  taskSummary: ['planning', 'task-summary'] as const,
   tasks: ['planning', 'tasks'] as const,
   protectedTimes: ['planning', 'protected-times'] as const,
 };
@@ -34,6 +36,13 @@ export const useTasks = () =>
   useQuery({
     queryKey: planningKeys.tasks,
     queryFn: listTasks,
+    enabled: useAuthStore((state) => state.status === 'authenticated'),
+  });
+
+export const useTaskSummary = () =>
+  useQuery({
+    queryKey: planningKeys.taskSummary,
+    queryFn: getTaskSummary,
     enabled: useAuthStore((state) => state.status === 'authenticated'),
   });
 
@@ -64,7 +73,11 @@ export const useCreateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createTask,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: planningKeys.tasks }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: planningKeys.taskSummary }),
+        queryClient.invalidateQueries({ queryKey: planningKeys.tasks }),
+      ]),
   });
 };
 
@@ -107,6 +120,7 @@ export const useApproveScheduleDraft = (date: string) => {
         }),
       ]),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: planningKeys.taskSummary });
       queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
     },
   });

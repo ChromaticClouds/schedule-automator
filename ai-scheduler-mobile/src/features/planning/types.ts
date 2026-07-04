@@ -13,6 +13,27 @@ export type Task = {
   postponedCount: number;
 };
 
+export type TaskSummaryStatus = Task['status'];
+
+export type TaskSummaryBucket = {
+  count: number;
+  estimatedMinutes: number;
+};
+
+export type TaskSummary = {
+  byStatus: Record<string, TaskSummaryBucket>;
+  range: { from?: string; to?: string };
+  statuses: TaskSummaryStatus[];
+  tasks: Array<{
+    _id: string;
+    deadline?: string;
+    estimatedMinutes: number;
+    status: TaskSummaryStatus;
+    title: string;
+  }>;
+  totals: TaskSummaryBucket;
+};
+
 export type ProtectedTime = {
   _id: string;
   title: string;

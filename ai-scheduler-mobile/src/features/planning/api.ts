@@ -10,6 +10,7 @@ import {
   ScheduleDraftResult,
   SaveDailyReviewInput,
   Task,
+  TaskSummary,
   WeeklyRescheduleInput,
   WeeklyRescheduleResult,
 } from './types';
@@ -25,6 +26,9 @@ export const createGoal = (body: CreateGoalInput) =>
 
 export const listTasks = () =>
   apiRequest<Task[]>('/tasks');
+
+export const getTaskSummary = () =>
+  apiRequest<TaskSummary>('/tasks/summary');
 
 export const createTask = (body: CreateTaskInput) =>
   apiRequest<Task>('/tasks', {
