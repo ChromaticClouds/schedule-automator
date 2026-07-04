@@ -1,4 +1,6 @@
 import { strict as assert } from 'node:assert';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   weeklyRescheduleOutputSchema,
   weeklyRescheduleRequestSchema,
@@ -116,5 +118,12 @@ const generator = createDeterministicWeeklyRescheduleGenerator(output);
 const generated = await generator.generate(context);
 generated.summary = 'mutated';
 assert.equal((await generator.generate(context)).summary, output.summary);
+
+const routeSource = readFileSync(
+  join(process.cwd(), 'src/routes/weekly-reschedules.ts'),
+  'utf8',
+);
+assert.match(routeSource, /GoogleConnectionError/);
+assert.match(routeSource, /code: error\.code/);
 
 console.log('weekly reschedule validation passed');

@@ -105,23 +105,17 @@ if (
   fail('OAuth flow is missing PKCE, handoff, browser session, or cache reset handling');
 }
 
-const breakdownValidation = spawnSync(
-  process.execPath,
-  [join(root, 'scripts', 'validate-goal-breakdown.mjs')],
-  { cwd: root, stdio: 'inherit' },
-);
-if (breakdownValidation.status !== 0) {
-  fail('goal breakdown state validation failed');
-}
+const runValidation = (script, message) => {
+  const result = spawnSync(process.execPath, [join(root, 'scripts', script)], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) fail(message);
+};
 
-const scheduleDraftUiValidation = spawnSync(
-  process.execPath,
-  [join(root, 'scripts', 'validate-schedule-draft-ui.mjs')],
-  { cwd: root, stdio: 'inherit' },
-);
-if (scheduleDraftUiValidation.status !== 0) {
-  fail('schedule draft UI validation failed');
-}
+runValidation('validate-goal-breakdown.mjs', 'goal breakdown state validation failed');
+runValidation('validate-schedule-draft-ui.mjs', 'schedule draft UI validation failed');
+runValidation('validate-weekly-reschedule-ui.mjs', 'weekly reschedule UI validation failed');
 
 const tsc = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
 

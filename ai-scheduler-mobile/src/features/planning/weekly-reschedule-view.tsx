@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { WeeklyRescheduleResult } from './types';
+import { weeklyRescheduleResultSummary } from './weekly-reschedule-state';
 
 export type WeeklyRescheduleViewProps = {
   disabled: boolean;
@@ -31,8 +32,7 @@ export function WeeklyRescheduleView({
         accessibilityRole="button"
         disabled={disabled || isPending}
         onPress={onRun}
-        style={[styles.button, (disabled || isPending) && styles.disabled]}
-      >
+        style={[styles.button, (disabled || isPending) && styles.disabled]}>
         <ThemedText type="smallBold">
           {isPending ? 'Rescheduling...' : 'Reschedule missed tasks'}
         </ThemedText>
@@ -40,9 +40,7 @@ export function WeeklyRescheduleView({
       {disabled && !result && (
         <ThemedText type="small">No missed tasks are ready to replan.</ThemedText>
       )}
-      {errorMessage && (
-        <ThemedText type="small">Failed: {errorMessage}</ThemedText>
-      )}
+      {errorMessage && <ThemedText type="small">Failed: {errorMessage}</ThemedText>}
       {result && <ResultSummary result={result} taskNames={taskNames} />}
     </ThemedView>
   );
@@ -56,13 +54,16 @@ function ResultSummary({
   taskNames: Record<string, string>;
 }) {
   if (result.replayed) {
-    return <ThemedText type="small">This request was already processed.</ThemedText>;
+    return <ThemedText type="small">This weekly replan was already processed.</ThemedText>;
   }
   return (
     <ThemedView style={styles.results}>
-      <ThemedText type="smallBold">
-        Placed {result.placedTaskIds.length} · Overflow {result.overflowTaskIds.length}
-      </ThemedText>
+      <ThemedText type="smallBold">{weeklyRescheduleResultSummary(result)}</ThemedText>
+      {result.drafts.length > 0 && (
+        <ThemedText type="small" themeColor="textSecondary">
+          Review generated drafts before approving calendar sync.
+        </ThemedText>
+      )}
       {result.drafts.map((draft) => (
         <ThemedView key={draft._id} style={styles.resultGroup}>
           <ThemedText type="smallBold">{draft.date}</ThemedText>
