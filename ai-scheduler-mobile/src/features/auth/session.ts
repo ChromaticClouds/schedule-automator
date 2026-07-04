@@ -28,6 +28,10 @@ let sessionVersion = 0;
 let storageMutation = Promise.resolve();
 let resetAuthCache = () => {};
 
+type SaveAuthSessionOptions = {
+  resetAuthCache?: boolean;
+};
+
 const mutateStoredSession = <T>(operation: () => Promise<T>) => {
   const result = storageMutation.then(operation, operation);
   storageMutation = result.then(
@@ -37,11 +41,14 @@ const mutateStoredSession = <T>(operation: () => Promise<T>) => {
   return result;
 };
 
-const commitSession = (session: AuthSession | null) => {
+const commitSession = (
+  session: AuthSession | null,
+  options: SaveAuthSessionOptions = {},
+) => {
   const crossedAuthBoundary = Boolean(activeSession) !== Boolean(session);
   sessionVersion += 1;
   activeSession = session;
-  if (crossedAuthBoundary) resetAuthCache();
+  if (crossedAuthBoundary || options.resetAuthCache) resetAuthCache();
   useAuthStore.setState({
     session,
     status: session ? 'authenticated' : 'anonymous',
@@ -68,6 +75,7 @@ export const hydrateAuthSession = async () => {
 export const saveAuthSession = (
   response: AuthSessionResponse,
   expectedVersion?: number,
+  options?: SaveAuthSessionOptions,
 ) => mutateStoredSession(async () => {
   if (
     expectedVersion !== undefined &&
@@ -77,7 +85,7 @@ export const saveAuthSession = (
   }
   const session = toAuthSession(response);
   await writeStoredSession(session);
-  commitSession(session);
+  commitSession(session, options);
   return session;
 });
 

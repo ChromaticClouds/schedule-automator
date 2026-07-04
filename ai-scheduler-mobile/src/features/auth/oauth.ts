@@ -49,6 +49,6 @@ export const signInWithGoogle = async () => {
       body: { code: handoffCode, codeVerifier: verifier },
     },
   );
-  await saveAuthSession(session);
+  await saveAuthSession(session, undefined, { resetAuthCache: true });
   return true;
 };
