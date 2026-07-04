@@ -12,7 +12,7 @@ export const useRegenerateScheduleDraft = (date: string) => {
   return useMutation({
     mutationFn: ({ draftId, idempotencyKey }: RegenerateInput) =>
       regenerateScheduleDraft(draftId, idempotencyKey),
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),
       });

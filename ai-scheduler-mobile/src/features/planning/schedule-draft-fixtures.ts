@@ -40,10 +40,14 @@ const withStatus = (status: ScheduleDraft['status']): ScheduleDraft => ({
   ...baseDraft,
   blocks: baseDraft.blocks.map((block) => ({
     ...block,
-    calendarEventId: ['approved', 'synced'].includes(status)
+    calendarEventId: status === 'synced'
       ? `event-${block._id}`
       : undefined,
-    status: status === 'synced' ? 'synced' : block.status,
+    status: status === 'synced'
+      ? 'synced'
+      : status === 'approved'
+        ? 'approved'
+        : block.status,
   })),
   status,
   ...(status === 'approved' || status === 'synced'
@@ -54,6 +58,7 @@ const withStatus = (status: ScheduleDraft['status']): ScheduleDraft => ({
 
 export const scheduleDraftFixtures = {
   date: baseDate,
+  approved: withStatus('approved'),
   draft: withStatus('draft'),
   empty: undefined,
   expired: withStatus('expired'),
@@ -89,6 +94,7 @@ const withDraft = (
 });
 
 export const scheduleDraftPanelFixtures = {
+  approved: withDraft(scheduleDraftFixtures.approved),
   blockNotEditableError: withDraft(scheduleDraftFixtures.draft, {
     errorMessage: 'This block cannot be edited.',
   }),
@@ -107,6 +113,12 @@ export const scheduleDraftPanelFixtures = {
   }),
   regenerateInvalidStateError: withDraft(scheduleDraftFixtures.synced, {
     errorMessage: 'Draft state changed. Refresh and try again.',
+  }),
+  googleReconnectError: withDraft(scheduleDraftFixtures.draft, {
+    errorMessage: 'Google Calendar connection expired. Reconnect Google.',
+  }),
+  googleSyncError: withDraft(scheduleDraftFixtures.approved, {
+    errorMessage: 'Google Calendar sync failed. Try again later.',
   }),
   staleContextError: withDraft(scheduleDraftFixtures.draft, {
     errorMessage: scheduleDraftFixtures.staleContextError,

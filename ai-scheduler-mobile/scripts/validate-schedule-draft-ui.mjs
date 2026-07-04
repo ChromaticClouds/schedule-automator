@@ -38,6 +38,8 @@ const expectedMessages = [
   ['STALE_DRAFT_VERSION', 'Review the latest version'],
   ['DRAFT_EDIT_VALIDATION_ERROR', 'conflicts with the current schedule'],
   ['DRAFT_BLOCK_NOT_EDITABLE', 'cannot be edited'],
+  ['GOOGLE_RECONNECT_REQUIRED', 'Reconnect Google'],
+  ['GOOGLE_CALENDAR_SYNC_FAILED', 'sync failed'],
 ];
 
 for (const [code, expected] of expectedMessages) {
@@ -75,17 +77,36 @@ assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.draft), true
 assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.rejected), true);
 assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.expired), true);
 assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.synced), false);
+assert.match(
+  state.scheduleDraftStatusMessage(scheduleDraftFixtures.approved),
+  /pending/,
+);
+assert.match(
+  state.scheduleDraftStatusMessage(scheduleDraftFixtures.synced),
+  /synced/,
+);
+assert.equal(
+  state.scheduleDraftCalendarEventSummary(scheduleDraftFixtures.approved),
+  undefined,
+);
+assert.match(
+  state.scheduleDraftCalendarEventSummary(scheduleDraftFixtures.synced),
+  /event-block-1/,
+);
 
 const requiredFixtureNames = [
   'loading',
   'empty',
   'draft',
+  'approved',
   'pending',
   'rejected',
   'expired',
   'synced',
   'requestInProgressError',
   'regenerateInvalidStateError',
+  'googleReconnectError',
+  'googleSyncError',
   'staleContextError',
   'staleVersionError',
   'editValidationError',
@@ -102,6 +123,7 @@ assert.equal(scheduleDraftPanelFixtures.loading.isLoading, true);
 assert.equal(scheduleDraftPanelFixtures.empty.noDraft, true);
 assert.equal(scheduleDraftPanelFixtures.pending.busy, true);
 assert.equal(scheduleDraftPanelFixtures.draft.draft.status, 'draft');
+assert.equal(scheduleDraftPanelFixtures.approved.draft.status, 'approved');
 assert.equal(scheduleDraftPanelFixtures.rejected.draft.status, 'rejected');
 assert.equal(scheduleDraftPanelFixtures.expired.draft.status, 'expired');
 assert.equal(scheduleDraftPanelFixtures.synced.draft.status, 'synced');
@@ -113,6 +135,8 @@ assert.match(
   scheduleDraftPanelFixtures.regenerateInvalidStateError.errorMessage,
   /state changed/,
 );
+assert.match(scheduleDraftPanelFixtures.googleReconnectError.errorMessage, /Reconnect/);
+assert.match(scheduleDraftPanelFixtures.googleSyncError.errorMessage, /sync failed/);
 
 for (const block of scheduleDraftFixtures.draft.blocks) {
   assert.ok(block._id);

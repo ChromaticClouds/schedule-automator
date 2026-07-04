@@ -37,6 +37,8 @@ export const scheduleDraftErrorMessage = (
   if (code === 'STALE_DRAFT_VERSION') return 'Draft changed elsewhere. Review the latest version.';
   if (code === 'DRAFT_EDIT_VALIDATION_ERROR') return 'Edit conflicts with the current schedule.';
   if (code === 'DRAFT_BLOCK_NOT_EDITABLE') return 'This block cannot be edited.';
+  if (code === 'GOOGLE_RECONNECT_REQUIRED') return 'Google Calendar connection expired. Reconnect Google.';
+  if (code === 'GOOGLE_CALENDAR_SYNC_FAILED') return 'Google Calendar sync failed. Try again later.';
   if (ignoreNotFound && scheduleDraftIsNotFoundError(error)) return undefined;
 
   return isRecord(error) && typeof error.message === 'string'
@@ -56,3 +58,16 @@ export const canRegenerateScheduleDraft = (draft: ScheduleDraft | undefined) =>
   draft?.status === 'draft' ||
   draft?.status === 'rejected' ||
   draft?.status === 'expired';
+
+export const scheduleDraftStatusMessage = (draft: ScheduleDraft) => {
+  if (draft.status === 'approved') return 'Approved. Google Calendar sync is pending.';
+  if (draft.status === 'synced') return 'Google Calendar synced.';
+  return undefined;
+};
+
+export const scheduleDraftCalendarEventSummary = (draft: ScheduleDraft) => {
+  const ids = draft.blocks
+    .map((block) => block.calendarEventId)
+    .filter((id): id is string => Boolean(id));
+  return ids.length ? `Calendar events: ${ids.join(', ')}` : undefined;
+};

@@ -8,6 +8,7 @@ export class GoogleConnectionError extends Error {
   constructor(
     message: string,
     public readonly statusCode: number,
+    public readonly code = 'GOOGLE_RECONNECT_REQUIRED',
   ) {
     super(message);
     this.name = 'GoogleConnectionError';

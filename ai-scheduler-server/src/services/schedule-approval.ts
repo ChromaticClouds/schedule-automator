@@ -8,7 +8,7 @@ import { buildScheduleContext } from './schedule-context.js';
 import { validateScheduleDraft } from './schedule-validation.js';
 import {
   createGoogleCalendarClient,
-  type GoogleConnectionError,
+  GoogleConnectionError,
 } from './google-client.js';
 import {
   createGoogleCalendarEventWriter,
@@ -31,12 +31,11 @@ const fail = (message: string, statusCode: number, code: string) => {
 };
 
 const syncBlocks = async (
-  draft: Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>,
+  draft: NonNullable<Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>>,
   calendarId: string,
   writer: CalendarEventWriter,
 ) => {
-  let wrote = false;
-  for (const block of draft?.blocks ?? []) {
+  for (const block of draft.blocks) {
     if (block.source !== 'ai' || block.calendarEventId) continue;
     if (!['task', 'break'].includes(block.type)) continue;
     const { eventId } = await writer.createEvent(calendarId, {
@@ -46,10 +45,8 @@ const syncBlocks = async (
     });
     block.calendarEventId = eventId;
     block.status = 'synced';
-    wrote = true;
-    await draft?.save();
+    await draft.save();
   }
-  return wrote;
 };
 
 const validateCurrentContext = async (
@@ -96,13 +93,19 @@ const markTasksScheduled = async (
   );
 };
 
+const mapCalendarSyncError = (error: unknown): never => {
+  if (error instanceof GoogleConnectionError) throw error;
+  return fail('Google Calendar sync failed', 502, 'GOOGLE_CALENDAR_SYNC_FAILED');
+};
+
 export const approveScheduleDraft = async (
   userId: Types.ObjectId,
   draftId: Types.ObjectId,
   writer?: CalendarEventWriter,
 ) => {
   const now = new Date();
-  const draft = await ScheduleDraftModel.findOneAndUpdate(
+  let shouldValidateContext = true;
+  let draft = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, status: 'draft', userId },
     {
       $set: {
@@ -120,22 +123,25 @@ export const approveScheduleDraft = async (
     const current = await ScheduleDraftModel.findOne({ _id: draftId, userId });
     if (!current) return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
     if (current.status === 'synced') return { draft: current, replayed: true };
-    return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
+    if (current.status !== 'approved') {
+      return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
+    }
+    shouldValidateContext = false;
+    draft = current;
   }
 
-  await validateCurrentContext(draft);
-  const { calendarId } = await ensureAiCalendar(userId);
-  const { api } = await createGoogleCalendarClient(userId);
-  const activeWriter = writer ?? createGoogleCalendarEventWriter(api);
-
-  await syncBlocks(draft, calendarId, activeWriter);
+  if (shouldValidateContext) await validateCurrentContext(draft);
+  try {
+    const { calendarId } = await ensureAiCalendar(userId);
+    const { api } = await createGoogleCalendarClient(userId);
+    const activeWriter = writer ?? createGoogleCalendarEventWriter(api);
+    await syncBlocks(draft, calendarId, activeWriter);
+  } catch (error) {
+    mapCalendarSyncError(error);
+  }
   await markTasksScheduled(draft);
   draft.status = 'synced';
   draft.syncedAt = new Date();
   await draft.save();
   return { draft, replayed: false };
 };
-
-export type ScheduleApprovalThrownError =
-  | ScheduleApprovalError
-  | GoogleConnectionError;

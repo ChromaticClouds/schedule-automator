@@ -85,7 +85,9 @@ assert.equal(
 );
 assert.throws(
   () => requireRefreshToken(true, undefined),
-  (error) => error.statusCode === 401,
+  (error) =>
+    error.statusCode === 401 &&
+    error.code === 'GOOGLE_RECONNECT_REQUIRED',
 );
 await assert.rejects(
   () =>
@@ -94,7 +96,9 @@ await assert.rejects(
         throw new Error('revoked');
       },
     }),
-  (error) => error.statusCode === 401,
+  (error) =>
+    error.statusCode === 401 &&
+    error.code === 'GOOGLE_RECONNECT_REQUIRED',
 );
 
 let eventPage = 0;
