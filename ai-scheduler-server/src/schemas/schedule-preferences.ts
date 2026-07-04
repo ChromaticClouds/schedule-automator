@@ -16,6 +16,7 @@ const timezoneSchema = z.string().trim().min(1).refine((timezone) => {
 export const schedulePreferencesSchema = z.object({
   maxDailyWorkMinutes: z.number().int().min(60).max(720),
   timezone: timezoneSchema,
+  wakeOffsetMinutes: z.number().int().min(0).max(240),
   wakeTime: wakeTimeSchema,
 });
 

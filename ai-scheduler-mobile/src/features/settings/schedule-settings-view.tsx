@@ -51,6 +51,12 @@ export function ScheduleSettingsView({
             onChange={(value) => onChange('maxDailyWorkMinutes', value)}
             value={form.maxDailyWorkMinutes}
           />
+          <Field
+            keyboardType="number-pad"
+            label="Wake offset minutes"
+            onChange={(value) => onChange('wakeOffsetMinutes', value)}
+            value={form.wakeOffsetMinutes}
+          />
           <Pressable
             accessibilityRole="button"
             disabled={!valid || isSaving}

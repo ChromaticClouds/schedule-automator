@@ -5,7 +5,8 @@
     "lint": "eslint .",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "validate": "node ./scripts/validate-server.mjs"
+    "validate": "node ./scripts/validate-server.mjs",
+    "worker:daily-schedule": "node dist/workers/daily-schedule.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
