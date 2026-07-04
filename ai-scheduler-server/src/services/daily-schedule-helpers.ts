@@ -1,11 +1,27 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { ENV } from '@/config/env.js';
+import type { KeyValueStore } from './daily-schedule-types.js';
 
 export const hashKey = (value: string) =>
   createHash('sha256').update(value).digest('hex');
 
 export const redisKey = (...parts: string[]) =>
   `${ENV.REDIS_KEY_PREFIX}scheduler:daily:${parts.join(':')}`;
+
+const releaseLockScript = `
+if redis.call("get", KEYS[1]) == ARGV[1] then
+  return redis.call("del", KEYS[1])
+end
+return 0
+`;
+
+export const createLockToken = () => randomUUID();
+
+export const releaseOwnedLock = (
+  redis: KeyValueStore,
+  key: string,
+  token: string,
+) => redis.eval(releaseLockScript, 1, key, token);
 
 export const localParts = (date: Date, timezone: string) => {
   const formatter = new Intl.DateTimeFormat('en-CA', {

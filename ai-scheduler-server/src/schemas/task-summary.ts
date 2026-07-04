@@ -6,13 +6,20 @@ const defaultStatuses = taskStatuses.filter((status) => status !== 'archived');
 
 const dateOnlySchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'date must use YYYY-MM-DD');
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'date must use YYYY-MM-DD')
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return !Number.isNaN(date.getTime()) &&
+      date.toISOString().slice(0, 10) === value;
+  }, 'date must be a real calendar date');
 
 const statusesSchema = z.preprocess((value) => {
-  if (Array.isArray(value)) return value.join(',').split(',');
-  if (typeof value === 'string' && value.trim()) return value.split(',');
+  const values = Array.isArray(value) ? value.join(',') : value;
+  if (typeof values === 'string' && values.trim()) {
+    return [...new Set(values.split(',').map((status) => status.trim()))];
+  }
   return defaultStatuses;
-}, z.array(taskStatusSchema).min(1));
+}, z.array(taskStatusSchema).min(1).max(taskStatuses.length));
 
 export const taskSummaryQuerySchema = z
   .object({

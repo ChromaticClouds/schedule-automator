@@ -18,10 +18,13 @@ export const useSaveDailyReview = (date: string) => {
       saveDailyReview(date, input),
     onSuccess: (result) => {
       queryClient.setQueryData(planningKeys.dailyReview(date), result);
-      queryClient.invalidateQueries({ queryKey: planningKeys.tasks });
-      queryClient.invalidateQueries({
-        queryKey: planningKeys.scheduleDraft(date),
-      });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: planningKeys.taskSummary }),
+        queryClient.invalidateQueries({ queryKey: planningKeys.tasks }),
+        queryClient.invalidateQueries({
+          queryKey: planningKeys.scheduleDraft(date),
+        }),
+      ]);
     },
   });
 };

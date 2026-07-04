@@ -1,5 +1,10 @@
 export type KeyValueStore = {
   del(key: string): Promise<unknown>;
+  eval(
+    script: string,
+    numberOfKeys: number,
+    ...args: string[]
+  ): Promise<unknown>;
   get(key: string): Promise<string | null>;
   set(
     key: string,

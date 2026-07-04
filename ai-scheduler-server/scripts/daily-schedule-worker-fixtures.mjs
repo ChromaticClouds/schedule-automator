@@ -28,6 +28,11 @@ export class FakeRedis {
     return this.data.delete(key) ? 1 : 0;
   }
 
+  async eval(_script, _numberOfKeys, key, token) {
+    if (this.data.get(key) !== token) return 0;
+    return this.del(key);
+  }
+
   async get(key) {
     return this.data.get(key) ?? null;
   }
