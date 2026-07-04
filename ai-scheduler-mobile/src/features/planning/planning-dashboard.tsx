@@ -7,6 +7,7 @@ import { Spacing } from '@/constants/theme';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { useAuthStore } from '@/features/auth/session';
 import { DailyReviewPanel } from './daily-review-panel';
+import { GoalBreakdownPanel } from './goal-breakdown-panel';
 import {
   useCreateGoal,
   useCreateProtectedTime,
@@ -80,6 +81,7 @@ export function PlanningDashboard() {
       {authenticated && <DailyReviewPanel />}
       {authenticated && <WeeklyReschedulePanel />}
       {authenticated && <TaskSummaryPanel />}
+      {authenticated && <GoalBreakdownPanel />}
 
       {authenticated && <PlanningSection {...sectionState('Goals', goals)}>
         <CreateRow value={goalTitle} onChange={setGoalTitle} onSubmit={submitGoal} />

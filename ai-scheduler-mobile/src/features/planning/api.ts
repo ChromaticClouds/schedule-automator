@@ -5,6 +5,7 @@ import {
   CreateTaskInput,
   DailyReviewResult,
   Goal,
+  GoalBreakdownResult,
   ProtectedTime,
   ScheduleDraft,
   ScheduleDraftResult,
@@ -22,6 +23,15 @@ export const createGoal = (body: CreateGoalInput) =>
   apiRequest<Goal>('/goals', {
     method: 'POST',
     body,
+  });
+
+export const generateGoalBreakdown = (
+  goalId: string,
+  idempotencyKey: string,
+) =>
+  apiRequest<GoalBreakdownResult>(`/goals/${goalId}/task-breakdown`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
   });
 
 export const listTasks = () =>
