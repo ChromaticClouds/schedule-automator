@@ -80,6 +80,18 @@ export type SaveDailyReviewInput = {
   notes?: string;
 };
 
+export type WeeklyRescheduleResult = {
+  drafts: ScheduleDraft[];
+  overflowTaskIds: string[];
+  placedTaskIds: string[];
+  replayed: boolean;
+};
+
+export type WeeklyRescheduleInput = {
+  idempotencyKey: string;
+  reviewDate: string;
+};
+
 export type CreateGoalInput = {
   title: string;
   importance: 1 | 2 | 3 | 4 | 5;

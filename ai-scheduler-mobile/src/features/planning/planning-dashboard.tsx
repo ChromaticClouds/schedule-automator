@@ -17,6 +17,7 @@ import {
 } from './hooks';
 import { PlanningSection } from './planning-section';
 import { ScheduleDraftPanel } from './schedule-draft-panel';
+import { WeeklyReschedulePanel } from './weekly-reschedule-panel';
 
 export function PlanningDashboard() {
   const authenticated = useAuthStore(
@@ -76,6 +77,7 @@ export function PlanningDashboard() {
 
       {authenticated && <ScheduleDraftPanel />}
       {authenticated && <DailyReviewPanel />}
+      {authenticated && <WeeklyReschedulePanel />}
 
       {authenticated && <PlanningSection {...sectionState('Goals', goals)}>
         <CreateRow value={goalTitle} onChange={setGoalTitle} onSubmit={submitGoal} />
