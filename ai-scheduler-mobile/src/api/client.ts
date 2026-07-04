@@ -43,5 +43,3 @@ export type HealthResponse = {
 };
 
 export const getHealth = () => rawApiRequest<HealthResponse>('/health');
-
-export { ApiError } from './transport';

@@ -36,12 +36,19 @@ export function ScheduleSettingsPanel() {
 
   useEffect(() => {
     if (!query.data) return;
-    setForm({
-      maxDailyWorkMinutes: String(query.data.maxDailyWorkMinutes),
-      timezone: query.data.timezone,
-      wakeOffsetMinutes: String(query.data.wakeOffsetMinutes),
-      wakeTime: query.data.wakeTime,
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      setForm({
+        maxDailyWorkMinutes: String(query.data.maxDailyWorkMinutes),
+        timezone: query.data.timezone,
+        wakeOffsetMinutes: String(query.data.wakeOffsetMinutes),
+        wakeTime: query.data.wakeTime,
+      });
     });
+    return () => {
+      active = false;
+    };
   }, [query.data]);
 
   const change = (field: keyof SchedulePreferencesForm, value: string) => {
