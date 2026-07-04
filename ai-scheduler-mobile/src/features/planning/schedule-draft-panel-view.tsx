@@ -7,6 +7,8 @@ import { ScheduleDraftBlocks } from './schedule-draft-blocks';
 import {
   canRegenerateScheduleDraft,
   canReviewScheduleDraft,
+  scheduleDraftCalendarEventSummary,
+  scheduleDraftStatusMessage,
 } from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
 
@@ -103,11 +105,18 @@ function DraftSummary({
   onEdit: ScheduleDraftPanelViewProps['onEdit'];
   timezone?: string;
 }) {
+  const statusMessage = scheduleDraftStatusMessage(draft);
+  const calendarSummary = scheduleDraftCalendarEventSummary(draft);
+
   return (
     <ThemedView style={styles.blockList}>
       <ThemedText type="small" themeColor="textSecondary">
         {draft.status.toUpperCase()} - {draft.summary ?? 'No summary'}
       </ThemedText>
+      {statusMessage && <ThemedText type="small">{statusMessage}</ThemedText>}
+      {calendarSummary && (
+        <ThemedText type="small" themeColor="textSecondary">{calendarSummary}</ThemedText>
+      )}
       {draft.warnings.map((warning) => (
         <ThemedText key={warning} type="small">Warning: {warning}</ThemedText>
       ))}
