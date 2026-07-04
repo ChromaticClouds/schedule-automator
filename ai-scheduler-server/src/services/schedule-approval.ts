@@ -8,7 +8,7 @@ import { buildScheduleContext } from './schedule-context.js';
 import { validateScheduleDraft } from './schedule-validation.js';
 import {
   createGoogleCalendarClient,
-  type GoogleConnectionError,
+  GoogleConnectionError,
 } from './google-client.js';
 import {
   createGoogleCalendarEventWriter,
@@ -96,6 +96,11 @@ const markTasksScheduled = async (
   );
 };
 
+const mapCalendarSyncError = (error: unknown): never => {
+  if (error instanceof GoogleConnectionError) throw error;
+  return fail('Google Calendar sync failed', 502, 'GOOGLE_CALENDAR_SYNC_FAILED');
+};
+
 export const approveScheduleDraft = async (
   userId: Types.ObjectId,
   draftId: Types.ObjectId,
@@ -124,11 +129,14 @@ export const approveScheduleDraft = async (
   }
 
   await validateCurrentContext(draft);
-  const { calendarId } = await ensureAiCalendar(userId);
-  const { api } = await createGoogleCalendarClient(userId);
-  const activeWriter = writer ?? createGoogleCalendarEventWriter(api);
-
-  await syncBlocks(draft, calendarId, activeWriter);
+  try {
+    const { calendarId } = await ensureAiCalendar(userId);
+    const { api } = await createGoogleCalendarClient(userId);
+    const activeWriter = writer ?? createGoogleCalendarEventWriter(api);
+    await syncBlocks(draft, calendarId, activeWriter);
+  } catch (error) {
+    mapCalendarSyncError(error);
+  }
   await markTasksScheduled(draft);
   draft.status = 'synced';
   draft.syncedAt = new Date();
