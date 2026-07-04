@@ -77,6 +77,18 @@ export const weeklyRescheduleFixtures = {
     },
     taskNames: {},
   } satisfies Fixture,
+  schemaError: {
+    disabled: false,
+    errorMessage: 'The generated plan format was invalid.',
+    isPending: false,
+    taskNames: {},
+  } satisfies Fixture,
+  saveError: {
+    disabled: false,
+    errorMessage: 'Could not save the generated plan. Try again.',
+    isPending: false,
+    taskNames: {},
+  } satisfies Fixture,
 };
 
 export const weeklyRescheduleRerunFixtures = {
