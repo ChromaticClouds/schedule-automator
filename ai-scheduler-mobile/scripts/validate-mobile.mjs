@@ -90,7 +90,8 @@ if (
 
 if (
   !queryProvider.includes('registerAuthCacheReset') ||
-  !queryProvider.includes("queryKey: ['planning']")
+  !queryProvider.includes("queryKey: ['planning']") ||
+  !queryProvider.includes('resetQueries')
 ) {
   fail('planning cache is not cleared across auth boundaries');
 }

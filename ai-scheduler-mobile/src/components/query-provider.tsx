@@ -18,7 +18,8 @@ export function QueryProvider({ children }: PropsWithChildren) {
   useEffect(
     () =>
       registerAuthCacheReset(() => {
-        client.removeQueries({ queryKey: ['planning'] });
+        void client.cancelQueries({ queryKey: ['planning'] });
+        void client.resetQueries({ queryKey: ['planning'] });
       }),
     [client],
   );
