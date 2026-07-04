@@ -104,6 +104,7 @@ export const approveScheduleDraft = async (
   writer?: CalendarEventWriter,
 ) => {
   const now = new Date();
+  let shouldValidateContext = true;
   let draft = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, status: 'draft', userId },
     {
@@ -125,10 +126,11 @@ export const approveScheduleDraft = async (
     if (current.status !== 'approved') {
       return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
     }
+    shouldValidateContext = false;
     draft = current;
   }
 
-  await validateCurrentContext(draft);
+  if (shouldValidateContext) await validateCurrentContext(draft);
   try {
     const { calendarId } = await ensureAiCalendar(userId);
     const { api } = await createGoogleCalendarClient(userId);
@@ -143,7 +145,3 @@ export const approveScheduleDraft = async (
   await draft.save();
   return { draft, replayed: false };
 };
-
-export type ScheduleApprovalThrownError =
-  | ScheduleApprovalError
-  | GoogleConnectionError;
