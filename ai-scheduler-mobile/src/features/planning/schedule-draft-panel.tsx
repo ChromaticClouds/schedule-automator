@@ -35,6 +35,14 @@ export function ScheduleDraftPanel() {
   const editBlock = useEditScheduleBlock(date);
   const reconnectGoogle = useMutation({
     mutationFn: signInWithGoogle,
+    onSuccess: (connected) => {
+      if (!connected) return;
+      approveDraft.reset();
+      editBlock.reset();
+      generateDraft.reset();
+      regenerateDraft.reset();
+      rejectDraft.reset();
+    },
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),

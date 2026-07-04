@@ -90,7 +90,8 @@ if (
 
 if (
   !queryProvider.includes('registerAuthCacheReset') ||
-  !queryProvider.includes("queryKey: ['planning']")
+  !queryProvider.includes("queryKey: ['planning']") ||
+  !queryProvider.includes('resetQueries')
 ) {
   fail('planning cache is not cleared across auth boundaries');
 }
@@ -98,9 +99,10 @@ if (
 if (
   !oauthFlow.includes('codeChallenge') ||
   !oauthFlow.includes('handoffCode') ||
-  !oauthFlow.includes('openAuthSessionAsync')
+  !oauthFlow.includes('openAuthSessionAsync') ||
+  !oauthFlow.includes('resetAuthCache: true')
 ) {
-  fail('OAuth flow is missing PKCE, handoff, or browser session handling');
+  fail('OAuth flow is missing PKCE, handoff, browser session, or cache reset handling');
 }
 
 const breakdownValidation = spawnSync(
