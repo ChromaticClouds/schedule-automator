@@ -1,8 +1,11 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ENV } from '@/config/env';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 const sections = [
@@ -21,6 +24,8 @@ const sections = [
 ];
 
 export default function ExploreScreen() {
+  const showDevTools = __DEV__ || ENV.ENABLE_DEV_TOOLS;
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -43,6 +48,19 @@ export default function ExploreScreen() {
               </ThemedText>
             </ThemedView>
           ))}
+
+          {showDevTools && (
+            <Link href={'/planning-preview' as Href} asChild>
+              <Pressable>
+                <ThemedView type="backgroundElement" style={styles.section}>
+                  <ThemedText type="smallBold">Planning state preview</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    Open fixture-backed planning states for manual QA.
+                  </ThemedText>
+                </ThemedView>
+              </Pressable>
+            </Link>
+          )}
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
