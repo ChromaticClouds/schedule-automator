@@ -31,12 +31,11 @@ const fail = (message: string, statusCode: number, code: string) => {
 };
 
 const syncBlocks = async (
-  draft: Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>,
+  draft: NonNullable<Awaited<ReturnType<typeof ScheduleDraftModel.findOne>>>,
   calendarId: string,
   writer: CalendarEventWriter,
 ) => {
-  let wrote = false;
-  for (const block of draft?.blocks ?? []) {
+  for (const block of draft.blocks) {
     if (block.source !== 'ai' || block.calendarEventId) continue;
     if (!['task', 'break'].includes(block.type)) continue;
     const { eventId } = await writer.createEvent(calendarId, {
@@ -46,10 +45,8 @@ const syncBlocks = async (
     });
     block.calendarEventId = eventId;
     block.status = 'synced';
-    wrote = true;
-    await draft?.save();
+    await draft.save();
   }
-  return wrote;
 };
 
 const validateCurrentContext = async (
@@ -107,7 +104,7 @@ export const approveScheduleDraft = async (
   writer?: CalendarEventWriter,
 ) => {
   const now = new Date();
-  const draft = await ScheduleDraftModel.findOneAndUpdate(
+  let draft = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, status: 'draft', userId },
     {
       $set: {
@@ -125,7 +122,10 @@ export const approveScheduleDraft = async (
     const current = await ScheduleDraftModel.findOne({ _id: draftId, userId });
     if (!current) return fail('Schedule draft not found', 404, 'DRAFT_NOT_FOUND');
     if (current.status === 'synced') return { draft: current, replayed: true };
-    return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
+    if (current.status !== 'approved') {
+      return fail('Schedule draft cannot be approved', 409, 'INVALID_DRAFT_STATE');
+    }
+    draft = current;
   }
 
   await validateCurrentContext(draft);
