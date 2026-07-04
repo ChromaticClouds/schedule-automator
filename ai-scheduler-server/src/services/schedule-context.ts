@@ -91,5 +91,6 @@ export const buildScheduleContext = async (
       importance: task.importance,
       title: task.title,
     })),
+    timezone: timeZone,
   };
 };

@@ -9,6 +9,7 @@ export type ScheduleContext = {
     importance: number;
     title: string;
   }[];
+  timezone: string;
 };
 
 export type ScheduleDraftGenerator = {

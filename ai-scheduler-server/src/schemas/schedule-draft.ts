@@ -13,6 +13,7 @@ const isoDate = z
 const objectId = z.string().refine((value) => Types.ObjectId.isValid(value), {
   message: 'Invalid ObjectId',
 });
+const timeOnly = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
 export const scheduleDraftRequestSchema = z.object({
   date: isoDate,
@@ -21,6 +22,20 @@ export const scheduleDraftRequestSchema = z.object({
 export const scheduleDraftQuerySchema = z.object({
   date: isoDate.optional(),
 });
+
+export const scheduleBlockEditParamsSchema = z.object({
+  blockId: objectId,
+  draftId: objectId,
+});
+
+export const scheduleBlockEditSchema = z
+  .object({
+    endTime: timeOnly,
+    expectedUpdatedAt: z.string().datetime(),
+    startTime: timeOnly,
+    title: boundedText(160),
+  })
+  .strict();
 
 export const scheduleBlockOutputSchema = z
   .object({
@@ -49,4 +64,5 @@ export const scheduleIdempotencyKeySchema = z
   .max(128);
 
 export type ScheduleBlockOutput = z.infer<typeof scheduleBlockOutputSchema>;
+export type ScheduleBlockEdit = z.infer<typeof scheduleBlockEditSchema>;
 export type ScheduleDraftOutput = z.infer<typeof scheduleDraftOutputSchema>;
