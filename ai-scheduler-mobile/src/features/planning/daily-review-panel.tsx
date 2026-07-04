@@ -19,13 +19,20 @@ export function DailyReviewPanel() {
   useEffect(() => {
     const review = query.data?.review;
     if (!review) return;
-    setStates({
-      ...Object.fromEntries(
-        review.completedTaskIds.map((id) => [id, 'completed']),
-      ),
-      ...Object.fromEntries(review.missedTaskIds.map((id) => [id, 'missed'])),
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      setStates({
+        ...Object.fromEntries(
+          review.completedTaskIds.map((id) => [id, 'completed']),
+        ),
+        ...Object.fromEntries(review.missedTaskIds.map((id) => [id, 'missed'])),
+      });
+      setNotes(review.notes ?? '');
     });
-    setNotes(review.notes ?? '');
+    return () => {
+      active = false;
+    };
   }, [query.data?.review]);
 
   const select = (taskId: string, state: TaskState) =>

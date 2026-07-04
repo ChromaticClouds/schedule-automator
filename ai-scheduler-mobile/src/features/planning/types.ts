@@ -29,13 +29,13 @@ export type TaskSummary = {
   byStatus: Record<string, TaskSummaryBucket>;
   range: { from?: string; to?: string };
   statuses: TaskSummaryStatus[];
-  tasks: Array<{
+  tasks: {
     _id: string;
     deadline?: string;
     estimatedMinutes: number;
     status: TaskSummaryStatus;
     title: string;
-  }>;
+  }[];
   totals: TaskSummaryBucket;
 };
 
