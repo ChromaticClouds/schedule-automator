@@ -1,6 +1,6 @@
 {
   "name": "ai-scheduler-mobile",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.1",
@@ -36,13 +36,21 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@storybook/addon-ondevice-actions": "10.4.7",
+    "@storybook/addon-ondevice-backgrounds": "10.4.7",
+    "@storybook/addon-ondevice-controls": "10.4.7",
+    "@storybook/react-native": "10.4.7",
     "@types/react": "~19.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "eslint-config-expo": "~57.0.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
+    "storybook": "cross-env STORYBOOK_ENABLED=true expo start",
+    "storybook:ios": "cross-env STORYBOOK_ENABLED=true expo start --ios",
+    "storybook:android": "cross-env STORYBOOK_ENABLED=true expo start --android",
     "typecheck": "tsc --noEmit",
     "validate": "node ./scripts/validate-mobile.mjs",
     "reset-project": "node ./scripts/reset-project.js",
