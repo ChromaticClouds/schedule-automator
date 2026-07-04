@@ -51,10 +51,18 @@ export function DailyReviewPanel() {
     <ThemedView type="backgroundElement" style={styles.panel}>
       <ThemedText type="smallBold">End-of-day review</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
-      {query.isLoading && <ThemedText type="small">Loading tasks...</ThemedText>}
-      {query.error && <ThemedText type="small">Failed: {query.error.message}</ThemedText>}
+      {query.isLoading && (
+        <ThemedText type="small">Loading today&apos;s scheduled tasks...</ThemedText>
+      )}
+      {query.error && (
+        <ThemedText type="small">
+          Daily review could not be loaded. Try again after refreshing tasks.
+        </ThemedText>
+      )}
       {query.data?.tasks.length === 0 && (
-        <ThemedText type="small">No scheduled tasks to review.</ThemedText>
+        <ThemedText type="small">
+          No scheduled tasks need review yet. Complete a schedule draft first.
+        </ThemedText>
       )}
       {query.data?.tasks.map((task) => (
         <ReviewTask
@@ -80,8 +88,14 @@ export function DailyReviewPanel() {
           {save.isPending ? 'Saving...' : 'Save review'}
         </ThemedText>
       </Pressable>
-      {save.error && <ThemedText type="small">Failed: {save.error.message}</ThemedText>}
-      {save.isSuccess && <ThemedText type="small">Review saved.</ThemedText>}
+      {save.error && (
+        <ThemedText type="small">
+          Review could not be saved. Try again before running a weekly replan.
+        </ThemedText>
+      )}
+      {save.isSuccess && (
+        <ThemedText type="small">Review saved. Missed tasks can now be replanned.</ThemedText>
+      )}
     </ThemedView>
   );
 }

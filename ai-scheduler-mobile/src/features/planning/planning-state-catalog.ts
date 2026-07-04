@@ -1,10 +1,15 @@
 import { scheduleSettingsFixtures } from '@/features/settings/schedule-settings-fixtures';
 import { goalBreakdownFixtures } from './goal-breakdown-fixtures';
+import {
+  planningSectionEmptyMessages,
+  planningSectionErrorMessages,
+} from './planning-empty-state';
 import { scheduleDraftPanelFixtures } from './schedule-draft-fixtures';
 import { weeklyRescheduleFixtures } from './weekly-reschedule-fixtures';
 
 type CatalogGroup =
   | 'goalBreakdown'
+  | 'planningSections'
   | 'scheduleDraft'
   | 'scheduleSettings'
   | 'weeklyReschedule';
@@ -33,6 +38,12 @@ export const planningStateCatalog = {
     entry('goalBreakdown', 'success', 'Generated tasks are ready.', goalBreakdownFixtures.success),
     entry('goalBreakdown', 'replay', 'Idempotent replay result.', goalBreakdownFixtures.replay),
     entry('goalBreakdown', 'providerError', 'AI provider failure copy.', goalBreakdownFixtures.providerError),
+  ],
+  planningSections: [
+    entry('planningSections', 'goalsEmpty', 'Goals empty state copy.', planningSectionEmptyMessages.Goals),
+    entry('planningSections', 'tasksEmpty', 'Tasks empty state copy.', planningSectionEmptyMessages.Tasks),
+    entry('planningSections', 'protectedTimeEmpty', 'Protected time empty state copy.', planningSectionEmptyMessages['Protected time']),
+    entry('planningSections', 'tasksError', 'Tasks error state copy.', planningSectionErrorMessages.Tasks),
   ],
   scheduleDraft: [
     entry('scheduleDraft', 'empty', 'No draft exists yet.', scheduleDraftPanelFixtures.empty),

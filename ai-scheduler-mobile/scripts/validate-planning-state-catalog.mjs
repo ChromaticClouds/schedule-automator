@@ -10,12 +10,19 @@ const catalogSource = readFileSync(
 
 const requiredGroups = [
   'goalBreakdown',
+  'planningSections',
   'scheduleDraft',
   'scheduleSettings',
   'weeklyReschedule',
 ];
 const requiredStates = {
   goalBreakdown: ['success', 'replay', 'providerError'],
+  planningSections: [
+    'goalsEmpty',
+    'tasksEmpty',
+    'protectedTimeEmpty',
+    'tasksError',
+  ],
   scheduleDraft: [
     'empty',
     'draft',
@@ -46,6 +53,8 @@ for (const group of requiredGroups) {
 assert.match(catalogSource, /PlanningStateCatalogEntry/);
 assert.match(catalogSource, /description: string/);
 assert.match(catalogSource, /props: TProps/);
+assert.match(catalogSource, /planningSectionEmptyMessages/);
+assert.match(catalogSource, /planningSectionErrorMessages/);
 assert.equal(catalogSource.includes('storybook'), false);
 
 console.log('planning state catalog validation passed');

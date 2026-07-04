@@ -19,9 +19,13 @@ export function TaskSummaryPanel() {
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
       <ThemedText type="subtitle">Task summary</ThemedText>
-      {query.isLoading && <ThemedText type="small">Loading tasks...</ThemedText>}
+      {query.isLoading && (
+        <ThemedText type="small">Loading task summary...</ThemedText>
+      )}
       {query.error && (
-        <ThemedText type="small">Failed to load task summary.</ThemedText>
+        <ThemedText type="small">
+          Task summary could not be loaded. Try again after refreshing tasks.
+        </ThemedText>
       )}
       {summary && (
         <>
@@ -42,7 +46,9 @@ export function TaskSummaryPanel() {
             ))}
           </ThemedView>
           {summary.tasks.length === 0 && (
-            <ThemedText type="small">No matching tasks yet.</ThemedText>
+            <ThemedText type="small">
+              No tasks yet. Add a task or break down a goal to populate this summary.
+            </ThemedText>
           )}
         </>
       )}
