@@ -68,6 +68,13 @@ export type ScheduleBlock = {
   reason?: string;
 };
 
+export type ScheduleBlockEditInput = {
+  endTime: string;
+  expectedUpdatedAt: string;
+  startTime: string;
+  title: string;
+};
+
 export type ScheduleDraft = {
   _id: string;
   userId: string;
@@ -77,6 +84,7 @@ export type ScheduleDraft = {
   approvedAt?: string;
   syncedAt?: string;
   summary?: string;
+  updatedAt: string;
   assumptions: string[];
   warnings: string[];
   blocks: ScheduleBlock[];

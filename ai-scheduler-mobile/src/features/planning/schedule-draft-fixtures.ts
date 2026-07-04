@@ -30,6 +30,7 @@ const baseDraft = {
   date: baseDate,
   generatedAt: '2026-07-04T00:00:00.000Z',
   summary: 'One focused task block with a recovery break.',
+  updatedAt: '2026-07-04T00:00:00.000Z',
   userId: 'user-1',
   warnings: [],
 } satisfies Omit<ScheduleDraft, 'status'>;

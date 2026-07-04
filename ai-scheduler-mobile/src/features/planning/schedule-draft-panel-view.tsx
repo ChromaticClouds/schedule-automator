@@ -3,7 +3,8 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import type { ScheduleBlock, ScheduleDraft } from './types';
+import { ScheduleDraftBlocks } from './schedule-draft-blocks';
+import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
 
 export type ScheduleDraftPanelViewProps = {
   busy: boolean;
@@ -13,8 +14,14 @@ export type ScheduleDraftPanelViewProps = {
   isLoading: boolean;
   noDraft: boolean;
   onApprove: (id: string) => void;
+  onEdit: (
+    draftId: string,
+    blockId: string,
+    body: ScheduleBlockEditInput,
+  ) => void;
   onGenerate: () => void;
   onReject: (id: string) => void;
+  timezone?: string;
 };
 
 export function ScheduleDraftPanelView({
@@ -25,8 +32,10 @@ export function ScheduleDraftPanelView({
   isLoading,
   noDraft,
   onApprove,
+  onEdit,
   onGenerate,
   onReject,
+  timezone,
 }: ScheduleDraftPanelViewProps) {
   const canGenerate =
     noDraft || draft?.status === 'rejected' || draft?.status === 'expired';
@@ -45,7 +54,14 @@ export function ScheduleDraftPanelView({
           onPress={onGenerate}
         />
       )}
-      {draft && <DraftSummary draft={draft} />}
+      {draft && (
+        <DraftSummary
+          busy={busy}
+          draft={draft}
+          onEdit={onEdit}
+          timezone={timezone}
+        />
+      )}
       {canReview && (
         <ThemedView style={styles.actions}>
           <ActionButton
@@ -64,7 +80,17 @@ export function ScheduleDraftPanelView({
   );
 }
 
-function DraftSummary({ draft }: { draft: ScheduleDraft }) {
+function DraftSummary({
+  busy,
+  draft,
+  onEdit,
+  timezone,
+}: {
+  busy: boolean;
+  draft: ScheduleDraft;
+  onEdit: ScheduleDraftPanelViewProps['onEdit'];
+  timezone?: string;
+}) {
   return (
     <ThemedView style={styles.blockList}>
       <ThemedText type="small" themeColor="textSecondary">
@@ -73,19 +99,12 @@ function DraftSummary({ draft }: { draft: ScheduleDraft }) {
       {draft.warnings.map((warning) => (
         <ThemedText key={warning} type="small">Warning: {warning}</ThemedText>
       ))}
-      {draft.blocks.map((block) => <DraftBlock key={block._id} block={block} />)}
-    </ThemedView>
-  );
-}
-
-function DraftBlock({ block }: { block: ScheduleBlock }) {
-  return (
-    <ThemedView style={styles.block}>
-      <ThemedText type="smallBold">{block.title}</ThemedText>
-      <ThemedText type="small" themeColor="textSecondary">
-        {formatTime(block.start)}-{formatTime(block.end)} - {block.type}
-      </ThemedText>
-      {block.reason && <ThemedText type="small">{block.reason}</ThemedText>}
+      <ScheduleDraftBlocks
+        busy={busy}
+        draft={draft}
+        onEdit={onEdit}
+        timezone={timezone}
+      />
     </ThemedView>
   );
 }
@@ -100,12 +119,8 @@ function ActionButton({ disabled, label, onPress }: ActionButtonProps) {
   );
 }
 
-const formatTime = (value: string) =>
-  new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
 const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Spacing.two },
-  block: { backgroundColor: 'transparent', gap: Spacing.one },
   blockList: { backgroundColor: 'transparent', gap: Spacing.two },
   button: { alignSelf: 'flex-start', backgroundColor: '#DCEBFF', borderRadius: 8, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
   section: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
