@@ -59,6 +59,42 @@ export const canRegenerateScheduleDraft = (draft: ScheduleDraft | undefined) =>
   draft?.status === 'rejected' ||
   draft?.status === 'expired';
 
+export const canRetryScheduleDraftSync = (draft: ScheduleDraft | undefined) =>
+  draft?.status === 'approved';
+
+export type ScheduleDraftRecoveryAction = {
+  kind: 'generate' | 'reconnect-google' | 'regenerate' | 'retry-sync';
+  label: string;
+  message?: string;
+};
+
+export const scheduleDraftRecoveryAction = (
+  draft: ScheduleDraft | undefined,
+  noDraft: boolean,
+  errorCode?: string,
+): ScheduleDraftRecoveryAction | undefined => {
+  if (errorCode === 'REQUEST_IN_PROGRESS') return undefined;
+  if (errorCode === 'GOOGLE_RECONNECT_REQUIRED') {
+    return {
+      kind: 'reconnect-google',
+      label: 'Reconnect Google',
+      message: 'Reconnect Google Calendar before syncing this draft.',
+    };
+  }
+  if (errorCode === 'GOOGLE_CALENDAR_SYNC_FAILED' && canRetryScheduleDraftSync(draft)) {
+    return { kind: 'retry-sync', label: 'Retry sync' };
+  }
+  if (errorCode === 'STALE_DRAFT_CONTEXT') {
+    return draft
+      ? { kind: 'regenerate', label: 'Regenerate fresh draft' }
+      : { kind: 'generate', label: 'Generate fresh draft' };
+  }
+  if (canRetryScheduleDraftSync(draft)) return { kind: 'retry-sync', label: 'Retry sync' };
+  if (canRegenerateScheduleDraft(draft)) return { kind: 'regenerate', label: 'Regenerate draft' };
+  if (noDraft) return { kind: 'generate', label: 'Generate draft' };
+  return undefined;
+};
+
 export const scheduleDraftStatusMessage = (draft: ScheduleDraft) => {
   if (draft.status === 'approved') return 'Approved. Google Calendar sync is pending.';
   if (draft.status === 'synced') return 'Google Calendar synced.';
@@ -69,5 +105,6 @@ export const scheduleDraftCalendarEventSummary = (draft: ScheduleDraft) => {
   const ids = draft.blocks
     .map((block) => block.calendarEventId)
     .filter((id): id is string => Boolean(id));
-  return ids.length ? `Calendar events: ${ids.join(', ')}` : undefined;
+  if (ids.length === 1) return '1 calendar event synced.';
+  return ids.length ? `${ids.length} calendar events synced.` : undefined;
 };

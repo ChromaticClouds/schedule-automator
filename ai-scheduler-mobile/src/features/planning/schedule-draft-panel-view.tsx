@@ -4,9 +4,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { ScheduleDraftBlocks } from './schedule-draft-blocks';
+import { ScheduleDraftRecoveryActionButton } from './schedule-draft-recovery-action';
 import {
-  canRegenerateScheduleDraft,
   canReviewScheduleDraft,
+  scheduleDraftRecoveryAction,
   scheduleDraftCalendarEventSummary,
   scheduleDraftStatusMessage,
 } from './schedule-draft-state';
@@ -16,16 +17,14 @@ export type ScheduleDraftPanelViewProps = {
   busy: boolean;
   date: string;
   draft?: ScheduleDraft;
+  errorCode?: string;
   errorMessage?: string;
   isLoading: boolean;
   noDraft: boolean;
   onApprove: (id: string) => void;
-  onEdit: (
-    draftId: string,
-    blockId: string,
-    body: ScheduleBlockEditInput,
-  ) => void;
+  onEdit: (draftId: string, blockId: string, body: ScheduleBlockEditInput) => void;
   onGenerate: () => void;
+  onReconnect: () => void;
   onRegenerate: (id: string) => void;
   onReject: (id: string) => void;
   timezone?: string;
@@ -35,17 +34,19 @@ export function ScheduleDraftPanelView({
   busy,
   date,
   draft,
+  errorCode,
   errorMessage,
   isLoading,
   noDraft,
   onApprove,
   onEdit,
   onGenerate,
+  onReconnect,
   onRegenerate,
   onReject,
   timezone,
 }: ScheduleDraftPanelViewProps) {
-  const regenerateDraft = canRegenerateScheduleDraft(draft) ? draft : undefined;
+  const recoveryAction = scheduleDraftRecoveryAction(draft, noDraft, errorCode);
   const reviewDraft = canReviewScheduleDraft(draft) ? draft : undefined;
 
   return (
@@ -54,18 +55,15 @@ export function ScheduleDraftPanelView({
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
       {isLoading && <ThemedText type="small">Loading draft...</ThemedText>}
       {errorMessage && <ThemedText type="small">Failed: {errorMessage}</ThemedText>}
-      {noDraft && (
-        <ActionButton
-          disabled={busy}
-          label="Generate draft"
-          onPress={onGenerate}
-        />
-      )}
-      {regenerateDraft && (
-        <ActionButton
-          disabled={busy}
-          label="Regenerate draft"
-          onPress={() => onRegenerate(regenerateDraft._id)}
+      {recoveryAction && (
+        <ScheduleDraftRecoveryActionButton
+          action={recoveryAction}
+          busy={busy}
+          draft={draft}
+          onApprove={onApprove}
+          onGenerate={onGenerate}
+          onReconnect={onReconnect}
+          onRegenerate={onRegenerate}
         />
       )}
       {draft && (
