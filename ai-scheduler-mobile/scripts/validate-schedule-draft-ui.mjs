@@ -71,6 +71,10 @@ assert.equal(
 );
 assert.equal(state.canReviewScheduleDraft(scheduleDraftFixtures.draft), true);
 assert.equal(state.canReviewScheduleDraft(scheduleDraftFixtures.synced), false);
+assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.draft), true);
+assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.rejected), true);
+assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.expired), true);
+assert.equal(state.canRegenerateScheduleDraft(scheduleDraftFixtures.synced), false);
 
 const requiredFixtureNames = [
   'loading',
@@ -81,6 +85,7 @@ const requiredFixtureNames = [
   'expired',
   'synced',
   'requestInProgressError',
+  'regenerateInvalidStateError',
   'staleContextError',
   'staleVersionError',
   'editValidationError',
@@ -90,6 +95,7 @@ const requiredFixtureNames = [
 for (const name of requiredFixtureNames) {
   assert.ok(scheduleDraftPanelFixtures[name], `${name} fixture is missing`);
   assert.equal(typeof scheduleDraftPanelFixtures[name].onGenerate, 'function');
+  assert.equal(typeof scheduleDraftPanelFixtures[name].onRegenerate, 'function');
 }
 
 assert.equal(scheduleDraftPanelFixtures.loading.isLoading, true);
@@ -102,6 +108,10 @@ assert.equal(scheduleDraftPanelFixtures.synced.draft.status, 'synced');
 assert.match(
   scheduleDraftPanelFixtures.editValidationError.errorMessage,
   /conflicts/,
+);
+assert.match(
+  scheduleDraftPanelFixtures.regenerateInvalidStateError.errorMessage,
+  /state changed/,
 );
 
 for (const block of scheduleDraftFixtures.draft.blocks) {

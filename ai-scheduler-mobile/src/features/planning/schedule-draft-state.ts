@@ -51,3 +51,8 @@ export const canGenerateScheduleDraft = (
 
 export const canReviewScheduleDraft = (draft: ScheduleDraft | undefined) =>
   draft?.status === 'draft';
+
+export const canRegenerateScheduleDraft = (draft: ScheduleDraft | undefined) =>
+  draft?.status === 'draft' ||
+  draft?.status === 'rejected' ||
+  draft?.status === 'expired';

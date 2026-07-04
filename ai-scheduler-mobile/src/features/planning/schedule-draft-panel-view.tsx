@@ -5,7 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { ScheduleDraftBlocks } from './schedule-draft-blocks';
 import {
-  canGenerateScheduleDraft,
+  canRegenerateScheduleDraft,
   canReviewScheduleDraft,
 } from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
@@ -24,6 +24,7 @@ export type ScheduleDraftPanelViewProps = {
     body: ScheduleBlockEditInput,
   ) => void;
   onGenerate: () => void;
+  onRegenerate: (id: string) => void;
   onReject: (id: string) => void;
   timezone?: string;
 };
@@ -38,10 +39,11 @@ export function ScheduleDraftPanelView({
   onApprove,
   onEdit,
   onGenerate,
+  onRegenerate,
   onReject,
   timezone,
 }: ScheduleDraftPanelViewProps) {
-  const canGenerate = canGenerateScheduleDraft(draft, noDraft);
+  const regenerateDraft = canRegenerateScheduleDraft(draft) ? draft : undefined;
   const reviewDraft = canReviewScheduleDraft(draft) ? draft : undefined;
 
   return (
@@ -50,11 +52,18 @@ export function ScheduleDraftPanelView({
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
       {isLoading && <ThemedText type="small">Loading draft...</ThemedText>}
       {errorMessage && <ThemedText type="small">Failed: {errorMessage}</ThemedText>}
-      {(noDraft || canGenerate) && (
+      {noDraft && (
         <ActionButton
           disabled={busy}
-          label={draft ? 'Generate fresh draft' : 'Generate draft'}
+          label="Generate draft"
           onPress={onGenerate}
+        />
+      )}
+      {regenerateDraft && (
+        <ActionButton
+          disabled={busy}
+          label="Regenerate draft"
+          onPress={() => onRegenerate(regenerateDraft._id)}
         />
       )}
       {draft && (

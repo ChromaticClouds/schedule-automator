@@ -74,6 +74,7 @@ const baseView = {
   onApprove: noop,
   onEdit: noop,
   onGenerate: noop,
+  onRegenerate: noop,
   onReject: noop,
   timezone: 'Asia/Seoul',
 } satisfies Omit<ScheduleDraftPanelViewProps, 'draft'>;
@@ -103,6 +104,9 @@ export const scheduleDraftPanelFixtures = {
   requestInProgressError: withDraft(undefined, {
     errorMessage: scheduleDraftFixtures.requestInProgressError,
     noDraft: true,
+  }),
+  regenerateInvalidStateError: withDraft(scheduleDraftFixtures.synced, {
+    errorMessage: 'Draft state changed. Refresh and try again.',
   }),
   staleContextError: withDraft(scheduleDraftFixtures.draft, {
     errorMessage: scheduleDraftFixtures.staleContextError,

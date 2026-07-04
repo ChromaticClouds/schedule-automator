@@ -17,6 +17,7 @@ import {
   scheduleDraftErrorMessage,
   scheduleDraftIsNotFoundError,
 } from './schedule-draft-state';
+import { useRegenerateScheduleDraft } from './schedule-regenerate-hooks';
 
 export function ScheduleDraftPanel() {
   const date = toScheduleDateKey();
@@ -25,18 +26,21 @@ export function ScheduleDraftPanel() {
   const generateDraft = useGenerateScheduleDraft(date);
   const approveDraft = useApproveScheduleDraft(date);
   const rejectDraft = useRejectScheduleDraft(date);
+  const regenerateDraft = useRegenerateScheduleDraft(date);
   const editBlock = useEditScheduleBlock(date);
   const errorMessage =
     scheduleDraftErrorMessage(draftQuery.error, true) ??
     scheduleDraftErrorMessage(generateDraft.error) ??
     scheduleDraftErrorMessage(approveDraft.error) ??
     scheduleDraftErrorMessage(rejectDraft.error) ??
+    scheduleDraftErrorMessage(regenerateDraft.error) ??
     scheduleDraftErrorMessage(editBlock.error);
   const props: ScheduleDraftPanelViewProps = {
     busy:
       generateDraft.isPending ||
       approveDraft.isPending ||
       rejectDraft.isPending ||
+      regenerateDraft.isPending ||
       editBlock.isPending,
     date,
     draft: draftQuery.data,
@@ -48,6 +52,11 @@ export function ScheduleDraftPanel() {
       editBlock.mutate({ blockId, body, draftId }),
     onGenerate: () =>
       generateDraft.mutate(`schedule-draft:${date}:${Crypto.randomUUID()}`),
+    onRegenerate: (draftId) =>
+      regenerateDraft.mutate({
+        draftId,
+        idempotencyKey: `schedule-regenerate:${draftId}:${Crypto.randomUUID()}`,
+      }),
     onReject: (id) => rejectDraft.mutate(id),
     timezone: preferences.data?.timezone,
   };

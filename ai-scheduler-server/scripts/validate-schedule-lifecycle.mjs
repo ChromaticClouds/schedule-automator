@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { scheduleDraftQuerySchema } from '../dist/schemas/schedule-draft.js';
-import { canRejectScheduleDraft } from '../dist/services/schedule-lifecycle.js';
+import {
+  canRegenerateScheduleDraft,
+  canRejectScheduleDraft,
+} from '../dist/services/schedule-lifecycle.js';
 
 assert.deepEqual(scheduleDraftQuerySchema.parse({}), {});
 assert.deepEqual(
@@ -15,5 +18,10 @@ assert.equal(canRejectScheduleDraft('draft'), true);
 assert.equal(canRejectScheduleDraft('rejected'), true);
 assert.equal(canRejectScheduleDraft('approved'), false);
 assert.equal(canRejectScheduleDraft('synced'), false);
+assert.equal(canRegenerateScheduleDraft('draft'), true);
+assert.equal(canRegenerateScheduleDraft('rejected'), true);
+assert.equal(canRegenerateScheduleDraft('expired'), true);
+assert.equal(canRegenerateScheduleDraft('approved'), false);
+assert.equal(canRegenerateScheduleDraft('synced'), false);
 
 console.log('schedule lifecycle validation passed');
