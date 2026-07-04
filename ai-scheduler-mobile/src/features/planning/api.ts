@@ -81,6 +81,15 @@ export const rejectScheduleDraft = (id: string) =>
     method: 'POST',
   });
 
+export const regenerateScheduleDraft = (
+  id: string,
+  idempotencyKey: string,
+) =>
+  apiRequest<ScheduleDraftResult>(`/schedule-drafts/${id}/regenerate`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+  });
+
 export const editScheduleBlock = (
   draftId: string,
   blockId: string,
