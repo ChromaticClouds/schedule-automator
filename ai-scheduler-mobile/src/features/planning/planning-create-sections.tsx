@@ -10,24 +10,25 @@ import {
   useTasks,
 } from './hooks';
 import { PlanningCreateRow } from './planning-create-row';
+import { ProtectedTimeCreateRow } from './protected-time-create-row';
 import {
   planningSectionEmptyMessages,
   planningSectionErrorMessages,
   type PlanningSectionTitle,
 } from './planning-empty-state';
 import { PlanningSection } from './planning-section';
-
 export function PlanningCreateSections() {
   const [goalTitle, setGoalTitle] = useState('');
   const [taskTitle, setTaskTitle] = useState('');
   const [protectedTitle, setProtectedTitle] = useState('');
+  const [protectedStart, setProtectedStart] = useState('12:00');
+  const [protectedEnd, setProtectedEnd] = useState('13:00');
   const goals = useGoals();
   const tasks = useTasks();
   const protectedTimes = useProtectedTimes();
   const createGoal = useCreateGoal();
   const createTask = useCreateTask();
   const createProtectedTime = useCreateProtectedTime();
-
   const submitGoal = () => {
     if (!goalTitle.trim()) return;
     createGoal.mutate(
@@ -35,7 +36,6 @@ export function PlanningCreateSections() {
       { onSuccess: () => setGoalTitle('') },
     );
   };
-
   const submitTask = () => {
     if (!taskTitle.trim()) return;
     createTask.mutate(
@@ -49,16 +49,15 @@ export function PlanningCreateSections() {
       { onSuccess: () => setTaskTitle('') },
     );
   };
-
   const submitProtected = () => {
     if (!protectedTitle.trim()) return;
     createProtectedTime.mutate(
       {
         category: 'custom',
         daysOfWeek: [1, 2, 3, 4, 5],
-        endTime: '23:00',
+        endTime: protectedEnd,
         protectionLevel: 'hard',
-        startTime: '22:00',
+        startTime: protectedStart,
         title: protectedTitle.trim(),
       },
       { onSuccess: () => setProtectedTitle('') },
@@ -102,18 +101,25 @@ export function PlanningCreateSections() {
         ))}
       </PlanningSection>
       <PlanningSection {...sectionState('보호 시간', protectedTimes)}>
-        <PlanningCreateRow
-          emptyMessage="보호 시간 이름을 먼저 입력하세요."
+        <ProtectedTimeCreateRow
+          endTime={protectedEnd}
           errorMessage={createProtectedTime.error ? '보호 시간을 저장하지 못했습니다. 다시 시도하세요.' : undefined}
-          guideText="예: 점심 식사 12:00-13:00, 운동 19:00-20:00"
           isPending={createProtectedTime.isPending}
-          onChange={(value) => {
+          onChangeEnd={(value) => {
+            createProtectedTime.reset();
+            setProtectedEnd(value);
+          }}
+          onChangeStart={(value) => {
+            createProtectedTime.reset();
+            setProtectedStart(value);
+          }}
+          onChangeTitle={(value) => {
             createProtectedTime.reset();
             setProtectedTitle(value);
           }}
           onSubmit={submitProtected}
-          placeholder="보호 시간을 입력하세요"
-          value={protectedTitle}
+          startTime={protectedStart}
+          title={protectedTitle}
         />
         {protectedTimes.data?.map((block) => (
           <Item key={block._id} text={`${block.title} ${block.startTime}-${block.endTime}`} />

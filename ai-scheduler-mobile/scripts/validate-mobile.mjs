@@ -116,6 +116,7 @@ const runValidation = (script, message) => {
 };
 
 runValidation('validate-goal-breakdown.mjs', 'goal breakdown state validation failed');
+runValidation('validate-navigation-ui.mjs', 'navigation UI validation failed');
 runValidation('validate-planning-create-flow.mjs', 'planning create flow validation failed');
 runValidation('validate-planning-state-catalog.mjs', 'planning state catalog validation failed');
 runValidation('validate-planning-state-preview.mjs', 'planning state preview validation failed');

@@ -11,7 +11,7 @@ export const validScheduleSettings: SchedulePreferencesForm = {
 };
 
 export const scheduleSettingsFixtures = {
-  errorMessage: 'Unable to save settings.',
+  errorMessage: '설정을 저장하지 못했습니다.',
   invalidMinutes: {
     ...validScheduleSettings,
     maxDailyWorkMinutes: '30',

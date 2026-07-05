@@ -10,29 +10,36 @@ export default function AppTabs() {
   return (
     <NativeTabs
       backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      iconColor={{
+        default: colors.textSecondary,
+        selected: colors.primary,
+      }}
+      indicatorColor={colors.backgroundSelected}
+      labelStyle={{
+        default: { color: colors.textSecondary, fontSize: 12 },
+        selected: { color: colors.text, fontSize: 12, fontWeight: '700' },
+      }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>홈</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
+          md={{ default: 'home', selected: 'home' }}
+          sf={{ default: 'house', selected: 'house.fill' }}
         />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="explore">
         <NativeTabs.Trigger.Label>탐색</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
+          md={{ default: 'explore', selected: 'explore' }}
+          sf={{ default: 'safari', selected: 'safari.fill' }}
         />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Label>설정</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
+          md={{ default: 'settings', selected: 'settings' }}
+          sf={{ default: 'gearshape', selected: 'gearshape.fill' }}
         />
       </NativeTabs.Trigger>
     </NativeTabs>

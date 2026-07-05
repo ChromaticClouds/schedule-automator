@@ -7,7 +7,7 @@ import {
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { useAuthStore } from '@/features/auth/session';
 import { DailyReviewPanel } from './daily-review-panel';
@@ -24,13 +24,12 @@ export function PlanningDashboard() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={BottomTabInset}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.keyboard}
     >
       <ScrollView
-        automaticallyAdjustKeyboardInsets
         contentContainerStyle={styles.content}
+        keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.header}>
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.six,
+    paddingBottom: Spacing.four,
     paddingTop: Spacing.three,
   },
   header: { gap: Spacing.one },

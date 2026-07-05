@@ -2,13 +2,13 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { PlanningDashboard } from '@/features/planning/planning-dashboard';
 
 export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
         <PlanningDashboard />
       </SafeAreaView>
     </ThemedView>
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: MaxContentWidth,
     paddingHorizontal: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
+    paddingBottom: Spacing.two,
   },
 });
