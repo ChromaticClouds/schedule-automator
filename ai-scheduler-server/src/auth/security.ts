@@ -12,6 +12,7 @@ const stateSchema = z.object({
   codeChallenge: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
   expiresAt: z.number().int().positive(),
   nonce: z.string().min(16),
+  returnTo: z.url().optional(),
 });
 
 const deriveKey = (secret: string) =>
@@ -23,6 +24,7 @@ const sign = (value: string, secret: string) =>
 export const createOAuthState = (
   codeChallenge: string,
   secret: string,
+  returnTo?: string,
   now = Date.now(),
 ) => {
   const payload = Buffer.from(
@@ -30,6 +32,7 @@ export const createOAuthState = (
       codeChallenge,
       expiresAt: now + 10 * 60 * 1000,
       nonce: randomBytes(18).toString('base64url'),
+      returnTo,
     }),
   ).toString('base64url');
 
