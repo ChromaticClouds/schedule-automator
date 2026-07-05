@@ -16,7 +16,7 @@ const blockSchema = {
   type: 'object',
 };
 
-const responseSchema = {
+const responseJsonSchema = {
   additionalProperties: false,
   properties: {
     assumptions: { items: { type: 'string' }, maxItems: 12, type: 'array' },
@@ -36,7 +36,7 @@ export const geminiScheduleGenerator: ScheduleDraftGenerator = {
       config: {
         maxOutputTokens: ENV.GEMINI_MAX_OUTPUT_TOKENS,
         responseMimeType: 'application/json',
-        responseSchema,
+        responseJsonSchema,
         temperature: ENV.GEMINI_TEMPERATURE,
       },
       contents: JSON.stringify({

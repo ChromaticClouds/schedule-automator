@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { ENV } from '@/config/env.js';
 import type { WeeklyRescheduleGenerator } from './weekly-reschedule-contract.js';
 
-const responseSchema = {
+const responseJsonSchema = {
   additionalProperties: false,
   properties: {
     overflowTaskIds: {
@@ -42,7 +42,7 @@ export const geminiWeeklyRescheduleGenerator: WeeklyRescheduleGenerator = {
       config: {
         maxOutputTokens: ENV.GEMINI_MAX_OUTPUT_TOKENS,
         responseMimeType: 'application/json',
-        responseSchema,
+        responseJsonSchema,
         temperature: ENV.GEMINI_TEMPERATURE,
       },
       contents: JSON.stringify({
