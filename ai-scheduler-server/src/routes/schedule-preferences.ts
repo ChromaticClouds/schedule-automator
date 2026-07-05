@@ -40,7 +40,7 @@ export const registerSchedulePreferenceRoutes = async (
     const user = await UserModel.findByIdAndUpdate(
       userId,
       { $set: input },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     ).select(selectPreferences);
     return user ? normalizePreferences(user) : notFound('User');
   });

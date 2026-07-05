@@ -42,7 +42,7 @@ export const rejectScheduleDraft = async (
   const rejected = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, userId, status: 'draft' },
     { $set: { status: 'rejected' } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   if (rejected) return { draft: rejected, replayed: false };
 

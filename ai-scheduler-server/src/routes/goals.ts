@@ -10,7 +10,9 @@ import { notFound, parseBody, parseParams, requireUserId } from './http.js';
 export const registerGoalRoutes = async (app: FastifyInstance) => {
   app.get('/goals', async (request) => {
     const userId = requireUserId(request);
-    return GoalModel.find({ userId }).sort({ createdAt: -1 });
+    return GoalModel.find({ status: { $ne: 'archived' }, userId }).sort({
+      createdAt: -1,
+    });
   });
 
   app.post('/goals', async (request, reply) => {
@@ -27,7 +29,7 @@ export const registerGoalRoutes = async (app: FastifyInstance) => {
     const goal = await GoalModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: body },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return goal ?? notFound('Goal');
@@ -39,7 +41,7 @@ export const registerGoalRoutes = async (app: FastifyInstance) => {
     const goal = await GoalModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: { status: 'archived' } },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return goal ?? notFound('Goal');

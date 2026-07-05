@@ -2,6 +2,10 @@ import { Types } from 'mongoose';
 import { AiRequestLogModel } from '@/models/index.js';
 import { weeklyRescheduleOutputSchema } from '@/schemas/weekly-reschedule.js';
 import { hashValue } from './breakdown-idempotency.js';
+import {
+  classifyGeminiError,
+  type ExternalApiErrorDetails,
+} from './external-api-error.js';
 import { geminiWeeklyRescheduleGenerator } from './gemini-weekly-reschedule.js';
 import type { WeeklyRescheduleGenerator } from './weekly-reschedule-contract.js';
 import { buildWeeklyRescheduleContext } from './weekly-reschedule-context.js';
@@ -14,14 +18,20 @@ export class WeeklyRescheduleError extends Error {
     message: string,
     public readonly statusCode: number,
     public readonly code: string,
+    public readonly details?: ExternalApiErrorDetails,
   ) {
     super(message);
     this.name = 'WeeklyRescheduleError';
   }
 }
 
-const fail = (message: string, statusCode: number, code: string): never => {
-  throw new WeeklyRescheduleError(message, statusCode, code);
+const fail = (
+  message: string,
+  statusCode: number,
+  code: string,
+  details?: ExternalApiErrorDetails,
+): never => {
+  throw new WeeklyRescheduleError(message, statusCode, code, details);
 };
 
 const markLog = (
@@ -57,9 +67,10 @@ export const rescheduleMissedTasks = async (
     rawOutput = context.tasks.length === 0
       ? { overflowTaskIds: [], placements: [], summary: 'No missed tasks', warnings: [] }
       : await generator.generate(context);
-  } catch {
+  } catch (error) {
+    const details = classifyGeminiError(error);
     await markLog(claim.log._id, 'api_error');
-    return fail('Schedule provider failed', 502, 'REPLAN_PROVIDER_ERROR');
+    return fail('Schedule provider failed', 502, details.code, details);
   }
   const parsed = weeklyRescheduleOutputSchema.safeParse(rawOutput);
   if (!parsed.success) {

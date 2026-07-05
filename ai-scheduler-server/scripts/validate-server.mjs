@@ -75,6 +75,7 @@ runNode('scripts/validate-auth.mjs');
 runNode('scripts/validate-calendar.mjs');
 runNode('scripts/validate-daily-schedule-worker.mjs');
 runNode('scripts/validate-daily-review.mjs');
+runNode('scripts/validate-external-api-errors.mjs');
 runNode('scripts/validate-schedule-draft.mjs');
 runNode('scripts/validate-schedule-edit.mjs');
 runNode('scripts/validate-schedule-lifecycle.mjs');

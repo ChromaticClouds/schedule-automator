@@ -10,18 +10,15 @@ const responseJsonSchema = {
         additionalProperties: false,
         properties: {
           checklist: {
-            items: { maxLength: 160, minLength: 1, type: 'string' },
+            items: { type: 'string' },
             maxItems: 12,
             minItems: 1,
             type: 'array',
           },
           estimatedMinutes: { maximum: 480, minimum: 5, type: 'integer' },
-          parentTaskId: {
-            pattern: '^[a-fA-F0-9]{24}$',
-            type: 'string',
-          },
-          priorityReason: { maxLength: 500, minLength: 1, type: 'string' },
-          title: { maxLength: 160, minLength: 1, type: 'string' },
+          parentTaskId: { type: 'string' },
+          priorityReason: { type: 'string' },
+          title: { type: 'string' },
         },
         required: [
           'title',

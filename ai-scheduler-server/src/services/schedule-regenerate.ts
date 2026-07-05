@@ -25,7 +25,7 @@ const retireDraft = async (userId: Types.ObjectId, draftId: Types.ObjectId) => {
   const retired = await ScheduleDraftModel.findOneAndUpdate(
     { _id: draftId, status: 'draft', userId },
     { $set: { status: 'rejected' } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   if (retired) return retired;
 

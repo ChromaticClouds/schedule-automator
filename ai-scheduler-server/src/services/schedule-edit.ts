@@ -86,7 +86,7 @@ export const editScheduleDraftBlock = async (
         'blocks.$.title': edit.title,
       },
     },
-    { new: true, runValidators: true },
+    { returnDocument: 'after', runValidators: true },
   );
   if (updated) return { draft: updated, replayed: false };
 

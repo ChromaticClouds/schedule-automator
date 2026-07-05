@@ -1,8 +1,5 @@
 import { Types } from 'mongoose';
-import {
-  AiRequestLogModel,
-  ScheduleDraftModel,
-} from '@/models/index.js';
+import { AiRequestLogModel, ScheduleDraftModel } from '@/models/index.js';
 import { scheduleDraftOutputSchema } from '@/schemas/schedule-draft.js';
 import { geminiScheduleGenerator } from './gemini-schedule.js';
 import type {
@@ -10,6 +7,11 @@ import type {
   ScheduleDraftGenerator,
 } from './schedule-contract.js';
 import { hashValue } from './breakdown-idempotency.js';
+import {
+  classifyGeminiError,
+  classifyGoogleCalendarError,
+  type ExternalApiErrorDetails,
+} from './external-api-error.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { claimDailySchedule } from './schedule-idempotency.js';
 import { validateScheduleDraft } from './schedule-validation.js';
@@ -19,14 +21,20 @@ export class ScheduleDraftError extends Error {
     message: string,
     public readonly statusCode: number,
     public readonly code: string,
+    public readonly details?: ExternalApiErrorDetails,
   ) {
     super(message);
     this.name = 'ScheduleDraftError';
   }
 }
 
-const fail = (message: string, statusCode: number, code: string) => {
-  throw new ScheduleDraftError(message, statusCode, code);
+const fail = (
+  message: string,
+  statusCode: number,
+  code: string,
+  details?: ExternalApiErrorDetails,
+) => {
+  throw new ScheduleDraftError(message, statusCode, code, details);
 };
 
 const markLog = (
@@ -61,7 +69,16 @@ export const generateDailyScheduleDraft = async (
   const existing = await findActiveDraft(userId, date);
   if (existing) return { draft: existing, replayed: true };
 
-  const context = await contextBuilder(userId, date);
+  let context: Awaited<ReturnType<ScheduleContextBuilder>>;
+  try {
+    context = await contextBuilder(userId, date);
+  } catch (error) {
+    const details = classifyGoogleCalendarError(error);
+    if (details) {
+      return fail('Google Calendar is unavailable', 502, details.code, details);
+    }
+    throw error;
+  }
   const payloadHash = hashValue(JSON.stringify(context));
   const idempotencyKeyHash = hashValue(`${userId}:${date}:${idempotencyKey}`);
   const claim = await claimDailySchedule(userId, idempotencyKeyHash, payloadHash);
@@ -75,9 +92,10 @@ export const generateDailyScheduleDraft = async (
   let rawOutput: unknown;
   try {
     rawOutput = await generator.generate(context);
-  } catch {
+  } catch (error) {
+    const details = classifyGeminiError(error);
     await markLog(claim.log._id, 'api_error');
-    return fail('Schedule provider failed', 502, 'SCHEDULE_PROVIDER_ERROR');
+    return fail('Schedule provider failed', 502, details.code, details);
   }
 
   const parsed = scheduleDraftOutputSchema.safeParse(rawOutput);

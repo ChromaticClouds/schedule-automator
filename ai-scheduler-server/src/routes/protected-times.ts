@@ -27,7 +27,7 @@ export const registerProtectedTimeRoutes = async (app: FastifyInstance) => {
     const protectedTime = await ProtectedTimeModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: body },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return protectedTime ?? notFound('Protected time');
