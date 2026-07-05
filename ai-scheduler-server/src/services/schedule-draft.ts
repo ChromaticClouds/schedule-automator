@@ -5,7 +5,10 @@ import {
 } from '@/models/index.js';
 import { scheduleDraftOutputSchema } from '@/schemas/schedule-draft.js';
 import { geminiScheduleGenerator } from './gemini-schedule.js';
-import type { ScheduleDraftGenerator } from './schedule-contract.js';
+import type {
+  ScheduleContextBuilder,
+  ScheduleDraftGenerator,
+} from './schedule-contract.js';
 import { hashValue } from './breakdown-idempotency.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { claimDailySchedule } from './schedule-idempotency.js';
@@ -53,11 +56,12 @@ export const generateDailyScheduleDraft = async (
   date: string,
   idempotencyKey: string,
   generator: ScheduleDraftGenerator = geminiScheduleGenerator,
+  contextBuilder: ScheduleContextBuilder = buildScheduleContext,
 ) => {
   const existing = await findActiveDraft(userId, date);
   if (existing) return { draft: existing, replayed: true };
 
-  const context = await buildScheduleContext(userId, date);
+  const context = await contextBuilder(userId, date);
   const payloadHash = hashValue(JSON.stringify(context));
   const idempotencyKeyHash = hashValue(`${userId}:${date}:${idempotencyKey}`);
   const claim = await claimDailySchedule(userId, idempotencyKeyHash, payloadHash);

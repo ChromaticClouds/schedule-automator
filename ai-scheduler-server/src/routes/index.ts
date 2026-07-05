@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
 import { registerCalendarRoutes } from './calendar.js';
 import { registerDailyReviewRoutes } from './daily-reviews.js';
 import { registerGoalRoutes } from './goals.js';
@@ -10,7 +11,10 @@ import { registerTaskRoutes } from './tasks.js';
 import { registerTaskBreakdownRoutes } from './task-breakdown.js';
 import { registerWeeklyRescheduleRoutes } from './weekly-reschedules.js';
 
-export const registerPlanningRoutes = async (app: FastifyInstance) => {
+export const registerPlanningRoutes = async (
+  app: FastifyInstance,
+  scheduleDraftDependencies: ScheduleDraftDependencies = {},
+) => {
   await registerGoogleAuthRoutes(app);
   await app.register(async (protectedApp) => {
     protectedApp.addHook('onRequest', async (request) => {
@@ -20,7 +24,7 @@ export const registerPlanningRoutes = async (app: FastifyInstance) => {
     await registerCalendarRoutes(protectedApp);
     await registerDailyReviewRoutes(protectedApp);
     await registerGoalRoutes(protectedApp);
-    await registerScheduleDraftRoutes(protectedApp);
+    await registerScheduleDraftRoutes(protectedApp, scheduleDraftDependencies);
     await registerSchedulePreferenceRoutes(protectedApp);
     await registerTaskBreakdownRoutes(protectedApp);
     await registerTaskRoutes(protectedApp);

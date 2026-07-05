@@ -16,6 +16,16 @@ export type ScheduleDraftGenerator = {
   generate(context: ScheduleContext): Promise<unknown>;
 };
 
+export type ScheduleContextBuilder = (
+  userId: import('mongoose').Types.ObjectId,
+  date: string,
+) => Promise<ScheduleContext>;
+
+export type ScheduleDraftDependencies = {
+  contextBuilder?: ScheduleContextBuilder;
+  generator?: ScheduleDraftGenerator;
+};
+
 export const createDeterministicScheduleGenerator = (
   output: unknown,
 ): ScheduleDraftGenerator => ({
