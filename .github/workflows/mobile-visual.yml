@@ -1,20 +1,31 @@
-name: Mobile visual smoke
+name: Mobile visual screenshots
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Capture artifacts, compare baselines, or generate baselines.
+        required: true
+        default: capture
+        type: choice
+        options:
+          - capture
+          - test
+          - update
 
 permissions:
   contents: read
 
 jobs:
-  capture:
-    name: Capture planning stories
+  visual:
+    name: Planning stories (${{ inputs.mode }})
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ai-scheduler-mobile
     env:
       CI: "true"
+      VISUAL_RUN_MODE: ${{ inputs.mode }}
 
     steps:
       - name: Checkout
@@ -36,16 +47,17 @@ jobs:
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Capture planning stories
-        run: pnpm visual:capture
+      - name: Run planning visual workflow
+        run: pnpm visual:ci
 
       - name: Upload visual artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: planning-storybook-screenshots
+          name: planning-storybook-${{ inputs.mode }}
           path: |
             ai-scheduler-mobile/test-results/visual
             ai-scheduler-mobile/playwright-report
+            ai-scheduler-mobile/tests/visual/__screenshots__
           if-no-files-found: warn
           retention-days: 7

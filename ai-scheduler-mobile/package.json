@@ -54,6 +54,7 @@
     "storybook:ios": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start --ios",
     "storybook:android": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start --android",
     "visual:capture": "cross-env VISUAL_MODE=capture playwright test",
+    "visual:ci": "node ./scripts/run-visual-screenshots.mjs",
     "visual:test": "playwright test",
     "visual:update": "playwright test --update-snapshots",
     "typecheck": "tsc --noEmit",
