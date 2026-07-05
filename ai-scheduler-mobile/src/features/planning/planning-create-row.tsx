@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton, PlanningTextInput } from './planning-controls';
 
 export type PlanningCreateRowProps = {
   emptyMessage: string;
@@ -46,22 +47,19 @@ export function PlanningCreateRow({
   return (
     <ThemedView style={styles.wrapper}>
       <ThemedView style={styles.row}>
-        <TextInput
+        <PlanningTextInput
           editable={!isPending}
           onChangeText={handleChange}
           placeholder={placeholder}
           style={styles.input}
           value={value}
         />
-        <Pressable
+        <PlanningButton
           disabled={isPending}
+          label={isPending ? 'Saving...' : 'Add'}
           onPress={handleSubmit}
-          style={[styles.button, isPending && styles.disabledButton]}
-        >
-          <ThemedText type="smallBold">
-            {isPending ? 'Saving...' : 'Add'}
-          </ThemedText>
-        </Pressable>
+          style={styles.button}
+        />
       </ThemedView>
       {shouldShowEmptyMessage && (
         <ThemedText type="small" themeColor="textSecondary">
@@ -75,18 +73,10 @@ export function PlanningCreateRow({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#DCEBFF',
-    borderRadius: 8,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
+    minHeight: 56,
   },
-  disabledButton: { opacity: 0.6 },
   input: {
-    borderColor: '#9AA0A6',
-    borderRadius: 8,
-    borderWidth: 1,
     flex: 1,
-    padding: Spacing.two,
   },
   row: { backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
   wrapper: { backgroundColor: 'transparent', gap: Spacing.one },
