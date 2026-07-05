@@ -9,14 +9,14 @@ const tasks = [
     estimatedMinutes: 45,
     postponedCount: 0,
     status: 'scheduled',
-    title: 'Review schedule draft output',
+    title: '일정 초안 결과 검토',
   },
   {
     _id: 'task-review-2',
     estimatedMinutes: 30,
     postponedCount: 1,
     status: 'missed',
-    title: 'Refine missed-task plan',
+    title: '미룬 작업 계획 다듬기',
   },
 ] satisfies Fixture['tasks'];
 

@@ -59,10 +59,10 @@ export const planningStateCatalog = {
     entry('planningCreate', 'error', 'Create row mutation error.', planningCreateFixtures.error),
   ],
   planningSections: [
-    entry('planningSections', 'goalsEmpty', 'Goals empty state copy.', planningSectionEmptyMessages.Goals),
-    entry('planningSections', 'tasksEmpty', 'Tasks empty state copy.', planningSectionEmptyMessages.Tasks),
-    entry('planningSections', 'protectedTimeEmpty', 'Protected time empty state copy.', planningSectionEmptyMessages['Protected time']),
-    entry('planningSections', 'tasksError', 'Tasks error state copy.', planningSectionErrorMessages.Tasks),
+    entry('planningSections', 'goalsEmpty', 'Goals empty state copy.', planningSectionEmptyMessages.목표),
+    entry('planningSections', 'tasksEmpty', 'Tasks empty state copy.', planningSectionEmptyMessages.작업),
+    entry('planningSections', 'protectedTimeEmpty', 'Protected time empty state copy.', planningSectionEmptyMessages['보호 시간']),
+    entry('planningSections', 'tasksError', 'Tasks error state copy.', planningSectionErrorMessages.작업),
   ],
   scheduleDraft: [
     entry('scheduleDraft', 'empty', 'No draft exists yet.', scheduleDraftPanelFixtures.empty),

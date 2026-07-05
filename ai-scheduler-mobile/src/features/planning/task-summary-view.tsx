@@ -6,11 +6,11 @@ import { Spacing } from '@/constants/theme';
 import type { TaskSummary } from './types';
 
 const labels: Record<string, string> = {
-  done: 'Done',
-  missed: 'Missed',
-  overflow: 'Overflow',
-  scheduled: 'Scheduled',
-  todo: 'Todo',
+  done: '완료',
+  missed: '미룸',
+  overflow: '보류',
+  scheduled: '예정',
+  todo: '할 일',
 };
 
 export type TaskSummaryViewProps = {
@@ -26,13 +26,13 @@ export function TaskSummaryView({
 }: TaskSummaryViewProps) {
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
-      <ThemedText type="subtitle">Task summary</ThemedText>
-      {isLoading && <ThemedText type="small">Loading task summary...</ThemedText>}
+      <ThemedText type="subtitle">작업 요약</ThemedText>
+      {isLoading && <ThemedText type="small">작업 요약을 불러오는 중...</ThemedText>}
       {errorMessage && <ThemedText type="small">{errorMessage}</ThemedText>}
       {summary && (
         <>
           <ThemedText type="small" themeColor="textSecondary">
-            {summary.totals.count} tasks · {summary.totals.estimatedMinutes}m
+            작업 {summary.totals.count}개 / {summary.totals.estimatedMinutes}분
           </ThemedText>
           <ThemedView style={styles.grid}>
             {summary.statuses.map((status) => (
@@ -41,15 +41,15 @@ export function TaskSummaryView({
                   {labels[status] ?? status}
                 </ThemedText>
                 <ThemedText type="small">
-                  {summary.byStatus[status]?.count ?? 0} ·{' '}
-                  {summary.byStatus[status]?.estimatedMinutes ?? 0}m
+                  {summary.byStatus[status]?.count ?? 0}개 /{' '}
+                  {summary.byStatus[status]?.estimatedMinutes ?? 0}분
                 </ThemedText>
               </ThemedView>
             ))}
           </ThemedView>
           {summary.tasks.length === 0 && (
             <ThemedText type="small">
-              No tasks yet. Add a task or break down a goal to populate this summary.
+              아직 작업이 없습니다. 작업을 추가하거나 목표를 AI로 분해하세요.
             </ThemedText>
           )}
         </>

@@ -39,12 +39,12 @@ export function DailyReviewView({
 }: DailyReviewViewProps) {
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
-      <ThemedText type="smallBold">End-of-day review</ThemedText>
+      <ThemedText type="smallBold">하루 마감 리뷰</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
-      {isLoading && <ThemedText type="small">Loading today&apos;s scheduled tasks...</ThemedText>}
+      {isLoading && <ThemedText type="small">오늘 예정된 작업을 불러오는 중...</ThemedText>}
       {errorMessage && <ThemedText type="small">{errorMessage}</ThemedText>}
       {tasks?.length === 0 && (
-        <ThemedText type="small">No scheduled tasks need review yet. Complete a schedule draft first.</ThemedText>
+        <ThemedText type="small">아직 리뷰할 예정 작업이 없습니다. 먼저 일정 초안을 완료하세요.</ThemedText>
       )}
       {tasks?.map((task) => (
         <ReviewTask
@@ -57,19 +57,19 @@ export function DailyReviewView({
       <PlanningTextInput
         multiline
         onChangeText={onNotesChange}
-        placeholder="Optional notes"
+        placeholder="선택 메모: 미룬 이유나 내일 반영할 내용을 적어주세요"
         style={styles.notes}
         value={notes}
       />
       <PlanningButton
         disabled={saveIsPending}
-        label={saveIsPending ? 'Saving...' : 'Save review'}
+        label={saveIsPending ? '저장 중...' : '리뷰 저장'}
         onPress={onSave}
         style={styles.save}
       />
       {saveErrorMessage && <ThemedText type="small">{saveErrorMessage}</ThemedText>}
       {saveIsSuccess && (
-        <ThemedText type="small">Review saved. Missed tasks can now be replanned.</ThemedText>
+        <ThemedText type="small">리뷰가 저장되었습니다. 미룬 작업을 다시 배치할 수 있습니다.</ThemedText>
       )}
     </ThemedView>
   );
@@ -88,8 +88,8 @@ function ReviewTask({
     <ThemedView style={styles.task}>
       <ThemedText type="small">{task.title}</ThemedText>
       <ThemedView style={styles.actions}>
-        <Choice active={state === 'completed'} label="Done" onPress={() => onSelect('completed')} />
-        <Choice active={state === 'missed'} label="Missed" onPress={() => onSelect('missed')} />
+        <Choice active={state === 'completed'} label="완료" onPress={() => onSelect('completed')} />
+        <Choice active={state === 'missed'} label="미룸" onPress={() => onSelect('missed')} />
       </ThemedView>
     </ThemedView>
   );
