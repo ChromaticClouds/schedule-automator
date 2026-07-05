@@ -6,8 +6,13 @@ import redis from '@fastify/redis';
 import { CORS_ORIGINS, ENV } from '@/config/env.js';
 import { HttpError } from '@/routes/http.js';
 import { registerPlanningRoutes } from '@/routes/index.js';
+import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
 
-export const buildApp = async () => {
+type BuildAppOptions = {
+  scheduleDraftDependencies?: ScheduleDraftDependencies;
+};
+
+export const buildApp = async (options: BuildAppOptions = {}) => {
   const app = Fastify({ logger: true });
 
   await app.register(jwt, {
@@ -66,7 +71,7 @@ export const buildApp = async () => {
     service: 'ai-scheduler-server',
   }));
 
-  await registerPlanningRoutes(app);
+  await registerPlanningRoutes(app, options.scheduleDraftDependencies);
 
   return app;
 };

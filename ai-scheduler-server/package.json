@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit",
     "validate": "node ./scripts/validate-server.mjs",
     "validate:ci-services": "node ./scripts/validate-ci-services.mjs",
-    "validate:ci": "pnpm validate:ci-services && pnpm validate",
+    "validate:planning-flow": "node ./scripts/validate-planning-flow.mjs",
+    "validate:ci": "pnpm validate:ci-services && pnpm validate && pnpm validate:planning-flow",
     "worker:daily-schedule": "node dist/workers/daily-schedule.js"
   },
   "dependencies": {

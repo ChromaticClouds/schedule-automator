@@ -9,6 +9,7 @@ import {
 } from '@/schemas/schedule-draft.js';
 import { approveScheduleDraft } from '@/services/schedule-approval.js';
 import { generateDailyScheduleDraft } from '@/services/schedule-draft.js';
+import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
 import { editScheduleDraftBlock } from '@/services/schedule-edit.js';
 import {
   getScheduleDraft,
@@ -26,7 +27,10 @@ import {
   requireIdempotencyKey,
 } from './schedule-draft-route-utils.js';
 
-export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
+export const registerScheduleDraftRoutes = async (
+  app: FastifyInstance,
+  dependencies: ScheduleDraftDependencies = {},
+) => {
   app.get('/schedule-drafts', async (request) => {
     const userId = requireUserId(request);
     const { date } = parseQuery(scheduleDraftQuerySchema, request);
@@ -48,6 +52,8 @@ export const registerScheduleDraftRoutes = async (app: FastifyInstance) => {
         userId,
         body.date,
         key,
+        dependencies.generator,
+        dependencies.contextBuilder,
       );
       return reply.code(result.replayed ? 200 : 201).send(result);
     } catch (error) {
