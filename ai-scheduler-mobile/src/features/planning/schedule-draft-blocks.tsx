@@ -4,22 +4,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { PlanningButton, PlanningTextInput } from './planning-controls';
-import type {
-  ScheduleBlock,
-  ScheduleBlockEditInput,
-  ScheduleDraft,
-} from './types';
+import type { ScheduleBlock, ScheduleBlockEditInput, ScheduleDraft } from './types';
 
 type EditForm = Omit<ScheduleBlockEditInput, 'expectedUpdatedAt'>;
 
 type Props = {
   busy: boolean;
   draft: ScheduleDraft;
-  onEdit: (
-    draftId: string,
-    blockId: string,
-    body: ScheduleBlockEditInput,
-  ) => void;
+  onEdit: (draftId: string, blockId: string, body: ScheduleBlockEditInput) => void;
   timezone?: string;
 };
 
@@ -30,8 +22,14 @@ const timeValue = (value: string, timezone?: string) =>
     minute: '2-digit',
     ...(timezone ? { timeZone: timezone } : {}),
   }).format(new Date(value));
-const validTime = (value: string) =>
-  /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+const validTime = (value: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+const blockTypeLabels: Record<ScheduleBlock['type'], string> = {
+  break: '휴식',
+  calendar_event: '캘린더',
+  protected: '보호 시간',
+  routine: '루틴',
+  task: '작업',
+};
 
 export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
   const [editingId, setEditingId] = useState<string>();
@@ -77,15 +75,15 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
                   onChange={(startTime) => setForm({ ...form, startTime })}
                   value={form.startTime}
                 />
-                <ThemedText type="small">to</ThemedText>
+                <ThemedText type="small">부터</ThemedText>
                 <TimeInput
                   onChange={(endTime) => setForm({ ...form, endTime })}
                   value={form.endTime}
                 />
               </ThemedView>
               <ThemedView style={styles.actions}>
-                <Button disabled={busy || !valid} label="Save" onPress={() => save(block._id)} />
-                <Button disabled={busy} label="Cancel" onPress={() => setEditingId(undefined)} />
+                <Button disabled={busy || !valid} label="저장" onPress={() => save(block._id)} />
+                <Button disabled={busy} label="취소" onPress={() => setEditingId(undefined)} />
               </ThemedView>
             </>
           ) : (
@@ -96,7 +94,7 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
             ['task', 'break'].includes(block.type) &&
             timezone &&
             editingId !== block._id && (
-              <Button disabled={busy || Boolean(editingId)} label="Edit" onPress={() => begin(block)} />
+              <Button disabled={busy || Boolean(editingId)} label="수정" onPress={() => begin(block)} />
             )}
         </ThemedView>
       ))}
@@ -104,18 +102,12 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
   );
 }
 
-function BlockReadView({
-  block,
-  timezone,
-}: {
-  block: ScheduleBlock;
-  timezone?: string;
-}) {
+function BlockReadView({ block, timezone }: { block: ScheduleBlock; timezone?: string }) {
   return (
     <>
       <ThemedText type="smallBold">{block.title}</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
-        {timeValue(block.start, timezone)}-{timeValue(block.end, timezone)} - {block.type}
+        {timeValue(block.start, timezone)}-{timeValue(block.end, timezone)} - {blockTypeLabels[block.type]}
       </ThemedText>
       {block.reason && <ThemedText type="small">{block.reason}</ThemedText>}
     </>

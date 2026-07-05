@@ -19,8 +19,8 @@ export function GoalBreakdownPanel() {
     : mutation.data
       ? goalBreakdownSuccessFeedback(mutation.data)
       : goals.error
-        ? { kind: 'error' as const, message: 'Failed to load goals.' }
-      : undefined;
+        ? { kind: 'error' as const, message: '목표를 불러오지 못했습니다.' }
+        : undefined;
 
   const generate = (goalId: string) => {
     const currentKey = requestKeys.current.get(goalId);
