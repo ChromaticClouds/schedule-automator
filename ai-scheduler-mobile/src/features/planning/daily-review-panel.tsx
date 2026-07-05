@@ -8,9 +8,9 @@ import { useDailyReview, useSaveDailyReview } from './review-hooks';
 import { toScheduleDateKey } from './schedule-date';
 
 const loadErrorMessage =
-  'Daily review could not be loaded. Try again after refreshing tasks.';
+  '일일 리뷰를 불러오지 못했습니다. 작업을 새로고침한 뒤 다시 시도하세요.';
 const saveErrorMessage =
-  'Review could not be saved. Try again before running a weekly replan.';
+  '리뷰를 저장하지 못했습니다. 주간 재배치 전에 다시 시도하세요.';
 
 export function DailyReviewPanel() {
   const date = toScheduleDateKey();

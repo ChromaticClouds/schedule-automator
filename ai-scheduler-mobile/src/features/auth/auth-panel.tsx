@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton } from '@/features/planning/planning-controls';
 import { signInWithGoogle } from './oauth';
 import { logoutAuthSession, useAuthStore } from './session';
 
@@ -17,14 +18,14 @@ export function AuthPanel() {
     try {
       await action();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Authentication failed');
+      setError(caught instanceof Error ? caught.message : '로그인 처리에 실패했습니다.');
     } finally {
       setPending(false);
     }
   };
 
   if (status === 'loading') {
-    return <ThemedText type="small">Restoring secure session...</ThemedText>;
+    return <ThemedText type="small">보안 세션을 복구하는 중입니다...</ThemedText>;
   }
 
   const authenticated = status === 'authenticated';
@@ -32,24 +33,22 @@ export function AuthPanel() {
     <ThemedView type="backgroundElement" style={styles.panel}>
       <ThemedView style={styles.copy}>
         <ThemedText type="smallBold">
-          {authenticated ? 'Google account connected' : 'Sign in required'}
+          {authenticated ? 'Google 계정 연결됨' : '로그인이 필요합니다'}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {authenticated
-            ? 'Planning requests use your secure server session.'
-            : 'Connect Google to load and update your planning data.'}
+            ? '계획 요청은 서버의 보안 세션으로 처리됩니다.'
+            : '계획 데이터를 불러오고 업데이트하려면 Google 계정을 연결하세요.'}
         </ThemedText>
       </ThemedView>
-      <Pressable
+      <PlanningButton
         disabled={pending}
+        label={pending ? '처리 중...' : authenticated ? '로그아웃' : 'Google로 계속하기'}
         onPress={() =>
           void run(authenticated ? logoutAuthSession : signInWithGoogle)
         }
-        style={[styles.button, pending && styles.disabled]}>
-        <ThemedText type="smallBold">
-          {pending ? 'Please wait...' : authenticated ? 'Sign out' : 'Continue with Google'}
-        </ThemedText>
-      </Pressable>
+        style={styles.button}
+      />
       {error && <ThemedText type="small">{error}</ThemedText>}
     </ThemedView>
   );
@@ -64,9 +63,7 @@ const styles = StyleSheet.create({
   copy: { backgroundColor: 'transparent', gap: Spacing.one },
   button: {
     alignItems: 'center',
-    backgroundColor: '#DCEBFF',
     borderRadius: 8,
     padding: Spacing.two,
   },
-  disabled: { opacity: 0.6 },
 });

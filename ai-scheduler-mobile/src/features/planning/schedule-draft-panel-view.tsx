@@ -14,6 +14,14 @@ import {
 } from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
 
+const draftStatusLabels: Record<ScheduleDraft['status'], string> = {
+  approved: '승인됨',
+  draft: '초안',
+  expired: '만료됨',
+  rejected: '거절됨',
+  synced: '동기화됨',
+};
+
 export type ScheduleDraftPanelViewProps = {
   busy: boolean;
   date: string;
@@ -52,10 +60,10 @@ export function ScheduleDraftPanelView({
 
   return (
     <ThemedView type="backgroundElement" style={styles.section}>
-      <ThemedText type="smallBold">Today&apos;s schedule draft</ThemedText>
+      <ThemedText type="smallBold">오늘의 일정 초안</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
-      {isLoading && <ThemedText type="small">Loading draft...</ThemedText>}
-      {errorMessage && <ThemedText type="small">Failed: {errorMessage}</ThemedText>}
+      {isLoading && <ThemedText type="small">초안을 불러오는 중...</ThemedText>}
+      {errorMessage && <ThemedText type="small">실패: {errorMessage}</ThemedText>}
       {recoveryAction && (
         <ScheduleDraftRecoveryActionButton
           action={recoveryAction}
@@ -67,24 +75,17 @@ export function ScheduleDraftPanelView({
           onRegenerate={onRegenerate}
         />
       )}
-      {draft && (
-        <DraftSummary
-          busy={busy}
-          draft={draft}
-          onEdit={onEdit}
-          timezone={timezone}
-        />
-      )}
+      {draft && <DraftSummary busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />}
       {reviewDraft && (
         <ThemedView style={styles.actions}>
           <ActionButton
             disabled={busy}
-            label="Approve and sync"
+            label="승인하고 동기화"
             onPress={() => onApprove(reviewDraft._id)}
           />
           <ActionButton
             disabled={busy}
-            label="Reject"
+            label="거절"
             onPress={() => onReject(reviewDraft._id)}
           />
         </ThemedView>
@@ -93,12 +94,7 @@ export function ScheduleDraftPanelView({
   );
 }
 
-function DraftSummary({
-  busy,
-  draft,
-  onEdit,
-  timezone,
-}: {
+function DraftSummary({ busy, draft, onEdit, timezone }: {
   busy: boolean;
   draft: ScheduleDraft;
   onEdit: ScheduleDraftPanelViewProps['onEdit'];
@@ -110,14 +106,14 @@ function DraftSummary({
   return (
     <ThemedView style={styles.blockList}>
       <ThemedText type="small" themeColor="textSecondary">
-        {draft.status.toUpperCase()} - {draft.summary ?? 'No summary'}
+        {draftStatusLabels[draft.status]} - {draft.summary ?? '요약 없음'}
       </ThemedText>
       {statusMessage && <ThemedText type="small">{statusMessage}</ThemedText>}
       {calendarSummary && (
         <ThemedText type="small" themeColor="textSecondary">{calendarSummary}</ThemedText>
       )}
       {draft.warnings.map((warning) => (
-        <ThemedText key={warning} type="small">Warning: {warning}</ThemedText>
+        <ThemedText key={warning} type="small">주의: {warning}</ThemedText>
       ))}
       <ScheduleDraftBlocks busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />
     </ThemedView>
@@ -130,7 +126,7 @@ function ActionButton({ disabled, label, onPress }: ActionButtonProps) {
   return (
     <PlanningButton
       disabled={disabled}
-      label={disabled ? 'Working...' : label}
+      label={disabled ? '처리 중...' : label}
       onPress={onPress}
       style={styles.button}
     />

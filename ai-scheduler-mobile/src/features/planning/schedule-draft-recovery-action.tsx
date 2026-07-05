@@ -38,7 +38,7 @@ export function ScheduleDraftRecoveryActionButton({
       {action.message && <ThemedText type="small">{action.message}</ThemedText>}
       <PlanningButton
         disabled={busy}
-        label={busy ? 'Working...' : action.label}
+        label={busy ? '처리 중...' : action.label}
         onPress={run}
         style={styles.button}
       />

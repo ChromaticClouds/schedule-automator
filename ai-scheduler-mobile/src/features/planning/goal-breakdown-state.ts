@@ -26,32 +26,32 @@ export const goalBreakdownErrorFeedback = (
   const error = (value ?? {}) as ErrorShape;
   const code = goalBreakdownErrorCode(error);
   if (error.status === 401) {
-    return { kind: 'error', message: 'Session expired. Sign in again.' };
+    return { kind: 'error', message: '세션이 만료되었습니다. 다시 로그인하세요.' };
   }
   if (code === 'REQUEST_IN_PROGRESS') {
-    return { kind: 'info', message: 'AI breakdown is still running. Retry shortly.' };
+    return { kind: 'info', message: 'AI 작업 분해가 아직 진행 중입니다. 잠시 후 다시 시도하세요.' };
   }
   if (code === 'IDEMPOTENCY_CONFLICT') {
-    return { kind: 'error', message: 'Goal changed. Start a fresh breakdown.' };
+    return { kind: 'error', message: '목표가 변경되었습니다. 새 작업 분해를 시작하세요.' };
   }
   if (error.status === 409) {
-    return { kind: 'info', message: 'Breakdown request conflicted. Retry shortly.' };
+    return { kind: 'info', message: '작업 분해 요청이 충돌했습니다. 잠시 후 다시 시도하세요.' };
   }
   if (error.status === 422) {
-    return { kind: 'error', message: 'AI returned an invalid task plan. Retry.' };
+    return { kind: 'error', message: 'AI가 올바르지 않은 작업 계획을 반환했습니다. 다시 시도하세요.' };
   }
   if (error.status === 502) {
-    return { kind: 'error', message: 'AI service is unavailable. Retry shortly.' };
+    return { kind: 'error', message: 'AI 서비스를 사용할 수 없습니다. 잠시 후 다시 시도하세요.' };
   }
   if (code === 'TASK_PERSISTENCE_ERROR') {
-    return { kind: 'error', message: 'Tasks could not be saved. Retry safely.' };
+    return { kind: 'error', message: '작업을 저장하지 못했습니다. 안전하게 다시 시도하세요.' };
   }
   if (error.status === 0) {
-    return { kind: 'error', message: 'Network unavailable. Check your connection.' };
+    return { kind: 'error', message: '네트워크를 사용할 수 없습니다. 연결 상태를 확인하세요.' };
   }
   return {
     kind: 'error',
-    message: typeof error.message === 'string' ? error.message : 'Breakdown failed.',
+    message: typeof error.message === 'string' ? error.message : '작업 분해에 실패했습니다.',
   };
 };
 
@@ -60,6 +60,6 @@ export const goalBreakdownSuccessFeedback = (
 ): GoalBreakdownFeedback => ({
   kind: 'success',
   message: result.replayed
-    ? `${result.tasks.length} generated tasks restored.`
-    : `${result.tasks.length} tasks generated.`,
+    ? `생성된 작업 ${result.tasks.length}개를 복구했습니다.`
+    : `작업 ${result.tasks.length}개를 생성했습니다.`,
 });

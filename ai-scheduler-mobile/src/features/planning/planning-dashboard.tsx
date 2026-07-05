@@ -34,9 +34,9 @@ export function PlanningDashboard() {
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.header}>
-          <ThemedText type="subtitle">Weekly planning</ThemedText>
+          <ThemedText type="subtitle">주간 계획</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Goals, tasks, and protected time for the current week.
+            이번 주 목표, 작업, 보호 시간을 한곳에서 정리하세요.
           </ThemedText>
         </ThemedView>
 
