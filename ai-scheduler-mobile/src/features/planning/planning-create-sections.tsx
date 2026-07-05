@@ -10,7 +10,11 @@ import {
   useTasks,
 } from './hooks';
 import { PlanningCreateRow } from './planning-create-row';
-import { planningSectionEmptyMessages, planningSectionErrorMessages, type PlanningSectionTitle } from './planning-empty-state';
+import {
+  planningSectionEmptyMessages,
+  planningSectionErrorMessages,
+  type PlanningSectionTitle,
+} from './planning-empty-state';
 import { PlanningSection } from './planning-section';
 
 export function PlanningCreateSections() {
@@ -63,49 +67,52 @@ export function PlanningCreateSections() {
 
   return (
     <>
-      <PlanningSection {...sectionState('Goals', goals)}>
+      <PlanningSection {...sectionState('목표', goals)}>
         <PlanningCreateRow
-          emptyMessage="Enter a goal title before adding it."
-          errorMessage={createGoal.error ? 'Goal could not be saved. Try again.' : undefined}
+          emptyMessage="추가할 목표 제목을 먼저 입력하세요."
+          errorMessage={createGoal.error ? '목표를 저장하지 못했습니다. 다시 시도하세요.' : undefined}
+          guideText="예: 이번 주 포트폴리오 README를 개선하고 재고 관리 리팩터링을 마무리한다"
           isPending={createGoal.isPending}
           onChange={(value) => {
             createGoal.reset();
             setGoalTitle(value);
           }}
           onSubmit={submitGoal}
-          placeholder="Add a weekly goal"
+          placeholder="주간 목표를 입력하세요"
           value={goalTitle}
         />
         {goals.data?.map((goal) => <Item key={goal._id} text={goal.title} />)}
       </PlanningSection>
-      <PlanningSection {...sectionState('Tasks', tasks)}>
+      <PlanningSection {...sectionState('작업', tasks)}>
         <PlanningCreateRow
-          emptyMessage="Enter a task title before adding it."
-          errorMessage={createTask.error ? 'Task could not be saved. Try again.' : undefined}
+          emptyMessage="추가할 작업 제목을 먼저 입력하세요."
+          errorMessage={createTask.error ? '작업을 저장하지 못했습니다. 다시 시도하세요.' : undefined}
+          guideText="예: README에 실행 방법과 주요 기능 설명을 추가한다 - 60분"
           isPending={createTask.isPending}
           onChange={(value) => {
             createTask.reset();
             setTaskTitle(value);
           }}
           onSubmit={submitTask}
-          placeholder="Add a task"
+          placeholder="작업을 입력하세요"
           value={taskTitle}
         />
         {tasks.data?.map((task) => (
-          <Item key={task._id} text={`${task.title} - ${task.estimatedMinutes}m`} />
+          <Item key={task._id} text={`${task.title} - ${task.estimatedMinutes}분`} />
         ))}
       </PlanningSection>
-      <PlanningSection {...sectionState('Protected time', protectedTimes)}>
+      <PlanningSection {...sectionState('보호 시간', protectedTimes)}>
         <PlanningCreateRow
-          emptyMessage="Enter a protected-time title before adding it."
-          errorMessage={createProtectedTime.error ? 'Protected time could not be saved. Try again.' : undefined}
+          emptyMessage="보호 시간 이름을 먼저 입력하세요."
+          errorMessage={createProtectedTime.error ? '보호 시간을 저장하지 못했습니다. 다시 시도하세요.' : undefined}
+          guideText="예: 점심 식사 12:00-13:00, 운동 19:00-20:00"
           isPending={createProtectedTime.isPending}
           onChange={(value) => {
             createProtectedTime.reset();
             setProtectedTitle(value);
           }}
           onSubmit={submitProtected}
-          placeholder="Add protected time"
+          placeholder="보호 시간을 입력하세요"
           value={protectedTitle}
         />
         {protectedTimes.data?.map((block) => (

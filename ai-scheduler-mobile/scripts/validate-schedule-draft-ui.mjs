@@ -32,14 +32,14 @@ const errorWithCode = (code) => ({
 });
 
 const expectedMessages = [
-  ['REQUEST_IN_PROGRESS', 'already running'],
-  ['STALE_DRAFT_CONTEXT', 'Generate a fresh draft'],
-  ['INVALID_DRAFT_STATE', 'Refresh and try again'],
-  ['STALE_DRAFT_VERSION', 'Review the latest version'],
-  ['DRAFT_EDIT_VALIDATION_ERROR', 'conflicts with the current schedule'],
-  ['DRAFT_BLOCK_NOT_EDITABLE', 'cannot be edited'],
-  ['GOOGLE_RECONNECT_REQUIRED', 'Reconnect Google'],
-  ['GOOGLE_CALENDAR_SYNC_FAILED', 'sync failed'],
+  ['REQUEST_IN_PROGRESS', '이미 생성 중'],
+  ['STALE_DRAFT_CONTEXT', '새 초안을 생성'],
+  ['INVALID_DRAFT_STATE', '새로고침 후 다시 시도'],
+  ['STALE_DRAFT_VERSION', '최신 버전'],
+  ['DRAFT_EDIT_VALIDATION_ERROR', '충돌하는 수정'],
+  ['DRAFT_BLOCK_NOT_EDITABLE', '수정할 수 없습니다'],
+  ['GOOGLE_RECONNECT_REQUIRED', '다시 연결'],
+  ['GOOGLE_CALENDAR_SYNC_FAILED', '동기화에 실패'],
 ];
 
 for (const [code, expected] of expectedMessages) {
@@ -76,11 +76,11 @@ const boolChecks = [
 for (const [actual, expected] of boolChecks) assert.equal(actual, expected);
 assert.match(
   state.scheduleDraftStatusMessage(scheduleDraftFixtures.approved),
-  /pending/,
+  /기다리는 중/,
 );
 assert.match(
   state.scheduleDraftStatusMessage(scheduleDraftFixtures.synced),
-  /synced/,
+  /동기화되었습니다/,
 );
 assert.equal(
   state.scheduleDraftCalendarEventSummary(scheduleDraftFixtures.approved),
@@ -88,7 +88,7 @@ assert.equal(
 );
 assert.match(
   state.scheduleDraftCalendarEventSummary(scheduleDraftFixtures.synced),
-  /2 calendar events synced/,
+  /2개가 동기화/,
 );
 const recoveryAction = state.scheduleDraftRecoveryAction;
 assert.equal(recoveryAction(scheduleDraftFixtures.synced, false), undefined);
@@ -99,7 +99,7 @@ const actionChecks = [
   [recoveryAction(scheduleDraftFixtures.draft, false).kind, 'regenerate'],
   [recoveryAction(scheduleDraftFixtures.draft, false, 'GOOGLE_RECONNECT_REQUIRED').kind, 'reconnect-google'],
   [recoveryAction(scheduleDraftFixtures.approved, false, 'GOOGLE_CALENDAR_SYNC_FAILED').kind, 'retry-sync'],
-  [recoveryAction(scheduleDraftFixtures.draft, false, 'STALE_DRAFT_CONTEXT').label, 'Regenerate fresh draft'],
+  [recoveryAction(scheduleDraftFixtures.draft, false, 'STALE_DRAFT_CONTEXT').label, '새 초안 다시 생성'],
 ];
 
 for (const [actual, expected] of actionChecks) assert.equal(actual, expected);
@@ -127,10 +127,10 @@ for (const status of ['draft', 'approved', 'rejected', 'expired', 'synced']) {
   assert.equal(scheduleDraftPanelFixtures[status].draft.status, status);
 }
 
-assert.match(scheduleDraftPanelFixtures.editValidationError.errorMessage, /conflicts/);
-assert.match(scheduleDraftPanelFixtures.regenerateInvalidStateError.errorMessage, /state changed/);
-assert.match(scheduleDraftPanelFixtures.googleReconnectError.errorMessage, /Reconnect/);
-assert.match(scheduleDraftPanelFixtures.googleSyncError.errorMessage, /sync failed/);
+assert.match(scheduleDraftPanelFixtures.editValidationError.errorMessage, /충돌/);
+assert.match(scheduleDraftPanelFixtures.regenerateInvalidStateError.errorMessage, /상태가 변경/);
+assert.match(scheduleDraftPanelFixtures.googleReconnectError.errorMessage, /다시 연결/);
+assert.match(scheduleDraftPanelFixtures.googleSyncError.errorMessage, /동기화에 실패/);
 assert.equal(scheduleDraftPanelFixtures.googleReconnectError.errorCode, 'GOOGLE_RECONNECT_REQUIRED');
 assert.equal(scheduleDraftPanelFixtures.googleSyncError.errorCode, 'GOOGLE_CALENDAR_SYNC_FAILED');
 

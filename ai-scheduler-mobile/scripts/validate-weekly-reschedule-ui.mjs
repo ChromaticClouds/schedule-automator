@@ -44,13 +44,13 @@ const errorWithCode = (code) => ({
 });
 
 const expectedMessages = [
-  ['REQUEST_IN_PROGRESS', 'already running'],
-  ['IDEMPOTENCY_CONFLICT', 'context changed'],
-  ['REPLAN_PROVIDER_ERROR', 'provider is unavailable'],
-  ['REPLAN_SCHEMA_ERROR', 'format was invalid'],
-  ['REPLAN_VALIDATION_ERROR', 'not safe to use'],
-  ['REPLAN_PERSISTENCE_ERROR', 'Could not save'],
-  ['GOOGLE_RECONNECT_REQUIRED', 'Reconnect Google'],
+  ['REQUEST_IN_PROGRESS', '이미 실행 중'],
+  ['IDEMPOTENCY_CONFLICT', '컨텍스트가 변경'],
+  ['REPLAN_PROVIDER_ERROR', '사용할 수 없습니다'],
+  ['REPLAN_SCHEMA_ERROR', '형식이 올바르지 않습니다'],
+  ['REPLAN_VALIDATION_ERROR', '안전하게 사용할 수 없습니다'],
+  ['REPLAN_PERSISTENCE_ERROR', '저장하지 못했습니다'],
+  ['GOOGLE_RECONNECT_REQUIRED', '다시 연결'],
 ];
 
 for (const [code, expected] of expectedMessages) {
@@ -71,11 +71,11 @@ assert.equal(weeklyRescheduleFixtures.pending.isPending, true);
 assert.equal(weeklyRescheduleFixtures.placed.result.placedTaskIds.length, 1);
 assert.equal(weeklyRescheduleFixtures.overflow.result.overflowTaskIds.length, 1);
 assert.equal(weeklyRescheduleFixtures.replayed.result.replayed, true);
-assert.match(weeklyRescheduleFixtures.schemaError.errorMessage, /format/);
-assert.match(weeklyRescheduleFixtures.saveError.errorMessage, /save/);
+assert.match(weeklyRescheduleFixtures.schemaError.errorMessage, /형식/);
+assert.match(weeklyRescheduleFixtures.saveError.errorMessage, /저장/);
 assert.match(
   state.weeklyRescheduleResultSummary(weeklyRescheduleFixtures.placed.result),
-  /Placed 1 · Overflow 0/,
+  /배치 1개 \/ 보류 0개/,
 );
 
 const viewSource = readFileSync(
@@ -83,6 +83,6 @@ const viewSource = readFileSync(
   'utf8',
 );
 assert.equal(viewSource.includes('쨌'), false);
-assert.match(viewSource, /Review generated drafts/);
+assert.match(viewSource, /생성된 초안/);
 
 console.log('weekly reschedule UI validation passed');

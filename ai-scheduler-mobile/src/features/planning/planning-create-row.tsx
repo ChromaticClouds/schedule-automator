@@ -9,6 +9,7 @@ import { PlanningButton, PlanningTextInput } from './planning-controls';
 export type PlanningCreateRowProps = {
   emptyMessage: string;
   errorMessage?: string;
+  guideText?: string;
   isPending: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
@@ -20,6 +21,7 @@ export type PlanningCreateRowProps = {
 export function PlanningCreateRow({
   emptyMessage,
   errorMessage,
+  guideText,
   isPending,
   onChange,
   onSubmit,
@@ -56,11 +58,16 @@ export function PlanningCreateRow({
         />
         <PlanningButton
           disabled={isPending}
-          label={isPending ? 'Saving...' : 'Add'}
+          label={isPending ? '저장 중...' : '추가'}
           onPress={handleSubmit}
           style={styles.button}
         />
       </ThemedView>
+      {guideText && (
+        <ThemedText type="small" themeColor="textSecondary">
+          {guideText}
+        </ThemedText>
+      )}
       {shouldShowEmptyMessage && (
         <ThemedText type="small" themeColor="textSecondary">
           {emptyMessage}

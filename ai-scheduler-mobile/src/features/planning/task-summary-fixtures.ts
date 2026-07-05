@@ -15,7 +15,7 @@ const populatedSummary = {
       _id: 'task-summary-1',
       estimatedMinutes: 60,
       status: 'scheduled',
-      title: 'Implement state preview fixtures',
+      title: '상태 미리보기 픽스처 구현',
     },
   ],
   totals: { count: 3, estimatedMinutes: 135 },
@@ -33,7 +33,7 @@ export const taskSummaryFixtures = {
     },
   } satisfies Fixture,
   error: {
-    errorMessage: 'Task summary could not be loaded. Try again after refreshing tasks.',
+    errorMessage: '작업 요약을 불러오지 못했습니다. 작업을 새로고침한 뒤 다시 시도하세요.',
     isLoading: false,
   } satisfies Fixture,
   loading: { isLoading: true } satisfies Fixture,

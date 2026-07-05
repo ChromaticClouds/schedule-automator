@@ -27,21 +27,21 @@ export function WeeklyRescheduleView({
 
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
-      <ThemedText type="smallBold">Weekly missed-task replan</ThemedText>
+      <ThemedText type="smallBold">주간 미완료 작업 재배치</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
-        Place missed tasks into the remaining days of this week.
+        미룬 작업을 이번 주 남은 날짜에 다시 배치합니다.
       </ThemedText>
       <PlanningButton
         accessibilityRole="button"
         disabled={busy}
-        label={isPending ? 'Rescheduling...' : 'Reschedule missed tasks'}
+        label={isPending ? '재배치 중...' : '미룬 작업 재배치'}
         onPress={onRun}
         style={styles.button}
       />
       {disabled && !result && (
-        <ThemedText type="small">No missed tasks are ready to replan.</ThemedText>
+        <ThemedText type="small">재배치할 미완료 작업이 아직 없습니다.</ThemedText>
       )}
-      {errorMessage && <ThemedText type="small">Failed: {errorMessage}</ThemedText>}
+      {errorMessage && <ThemedText type="small">실패: {errorMessage}</ThemedText>}
       {result && <ResultSummary result={result} taskNames={taskNames} />}
     </ThemedView>
   );
@@ -55,14 +55,14 @@ function ResultSummary({
   taskNames: Record<string, string>;
 }) {
   if (result.replayed) {
-    return <ThemedText type="small">This weekly replan was already processed.</ThemedText>;
+    return <ThemedText type="small">이 주간 재배치는 이미 처리되었습니다.</ThemedText>;
   }
   return (
     <ThemedView style={styles.results}>
       <ThemedText type="smallBold">{weeklyRescheduleResultSummary(result)}</ThemedText>
       {result.drafts.length > 0 && (
         <ThemedText type="small" themeColor="textSecondary">
-          Review generated drafts before approving calendar sync.
+          생성된 초안을 확인한 뒤 캘린더 동기화를 승인하세요.
         </ThemedText>
       )}
       {result.drafts.map((draft) => (
@@ -72,14 +72,14 @@ function ResultSummary({
             .filter(({ taskId }) => result.placedTaskIds.includes(taskId ?? ''))
             .map((block) => (
               <ThemedText key={block._id} type="small">
-                {block.title} · {formatTime(block.start)}
+                {block.title} / {formatTime(block.start)}
               </ThemedText>
             ))}
         </ThemedView>
       ))}
       {result.overflowTaskIds.map((taskId) => (
         <ThemedText key={taskId} type="small">
-          Overflow · {taskNames[taskId] ?? taskId}
+          보류 / {taskNames[taskId] ?? taskId}
         </ThemedText>
       ))}
     </ThemedView>

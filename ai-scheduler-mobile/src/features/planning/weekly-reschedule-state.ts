@@ -27,13 +27,13 @@ export const weeklyRescheduleDetailCode = (error: unknown) => {
 
 export const weeklyRescheduleErrorMessage = (error: unknown) => {
   const code = weeklyRescheduleDetailCode(error);
-  if (code === 'REQUEST_IN_PROGRESS') return 'A weekly replan is already running.';
-  if (code === 'IDEMPOTENCY_CONFLICT') return 'Planning context changed. Try again.';
-  if (code === 'REPLAN_PROVIDER_ERROR') return 'The planning provider is unavailable.';
-  if (code === 'REPLAN_SCHEMA_ERROR') return 'The generated plan format was invalid.';
-  if (code === 'REPLAN_VALIDATION_ERROR') return 'The generated plan was not safe to use.';
-  if (code === 'REPLAN_PERSISTENCE_ERROR') return 'Could not save the generated plan. Try again.';
-  if (code === 'GOOGLE_RECONNECT_REQUIRED') return 'Google Calendar connection expired. Reconnect Google.';
+  if (code === 'REQUEST_IN_PROGRESS') return '주간 재배치를 이미 실행 중입니다.';
+  if (code === 'IDEMPOTENCY_CONFLICT') return '계획 컨텍스트가 변경되었습니다. 다시 시도하세요.';
+  if (code === 'REPLAN_PROVIDER_ERROR') return '계획 생성 서비스를 사용할 수 없습니다.';
+  if (code === 'REPLAN_SCHEMA_ERROR') return '생성된 계획 형식이 올바르지 않습니다.';
+  if (code === 'REPLAN_VALIDATION_ERROR') return '생성된 계획을 안전하게 사용할 수 없습니다.';
+  if (code === 'REPLAN_PERSISTENCE_ERROR') return '생성된 계획을 저장하지 못했습니다. 다시 시도하세요.';
+  if (code === 'GOOGLE_RECONNECT_REQUIRED') return 'Google Calendar 연결이 만료되었습니다. 다시 연결하세요.';
   return isRecord(error) && typeof error.message === 'string'
     ? error.message
     : undefined;
@@ -41,4 +41,4 @@ export const weeklyRescheduleErrorMessage = (error: unknown) => {
 
 export const weeklyRescheduleResultSummary = (
   result: WeeklyRescheduleResult,
-) => `Placed ${result.placedTaskIds.length} · Overflow ${result.overflowTaskIds.length}`;
+) => `배치 ${result.placedTaskIds.length}개 / 보류 ${result.overflowTaskIds.length}개`;

@@ -26,13 +26,13 @@ const { goalBreakdownFixtures: fixtures } = loadTypeScriptModule(
 );
 
 const errorCases = [
-  [fixtures.authError, 'Session expired'],
-  [fixtures.inProgress, 'still running'],
-  [fixtures.conflict, 'Goal changed'],
-  [fixtures.schemaError, 'invalid task plan'],
-  [fixtures.providerError, 'AI service is unavailable'],
-  [fixtures.persistenceError, 'could not be saved'],
-  [fixtures.networkError, 'Network unavailable'],
+  [fixtures.authError, '세션이 만료'],
+  [fixtures.inProgress, '아직 진행 중'],
+  [fixtures.conflict, '목표가 변경'],
+  [fixtures.schemaError, '올바르지 않은 작업 계획'],
+  [fixtures.providerError, 'AI 서비스를 사용할 수 없습니다'],
+  [fixtures.persistenceError, '작업을 저장하지 못했습니다'],
+  [fixtures.networkError, '네트워크를 사용할 수 없습니다'],
 ];
 
 for (const [error, expected] of errorCases) {
@@ -42,11 +42,11 @@ for (const [error, expected] of errorCases) {
 
 assert.deepEqual(state.goalBreakdownSuccessFeedback(fixtures.success), {
   kind: 'success',
-  message: '2 tasks generated.',
+  message: '작업 2개를 생성했습니다.',
 });
 assert.deepEqual(state.goalBreakdownSuccessFeedback(fixtures.replay), {
   kind: 'success',
-  message: '1 generated tasks restored.',
+  message: '생성된 작업 1개를 복구했습니다.',
 });
 
 console.log('goal breakdown validation passed');

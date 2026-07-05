@@ -41,7 +41,7 @@ export const signInWithGoogle = async () => {
   const callback = new URL(result.url);
   const handoffCode = callback.searchParams.get('handoffCode');
   if (!handoffCode || callback.searchParams.get('google') !== 'connected') {
-    throw new Error('Google authentication callback was incomplete');
+    throw new Error('Google 인증 콜백이 완료되지 않았습니다.');
   }
 
   const session = await rawApiRequest<AuthSessionResponse>(

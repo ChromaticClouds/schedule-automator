@@ -9,7 +9,7 @@ const baseDraft = {
     {
       _id: 'block-1',
       end: '2026-07-04T01:30:00.000Z',
-      reason: 'Highest impact task with enough open time.',
+      reason: '비어 있는 시간에 넣을 수 있는 가장 중요한 작업입니다.',
       source: 'ai',
       start: '2026-07-04T00:30:00.000Z',
       status: 'draft',
@@ -101,7 +101,7 @@ export const scheduleDraftPanelFixtures = {
   }),
   draft: withDraft(scheduleDraftFixtures.draft),
   editValidationError: withDraft(scheduleDraftFixtures.draft, {
-    errorMessage: 'Edit conflicts with the current schedule.',
+    errorMessage: '현재 일정과 충돌하는 수정입니다.',
   }),
   empty: withDraft(undefined, { noDraft: true }),
   expired: withDraft(scheduleDraftFixtures.expired),
@@ -113,15 +113,15 @@ export const scheduleDraftPanelFixtures = {
     noDraft: true,
   }),
   regenerateInvalidStateError: withDraft(scheduleDraftFixtures.synced, {
-    errorMessage: 'Draft state changed. Refresh and try again.',
+    errorMessage: '초안 상태가 변경되었습니다. 새로고침 후 다시 시도하세요.',
   }),
   googleReconnectError: withDraft(scheduleDraftFixtures.draft, {
     errorCode: 'GOOGLE_RECONNECT_REQUIRED',
-    errorMessage: 'Google Calendar connection expired. Reconnect Google.',
+    errorMessage: 'Google Calendar 연결이 만료되었습니다. 다시 연결하세요.',
   }),
   googleSyncError: withDraft(scheduleDraftFixtures.approved, {
     errorCode: 'GOOGLE_CALENDAR_SYNC_FAILED',
-    errorMessage: 'Google Calendar sync failed. Try again later.',
+    errorMessage: 'Google Calendar 동기화에 실패했습니다. 나중에 다시 시도하세요.',
   }),
   staleContextError: withDraft(scheduleDraftFixtures.draft, {
     errorCode: 'STALE_DRAFT_CONTEXT',

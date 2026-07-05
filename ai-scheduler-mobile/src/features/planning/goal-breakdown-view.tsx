@@ -23,13 +23,13 @@ export function GoalBreakdownView({
 }: GoalBreakdownViewProps) {
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
-      <ThemedText type="subtitle">AI task breakdown</ThemedText>
+      <ThemedText type="subtitle">AI 작업 분해</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
-        Turn an active weekly goal into executable tasks.
+        활성 주간 목표를 실행 가능한 작업 목록으로 나눕니다.
       </ThemedText>
-      {isLoading && <ThemedText type="small">Loading goals...</ThemedText>}
+      {isLoading && <ThemedText type="small">목표를 불러오는 중...</ThemedText>}
       {!isLoading && goals.length === 0 && (
-        <ThemedText type="small">Create an active goal first.</ThemedText>
+        <ThemedText type="small">먼저 활성 목표를 추가하세요.</ThemedText>
       )}
       {goals.map((goal) => {
         const busy = busyGoalId === goal._id;
@@ -41,7 +41,7 @@ export function GoalBreakdownView({
             <PlanningButton
               accessibilityRole="button"
               disabled={Boolean(busyGoalId)}
-              label={busy ? 'Generating...' : 'Break down'}
+              label={busy ? '생성 중...' : '분해'}
               onPress={() => onGenerate(goal._id)}
               style={styles.button}
             />
