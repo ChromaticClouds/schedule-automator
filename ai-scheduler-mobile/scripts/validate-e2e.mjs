@@ -1,0 +1,38 @@
+import { strict as assert } from 'node:assert';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('..', import.meta.url));
+const repoRoot = join(root, '..');
+const read = (path) => readFileSync(join(root, path), 'utf8');
+const readRepo = (path) => readFileSync(join(repoRoot, path), 'utf8');
+const packageJson = JSON.parse(read('package.json'));
+const mockSession = read('src/features/auth/mock-session.ts');
+const session = read('src/features/auth/session.ts');
+const config = read('playwright.e2e.config.ts');
+const spec = read('tests/e2e/planning-flow.spec.ts');
+const serverPackage = JSON.parse(readRepo('ai-scheduler-server/package.json'));
+const serverHarness = readRepo('ai-scheduler-server/scripts/run-e2e-server.mjs');
+const workflow = readRepo('.github/workflows/planning-e2e.yml');
+const guide = readRepo('docs/planning-e2e-testing.md');
+
+assert.equal(typeof packageJson.scripts['e2e:web'], 'string');
+assert.equal(typeof packageJson.scripts['e2e:test'], 'string');
+assert.equal(typeof serverPackage.scripts['e2e:start'], 'string');
+assert.match(mockSession, /ENV\.APP_ENV !== 'test'/);
+assert.match(mockSession, /!ENV\.ENABLE_MOCK_AUTH/);
+assert.match(session, /loadMockAuthSession/);
+assert.match(config, /e2e:start/);
+assert.match(packageJson.scripts['e2e:web'], /EXPO_PUBLIC_APP_ENV=test/);
+assert.match(spec, /Google account connected/);
+assert.match(spec, /Generate draft/);
+assert.match(spec, /Reject/);
+assert.match(serverHarness, /app\.post\('\/auth\/e2e-session'/);
+assert.match(serverHarness, /scheduleDraftDependencies/);
+assert.match(workflow, /pnpm --dir ai-scheduler-mobile e2e:test/);
+assert.match(workflow, /playwright install --with-deps chromium/);
+assert.match(guide, /EXPO_PUBLIC_APP_ENV=test/);
+assert.match(guide, /Google consent and Calendar writes remain manual/);
+
+console.log('planning E2E validation passed');

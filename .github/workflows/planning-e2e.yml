@@ -1,0 +1,102 @@
+name: Planning E2E
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/planning-e2e.yml"
+      - "docker-compose.ci.yml"
+      - "ai-scheduler-mobile/**"
+      - "ai-scheduler-server/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/planning-e2e.yml"
+      - "docker-compose.ci.yml"
+      - "ai-scheduler-mobile/**"
+      - "ai-scheduler-server/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: planning-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  planning-e2e:
+    name: Browser planning flow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Start local services
+        run: docker compose -f docker-compose.ci.yml up -d --wait
+
+      - name: Initialize MongoDB replica set
+        run: |
+          docker compose -f docker-compose.ci.yml exec -T mongo mongosh --quiet --eval '
+            try {
+              print(rs.status().ok);
+            } catch (error) {
+              print(rs.initiate({
+                _id: "rs0",
+                members: [{ _id: 0, host: "localhost:27017" }]
+              }).ok);
+            }
+          '
+
+          for i in {1..30}; do
+            if docker compose -f docker-compose.ci.yml exec -T mongo \
+              mongosh --quiet --eval "rs.status().myState" | grep -q 1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.ci.yml logs mongo
+          exit 1
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            ai-scheduler-mobile/pnpm-lock.yaml
+            ai-scheduler-server/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: |
+          pnpm --dir ai-scheduler-server install --frozen-lockfile
+          pnpm --dir ai-scheduler-mobile install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm --dir ai-scheduler-mobile exec playwright install --with-deps chromium
+
+      - name: Run browser planning flow
+        run: pnpm --dir ai-scheduler-mobile e2e:test
+
+      - name: Upload E2E diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: planning-e2e
+          path: |
+            ai-scheduler-mobile/playwright-report
+            ai-scheduler-mobile/test-results/e2e
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Print service logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.ci.yml logs
+
+      - name: Stop local services
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down -v
