@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { ENV } from '@/config/env.js';
 import type { TaskBreakdownGenerator } from './breakdown-contract.js';
 
-const responseSchema = {
+const responseJsonSchema = {
   additionalProperties: false,
   properties: {
     taskBreakdown: {
@@ -48,7 +48,7 @@ export const geminiTaskBreakdownGenerator: TaskBreakdownGenerator = {
       config: {
         maxOutputTokens: ENV.GEMINI_MAX_OUTPUT_TOKENS,
         responseMimeType: 'application/json',
-        responseSchema,
+        responseJsonSchema,
         temperature: ENV.GEMINI_TEMPERATURE,
       },
       contents: JSON.stringify({
