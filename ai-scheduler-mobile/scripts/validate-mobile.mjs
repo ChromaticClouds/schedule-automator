@@ -98,6 +98,8 @@ if (
 
 if (
   !oauthFlow.includes('codeChallenge') ||
+  !oauthFlow.includes('Linking.createURL') ||
+  !oauthFlow.includes('returnTo') ||
   !oauthFlow.includes('handoffCode') ||
   !oauthFlow.includes('openAuthSessionAsync') ||
   !oauthFlow.includes('resetAuthCache: true')

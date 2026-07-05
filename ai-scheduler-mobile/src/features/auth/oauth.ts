@@ -1,7 +1,7 @@
 import * as Crypto from 'expo-crypto';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { rawApiRequest } from '@/api/transport';
-import { ENV } from '@/config';
 import { saveAuthSession } from './session';
 import { AuthSessionResponse } from './types';
 
@@ -25,10 +25,12 @@ export const createPkcePair = async () => {
 
 export const signInWithGoogle = async () => {
   const { verifier, challenge } = await createPkcePair();
+  const redirectUrl = Linking.createURL('/');
   const start = await rawApiRequest<{ authorizationUrl: string }>(
-    `/auth/google?codeChallenge=${encodeURIComponent(challenge)}`,
+    `/auth/google?codeChallenge=${encodeURIComponent(
+      challenge,
+    )}&returnTo=${encodeURIComponent(redirectUrl)}`,
   );
-  const redirectUrl = `${ENV.APP_SCHEME}://`;
   const result = await WebBrowser.openAuthSessionAsync(
     start.authorizationUrl,
     redirectUrl,

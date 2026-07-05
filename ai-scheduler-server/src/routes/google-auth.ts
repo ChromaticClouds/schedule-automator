@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import {
-  createOAuthState,
-  verifyOAuthState,
-} from '@/auth/security.js';
+  canRedirectToOAuthReturnUrl,
+  resolveOAuthReturnUrl,
+} from '@/auth/oauth-return-url.js';
+import { createOAuthState, verifyOAuthState } from '@/auth/security.js';
 import { ENV } from '@/config/env.js';
 import {
   googleCallbackQuerySchema,
@@ -22,11 +23,7 @@ import {
   connectGoogleAccount,
   createGoogleAuthorizationUrl,
 } from '@/services/google-oauth.js';
-import {
-  HttpError,
-  parseBody,
-  parseQuery,
-} from './http.js';
+import { HttpError, parseBody, parseQuery } from './http.js';
 
 const issueSession = async (
   reply: FastifyReply,
@@ -47,8 +44,19 @@ const issueSession = async (
 
 export const registerGoogleAuthRoutes = async (app: FastifyInstance) => {
   app.get('/auth/google', async (request) => {
-    const { codeChallenge } = parseQuery(googleStartQuerySchema, request);
-    const state = createOAuthState(codeChallenge, ENV.SESSION_SECRET);
+    const { codeChallenge, returnTo } = parseQuery(
+      googleStartQuerySchema,
+      request,
+    );
+    if (returnTo && !canRedirectToOAuthReturnUrl(returnTo)) {
+      throw new HttpError('OAuth return URL is not allowed', 400);
+    }
+
+    const state = createOAuthState(
+      codeChallenge,
+      ENV.SESSION_SECRET,
+      returnTo,
+    );
 
     return {
       authorizationUrl: createGoogleAuthorizationUrl(state),
@@ -82,7 +90,11 @@ export const registerGoogleAuthRoutes = async (app: FastifyInstance) => {
       userId,
       state.codeChallenge,
     );
-    const returnUrl = new URL(ENV.APP_ORIGIN);
+    if (state.returnTo && !canRedirectToOAuthReturnUrl(state.returnTo)) {
+      throw new HttpError('OAuth return URL is not allowed', 400);
+    }
+
+    const returnUrl = resolveOAuthReturnUrl(state.returnTo);
     returnUrl.searchParams.set('google', 'connected');
     returnUrl.searchParams.set('handoffCode', handoffCode);
     return reply.redirect(returnUrl.toString());
@@ -101,12 +113,7 @@ export const registerGoogleAuthRoutes = async (app: FastifyInstance) => {
     }
 
     const session = await createAuthSession(app.redis, userId);
-    return issueSession(
-      reply,
-      userId,
-      session.sessionId,
-      session.token,
-    );
+    return issueSession(reply, userId, session.sessionId, session.token);
   });
 
   app.post('/auth/session/refresh', async (request, reply) => {

@@ -22,8 +22,18 @@ const now = Date.parse('2026-07-03T00:00:00.000Z');
 const verifier = 'a'.repeat(43);
 const challenge = createCodeChallenge(verifier);
 
-const state = createOAuthState(challenge, secret, now);
+const state = createOAuthState(challenge, secret, undefined, now);
 assert.equal(verifyOAuthState(state, secret, now).codeChallenge, challenge);
+const returnState = createOAuthState(
+  challenge,
+  secret,
+  'exp://192.168.0.2:8082/--/',
+  now,
+);
+assert.equal(
+  verifyOAuthState(returnState, secret, now).returnTo,
+  'exp://192.168.0.2:8082/--/',
+);
 assert.throws(() => verifyOAuthState(state, secret, now + 10 * 60 * 1000));
 
 const tamperedState = `${state.slice(0, -1)}${state.endsWith('a') ? 'b' : 'a'}`;

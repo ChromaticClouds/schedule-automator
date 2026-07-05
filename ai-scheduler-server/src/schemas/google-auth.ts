@@ -5,6 +5,7 @@ const opaqueToken = z.string().regex(/^[A-Za-z0-9_.-]{32,256}$/);
 
 export const googleStartQuerySchema = z.object({
   codeChallenge: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+  returnTo: z.url().optional(),
 });
 
 export const googleCallbackQuerySchema = z
