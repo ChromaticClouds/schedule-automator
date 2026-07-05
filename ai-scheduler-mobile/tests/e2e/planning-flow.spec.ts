@@ -8,7 +8,7 @@ const addPlanningItem = async (
 ) => {
   const input = page.getByPlaceholder(placeholder);
   await input.fill(title);
-  await input.locator('xpath=..').getByText(buttonLabel, { exact: true }).click();
+  await page.getByText(buttonLabel, { exact: true }).click();
   await expect(page.getByText(title, { exact: false }).first()).toBeVisible();
 };
 
