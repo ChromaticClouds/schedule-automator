@@ -42,13 +42,17 @@ for (const story of [
   assert.match(stories, new RegExp(`export const ${story}`));
 }
 assert.match(workflow, /workflow_dispatch/);
+assert.match(workflow, /pull_request:/);
+assert.match(workflow, /ai-scheduler-mobile\/tests\/visual\/\*\*/);
 assert.match(workflow, /type: choice/);
-assert.match(workflow, /VISUAL_RUN_MODE: \$\{\{ inputs\.mode \}\}/);
+assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+assert.match(workflow, /inputs\.mode \|\| 'test'/);
 assert.match(workflow, /playwright install --with-deps chromium/);
 assert.match(workflow, /pnpm visual:ci/);
 assert.match(workflow, /actions\/upload-artifact/);
 assert.match(guide, /pnpm visual:capture/);
 assert.match(guide, /pnpm visual:ci/);
 assert.match(guide, /pnpm visual:update/);
+assert.match(guide, /pull requests/);
 
 console.log('visual screenshot validation passed');

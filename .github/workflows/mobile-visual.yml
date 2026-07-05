@@ -1,6 +1,17 @@
 name: Mobile visual screenshots
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/mobile-visual.yml"
+      - "ai-scheduler-mobile/.storybook/**"
+      - "ai-scheduler-mobile/scripts/run-visual-screenshots.mjs"
+      - "ai-scheduler-mobile/src/**"
+      - "ai-scheduler-mobile/tests/visual/**"
+      - "ai-scheduler-mobile/package.json"
+      - "ai-scheduler-mobile/pnpm-lock.yaml"
+      - "ai-scheduler-mobile/playwright.config.ts"
+      - "ai-scheduler-mobile/tsconfig.json"
   workflow_dispatch:
     inputs:
       mode:
@@ -16,16 +27,20 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: mobile-visual-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   visual:
-    name: Planning stories (${{ inputs.mode }})
+    name: Planning stories
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ai-scheduler-mobile
     env:
       CI: "true"
-      VISUAL_RUN_MODE: ${{ inputs.mode }}
+      VISUAL_RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'test' }}
 
     steps:
       - name: Checkout
@@ -54,7 +69,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: planning-storybook-${{ inputs.mode }}
+          name: planning-storybook-${{ env.VISUAL_RUN_MODE }}
           path: |
             ai-scheduler-mobile/test-results/visual
             ai-scheduler-mobile/playwright-report
