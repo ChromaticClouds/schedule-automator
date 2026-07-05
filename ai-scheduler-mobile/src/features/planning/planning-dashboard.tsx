@@ -35,12 +35,10 @@ export function PlanningDashboard() {
         <ThemedView style={styles.header}>
           <ThemedText type="subtitle">주간 계획</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            이번 주 목표, 작업, 보호 시간을 한곳에서 정리하세요.
+            이번 주 목표, 작업, 보호 시간을 한 화면에서 정리하세요.
           </ThemedText>
         </ThemedView>
-
         <AuthPanel />
-
         {authenticated && <ScheduleDraftPanel />}
         {authenticated && <DailyReviewPanel />}
         {authenticated && <WeeklyReschedulePanel />}

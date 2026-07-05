@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -22,14 +23,14 @@ export function GoalBreakdownView({
   onGenerate,
 }: GoalBreakdownViewProps) {
   return (
-    <ThemedView type="backgroundElement" style={styles.panel}>
+    <ThemedView style={styles.panel} type="backgroundElement">
       <ThemedText type="subtitle">AI 작업 분해</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
         활성 주간 목표를 실행 가능한 작업 목록으로 나눕니다.
       </ThemedText>
       {isLoading && <ThemedText type="small">목표를 불러오는 중...</ThemedText>}
       {!isLoading && goals.length === 0 && (
-        <ThemedText type="small">먼저 활성 목표를 추가하세요.</ThemedText>
+        <ThemedText type="small">먼저 활성 목표를 추가해 주세요.</ThemedText>
       )}
       {goals.map((goal) => {
         const busy = busyGoalId === goal._id;
@@ -39,7 +40,6 @@ export function GoalBreakdownView({
               {goal.title}
             </ThemedText>
             <PlanningButton
-              accessibilityRole="button"
               disabled={Boolean(busyGoalId)}
               label={busy ? '생성 중...' : '분해'}
               onPress={() => onGenerate(goal._id)}
@@ -50,8 +50,8 @@ export function GoalBreakdownView({
       })}
       {feedback && (
         <ThemedText
+          themeColor={feedback.kind === 'error' ? 'danger' : 'textSecondary'}
           type="small"
-          themeColor={feedback.kind === 'error' ? 'text' : 'textSecondary'}
         >
           {feedback.message}
         </ThemedText>

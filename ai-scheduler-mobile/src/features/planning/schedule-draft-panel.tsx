@@ -1,6 +1,7 @@
 import * as Crypto from 'expo-crypto';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { useToast } from '@/components/toast-provider';
 import { signInWithGoogle } from '@/features/auth/oauth';
 import { useSchedulePreferences } from '@/features/settings/hooks';
 import {
@@ -24,6 +25,7 @@ import {
 import { useRegenerateScheduleDraft } from './schedule-regenerate-hooks';
 
 export function ScheduleDraftPanel() {
+  const { showToast } = useToast();
   const date = toScheduleDateKey();
   const queryClient = useQueryClient();
   const draftQuery = useScheduleDraft(date);
@@ -63,6 +65,13 @@ export function ScheduleDraftPanel() {
     scheduleDraftErrorMessage(regenerateDraft.error) ??
     scheduleDraftErrorMessage(editBlock.error) ??
     scheduleDraftErrorMessage(reconnectGoogle.error);
+  const toastError = (error: unknown, fallback: string) =>
+    showToast({
+      kind: 'error',
+      message: scheduleDraftErrorMessage(error) ?? fallback,
+    });
+  const toastSuccess = (message: string) =>
+    showToast({ kind: 'success', message });
   const props: ScheduleDraftPanelViewProps = {
     busy:
       generateDraft.isPending ||
@@ -77,18 +86,50 @@ export function ScheduleDraftPanel() {
     errorMessage,
     isLoading: draftQuery.isLoading,
     noDraft: scheduleDraftIsNotFoundError(draftQuery.error),
-    onApprove: (id) => approveDraft.mutate(id),
-    onEdit: (draftId, blockId, body) =>
-      editBlock.mutate({ blockId, body, draftId }),
-    onGenerate: () =>
-      generateDraft.mutate(`schedule-draft:${date}:${Crypto.randomUUID()}`),
-    onReconnect: () => reconnectGoogle.mutate(),
-    onRegenerate: (draftId) =>
-      regenerateDraft.mutate({
-        draftId,
-        idempotencyKey: `schedule-regenerate:${draftId}:${Crypto.randomUUID()}`,
+    onApprove: (id) =>
+      approveDraft.mutate(id, {
+        onError: (error) => toastError(error, '초안을 승인하지 못했습니다.'),
+        onSuccess: () => toastSuccess('초안을 승인했습니다.'),
       }),
-    onReject: (id) => rejectDraft.mutate(id),
+    onEdit: (draftId, blockId, body) =>
+      editBlock.mutate(
+        { blockId, body, draftId },
+        {
+          onError: (error) => toastError(error, '블록을 수정하지 못했습니다.'),
+          onSuccess: () => toastSuccess('일정 블록을 수정했습니다.'),
+        },
+      ),
+    onGenerate: () =>
+      generateDraft.mutate(`schedule-draft:${date}:${Crypto.randomUUID()}`, {
+        onError: (error) => toastError(error, '초안을 생성하지 못했습니다.'),
+        onSuccess: () => toastSuccess('초안을 생성했습니다.'),
+      }),
+    onReconnect: () =>
+      reconnectGoogle.mutate(undefined, {
+        onError: () =>
+          showToast({ kind: 'error', message: 'Google 재연결을 완료하지 못했습니다.' }),
+        onSuccess: (connected) => {
+          if (connected) {
+            toastSuccess('Google Calendar를 다시 연결했습니다.');
+          }
+        },
+      }),
+    onRegenerate: (draftId) =>
+      regenerateDraft.mutate(
+        {
+          draftId,
+          idempotencyKey: `schedule-regenerate:${draftId}:${Crypto.randomUUID()}`,
+        },
+        {
+          onError: (error) => toastError(error, '초안을 다시 생성하지 못했습니다.'),
+          onSuccess: () => toastSuccess('초안을 다시 생성했습니다.'),
+        },
+      ),
+    onReject: (id) =>
+      rejectDraft.mutate(id, {
+        onError: (error) => toastError(error, '초안을 거절하지 못했습니다.'),
+        onSuccess: () => toastSuccess('초안을 거절했습니다.'),
+      }),
     timezone: preferences.data?.timezone,
   };
   return <ScheduleDraftPanelView {...props} />;

@@ -40,20 +40,14 @@ export function ProtectedTimeCreateRow({
   return (
     <View style={styles.container}>
       <PlanningTextInput
-        accessibilityHint={
-          attempted && !title.trim() ? '보호 시간 이름을 입력하세요.' : undefined
-        }
         accessibilityLabel="보호 시간 이름"
         editable={!isPending}
         onChangeText={onChangeTitle}
-        placeholder="보호 시간 이름"
+        placeholder="예: 점심 식사"
         value={title}
       />
       <View style={styles.timeRow}>
         <PlanningTextInput
-          accessibilityHint={
-            attempted && !valid ? '올바른 시작 시간을 입력하세요.' : undefined
-          }
           accessibilityLabel="보호 시간 시작"
           editable={!isPending}
           maxLength={5}
@@ -62,11 +56,8 @@ export function ProtectedTimeCreateRow({
           style={styles.timeInput}
           value={startTime}
         />
-        <ThemedText>–</ThemedText>
+        <ThemedText>~</ThemedText>
         <PlanningTextInput
-          accessibilityHint={
-            attempted && !valid ? '시작 시간보다 늦게 입력하세요.' : undefined
-          }
           accessibilityLabel="보호 시간 종료"
           editable={!isPending}
           maxLength={5}
@@ -77,12 +68,12 @@ export function ProtectedTimeCreateRow({
         />
       </View>
       <ThemedText type="small" themeColor="textSecondary">
-        평일에 반복할 같은 날의 시간을 24시간 형식으로 입력하세요. 예: 점심
-        식사, 12:00–13:00
+        평일에 반복되는 시간을 24시간 형식으로 입력해 주세요. 예: 점심 식사,
+        12:00–13:00
       </ThemedText>
       {attempted && !valid && (
         <ThemedText type="small" themeColor="danger">
-          이름을 입력하고 종료 시간을 시작 시간보다 늦게 설정하세요.
+          이름을 입력하고 종료 시간을 시작 시간보다 늦게 설정해 주세요.
         </ThemedText>
       )}
       {errorMessage && (

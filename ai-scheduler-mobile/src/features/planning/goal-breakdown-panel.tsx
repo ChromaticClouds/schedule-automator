@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import * as Crypto from 'expo-crypto';
+import { useToast } from '@/components/toast-provider';
 import { useGoalBreakdown } from './goal-breakdown-hooks';
 import {
   goalBreakdownErrorCode,
@@ -10,6 +11,7 @@ import { GoalBreakdownView } from './goal-breakdown-view';
 import { useGoals } from './hooks';
 
 export function GoalBreakdownPanel() {
+  const { showToast } = useToast();
   const goals = useGoals();
   const mutation = useGoalBreakdown();
   const requestKeys = useRef(new Map<string, string>());
@@ -31,11 +33,21 @@ export function GoalBreakdownPanel() {
       { goalId, idempotencyKey },
       {
         onError: (error) => {
+          showToast({
+            kind: 'error',
+            message: goalBreakdownErrorFeedback(error).message,
+          });
           if (goalBreakdownErrorCode(error) === 'IDEMPOTENCY_CONFLICT') {
             requestKeys.current.delete(goalId);
           }
         },
-        onSuccess: () => requestKeys.current.delete(goalId),
+        onSuccess: (result) => {
+          requestKeys.current.delete(goalId);
+          showToast({
+            kind: 'success',
+            message: goalBreakdownSuccessFeedback(result).message,
+          });
+        },
       },
     );
   };

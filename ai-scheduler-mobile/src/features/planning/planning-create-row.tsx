@@ -31,12 +31,10 @@ export function PlanningCreateRow({
 }: PlanningCreateRowProps) {
   const [localEmptyMessage, setLocalEmptyMessage] = useState(false);
   const shouldShowEmptyMessage = showEmptyMessage || localEmptyMessage;
-
   const handleChange = (nextValue: string) => {
     if (nextValue.trim()) setLocalEmptyMessage(false);
     onChange(nextValue);
   };
-
   const handleSubmit = () => {
     if (!value.trim()) {
       setLocalEmptyMessage(true);
@@ -69,22 +67,22 @@ export function PlanningCreateRow({
         </ThemedText>
       )}
       {shouldShowEmptyMessage && (
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText type="small" themeColor="danger">
           {emptyMessage}
         </ThemedText>
       )}
-      {errorMessage && <ThemedText type="small">{errorMessage}</ThemedText>}
+      {errorMessage && (
+        <ThemedText type="small" themeColor="danger">
+          {errorMessage}
+        </ThemedText>
+      )}
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    minHeight: 56,
-  },
-  input: {
-    flex: 1,
-  },
+  button: { minHeight: 56 },
+  input: { flex: 1 },
   row: { backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
   wrapper: { backgroundColor: 'transparent', gap: Spacing.one },
 });

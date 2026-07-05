@@ -47,6 +47,17 @@ export const createTask = (body: CreateTaskInput) =>
     body,
   });
 
+export const updateTask = (id: string, body: Partial<CreateTaskInput>) =>
+  apiRequest<Task>(`/tasks/${id}`, {
+    method: 'PATCH',
+    body,
+  });
+
+export const deleteTask = (id: string) =>
+  apiRequest<Task>(`/tasks/${id}`, {
+    method: 'DELETE',
+  });
+
 export const listProtectedTimes = () =>
   apiRequest<ProtectedTime[]>('/protected-times');
 
