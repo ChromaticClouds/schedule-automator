@@ -14,19 +14,19 @@ import { useTheme } from '@/hooks/use-theme';
 
 const useControlColors = () => {
   const theme = useTheme();
-  const isDark = theme.background === '#000000';
 
   return {
-    activeButton: isDark ? '#2F6FED' : '#DCEBFF',
-    activeButtonText: isDark ? '#FFFFFF' : '#0B1F3A',
-    disabledButton: isDark ? '#263447' : '#E8F1FF',
-    disabledButtonText: isDark ? '#C5D2E8' : '#5F6E85',
-    inputBackground: isDark ? '#17181B' : '#FFFFFF',
-    inputBorder: isDark ? '#8E95A3' : '#6B7280',
+    activeButton: theme.primary,
+    activeButtonText: theme.primaryText,
+    disabledButton: theme.backgroundSelected,
+    disabledButtonText: theme.textSecondary,
+    inputBackground: theme.inputBackground,
+    inputBorder: theme.border,
     inputText: theme.text,
     placeholderText: theme.textSecondary,
-    selectedButton: isDark ? '#3D7EF7' : '#B8D8FF',
-    selection: '#3C87F7',
+    selectedButton: theme.backgroundSelected,
+    selectedButtonText: theme.text,
+    selection: theme.primary,
   };
 };
 
@@ -78,13 +78,24 @@ export function PlanningButton({
     : selected
       ? colors.selectedButton
       : colors.activeButton;
-  const color = disabled ? colors.disabledButtonText : colors.activeButtonText;
+  const color = disabled
+    ? colors.disabledButtonText
+    : selected
+      ? colors.selectedButtonText
+      : colors.activeButtonText;
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled, selected }}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.button, { backgroundColor }, style]}
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor },
+        pressed && !disabled && styles.pressed,
+        style,
+      ]}
       {...props}
     >
       <ThemedText style={{ color }} type="smallBold">
@@ -98,12 +109,15 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 8,
     justifyContent: 'center',
+    minHeight: 48,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
   input: {
     borderRadius: 8,
     borderWidth: 1,
+    minHeight: 48,
     padding: Spacing.two,
   },
+  pressed: { opacity: 0.78 },
 });

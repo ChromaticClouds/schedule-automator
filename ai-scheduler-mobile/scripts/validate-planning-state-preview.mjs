@@ -19,7 +19,7 @@ assert.match(previewRoute, /PlanningStatePreview/);
 assert.match(previewRoute, /__DEV__ \|\| ENV\.ENABLE_DEV_TOOLS/);
 assert.match(explore, /__DEV__ \|\| ENV\.ENABLE_DEV_TOOLS/);
 assert.match(explore, /\/planning-preview/);
-assert.match(explore, /Planning state preview/);
+assert.match(explore, /계획 상태 미리보기/);
 assert.match(rootLayout, /Stack\.Screen name="\(tabs\)"/);
 assert.match(rootLayout, /Stack\.Screen name="planning-preview"/);
 assert.match(tabLayout, /<AppTabs \/>/);
