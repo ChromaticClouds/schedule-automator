@@ -32,7 +32,7 @@ export function PlanningStatePreviewSections() {
   );
 }
 
-function DailyReviewPreview() {
+export function DailyReviewPreview() {
   return (
     <PreviewGroup title="Daily review">
       {planningStateCatalog.dailyReview.map((entry) => (
@@ -49,7 +49,7 @@ function DailyReviewPreview() {
   );
 }
 
-function TaskSummaryPreview() {
+export function TaskSummaryPreview() {
   return (
     <PreviewGroup title="Task summary">
       {planningStateCatalog.taskSummary.map((entry) => (
@@ -61,7 +61,7 @@ function TaskSummaryPreview() {
   );
 }
 
-function PlanningCreatePreview() {
+export function PlanningCreatePreview() {
   return (
     <PreviewGroup title="Planning create row">
       {planningStateCatalog.planningCreate.map((entry) => (
@@ -73,7 +73,7 @@ function PlanningCreatePreview() {
   );
 }
 
-function ScheduleDraftPreview() {
+export function ScheduleDraftPreview() {
   return (
     <PreviewGroup title="Schedule draft">
       {planningStateCatalog.scheduleDraft.map((entry) => (
@@ -93,7 +93,7 @@ function ScheduleDraftPreview() {
   );
 }
 
-function WeeklyReschedulePreview() {
+export function WeeklyReschedulePreview() {
   return (
     <PreviewGroup title="Weekly reschedule">
       {planningStateCatalog.weeklyReschedule.map((entry) => (
@@ -108,7 +108,7 @@ function WeeklyReschedulePreview() {
   );
 }
 
-function GoalBreakdownPreview() {
+export function GoalBreakdownPreview() {
   return (
     <PreviewGroup title="Goal breakdown">
       {planningStateCatalog.goalBreakdown.map((entry) => (
@@ -125,7 +125,7 @@ function GoalBreakdownPreview() {
   );
 }
 
-function PlanningSectionCopyPreview() {
+export function PlanningSectionCopyPreview() {
   return (
     <PreviewGroup title="Planning section copy">
       {planningStateCatalog.planningSections.map((entry) => (

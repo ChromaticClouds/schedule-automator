@@ -1,4 +1,4 @@
-if (process.env.STORYBOOK_ENABLED === 'true') {
+if (process.env.EXPO_PUBLIC_STORYBOOK_ENABLED === 'true') {
   const { registerRootComponent } = require('expo');
   const StorybookUIRoot = require('./.rnstorybook').default;
 

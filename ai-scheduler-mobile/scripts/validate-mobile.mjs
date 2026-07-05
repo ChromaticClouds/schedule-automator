@@ -119,6 +119,7 @@ runValidation('validate-planning-state-catalog.mjs', 'planning state catalog val
 runValidation('validate-planning-state-preview.mjs', 'planning state preview validation failed');
 runValidation('validate-schedule-draft-ui.mjs', 'schedule draft UI validation failed');
 runValidation('validate-storybook.mjs', 'storybook validation failed');
+runValidation('validate-visual-screenshots.mjs', 'visual screenshot validation failed');
 runValidation('validate-weekly-reschedule-ui.mjs', 'weekly reschedule UI validation failed');
 
 const tsc = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
