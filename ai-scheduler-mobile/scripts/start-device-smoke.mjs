@@ -1,10 +1,12 @@
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 const allowLoopback = process.env.ALLOW_LOOPBACK_DEVICE_API === 'true';
-const forwardedArgs = process.argv.slice(2);
+const forwardedArgs = process.argv.slice(2).filter((arg) => arg !== '--');
 
 const fail = (message) => {
   console.error(`device smoke setup failed: ${message}`);
@@ -29,8 +31,18 @@ if (isLoopback && !allowLoopback) {
   fail('use your computer LAN IP for physical devices, not localhost');
 }
 
-const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
-const args = ['exec', 'expo', 'start', '--lan', ...forwardedArgs];
+const expoBin = join(
+  root,
+  'node_modules',
+  '.bin',
+  process.platform === 'win32' ? 'expo.cmd' : 'expo',
+);
+
+if (!existsSync(expoBin)) {
+  fail('install mobile dependencies before running device smoke');
+}
+
+const args = ['start', '--lan', ...forwardedArgs];
 const env = {
   ...process.env,
   EXPO_PUBLIC_APP_ENV: process.env.EXPO_PUBLIC_APP_ENV ?? 'development',
@@ -43,10 +55,15 @@ const env = {
 console.log(`Starting Expo device smoke against ${parsedUrl.origin}`);
 console.log('Mocks are disabled for auth and calendar integration.');
 
-const result = spawnSync(command, args, {
+const result = spawnSync(expoBin, args, {
   cwd: root,
   env,
   stdio: 'inherit',
+  shell: process.platform === 'win32',
 });
+
+if (result.error) {
+  fail(result.error.message);
+}
 
 process.exit(result.status ?? 1);
