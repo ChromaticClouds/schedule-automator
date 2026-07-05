@@ -31,6 +31,7 @@ export function PlanningDashboard() {
         contentContainerStyle={styles.content}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
+        style={styles.scroll}
       >
         <ThemedView style={styles.header}>
           <ThemedText type="subtitle">주간 계획</ThemedText>
@@ -54,9 +55,10 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     gap: Spacing.three,
-    paddingBottom: Spacing.four,
+    paddingBottom: Spacing.three,
     paddingTop: Spacing.three,
   },
   header: { gap: Spacing.one },
   keyboard: { flex: 1 },
+  scroll: { flex: 1 },
 });

@@ -41,7 +41,11 @@ export function WeeklyRescheduleView({
       {disabled && !result && (
         <ThemedText type="small">재배치할 미완료 작업이 아직 없습니다.</ThemedText>
       )}
-      {errorMessage && <ThemedText type="small">실패: {errorMessage}</ThemedText>}
+      {errorMessage && (
+        <ThemedText type="small" themeColor="danger">
+          실패: {errorMessage}
+        </ThemedText>
+      )}
       {result && <ResultSummary result={result} taskNames={taskNames} />}
     </ThemedView>
   );

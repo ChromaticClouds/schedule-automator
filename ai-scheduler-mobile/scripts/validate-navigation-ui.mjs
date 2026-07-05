@@ -7,6 +7,7 @@ const readSource = (path) => readFileSync(join(root, 'src', path), 'utf8');
 
 const tabs = readSource('components/app-tabs.tsx');
 const webTabs = readSource('components/app-tabs.web.tsx');
+const tabScreen = readSource('components/tab-screen.tsx');
 const dashboard = readSource('features/planning/planning-dashboard.tsx');
 const home = readSource('app/(tabs)/index.tsx');
 const explore = readSource('app/(tabs)/explore.tsx');
@@ -30,7 +31,8 @@ for (const text of ['설정', '기상 시간', '시간대', '설정 저장']) {
 
 assert.match(tabs, /default: colors\.textSecondary/);
 assert.match(tabs, /selected: colors\.primary/);
-assert.match(settings, /KeyboardAvoidingView/);
+assert.match(settings, /TabScreenScrollView keyboardAvoiding/);
+assert.match(tabScreen, /KeyboardAvoidingView/);
 assert.match(settingsView, /PlanningTextInput/);
 assert.match(settingsView, /PlanningButton/);
 assert.match(settingsView, /accessibilityLiveRegion="polite"/);
@@ -39,9 +41,10 @@ assert.match(protectedRow, /12:00–13:00/);
 assert.match(controls, /accessibilityRole="button"/);
 assert.match(controls, /selectedButtonText: theme\.text/);
 
-for (const source of [home, explore, settings]) {
-  assert.match(source, /edges={\['top', 'left', 'right'\]}/);
-}
+assert.match(tabScreen, /edges={\['top', 'left', 'right'\]}/);
+assert.match(home, /TabScreenFrame/);
+assert.match(explore, /TabScreenScrollView/);
+assert.match(settings, /TabScreenScrollView/);
 for (const source of [dashboard, home, explore, settings]) {
   assert.doesNotMatch(source, /BottomTabInset/);
 }

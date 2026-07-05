@@ -49,7 +49,11 @@ export function AuthPanel() {
         }
         style={styles.button}
       />
-      {error && <ThemedText type="small">{error}</ThemedText>}
+      {error && (
+        <ThemedText type="small" themeColor="danger">
+          {error}
+        </ThemedText>
+      )}
     </ThemedView>
   );
 }

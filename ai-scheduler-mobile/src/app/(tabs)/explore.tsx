@@ -1,11 +1,11 @@
 import { Link, type Href } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { TabScreenScrollView } from '@/components/tab-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ENV } from '@/config/env';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 const features = [
@@ -31,80 +31,77 @@ export default function ExploreScreen() {
   const theme = useTheme();
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
-        <ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}>
-          <View style={styles.header}>
-            <ThemedText type="subtitle">탐색</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              계획 흐름을 빠르게 이해하고 필요한 기능을 찾아보세요.
-            </ThemedText>
+    <TabScreenScrollView>
+      <View style={styles.header}>
+        <ThemedText type="subtitle">탐색</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">
+          계획 흐름을 빠르게 이해하고 필요한 기능을 찾아보세요.
+        </ThemedText>
+      </View>
+
+      <ThemedView type="backgroundElement" style={styles.featureGroup}>
+        <ThemedText type="smallBold">Schedule Automator 활용 흐름</ThemedText>
+        {features.map((feature, index) => (
+          <View key={feature.title} style={styles.featureRow}>
+            <View
+              style={[
+                styles.step,
+                { backgroundColor: theme.backgroundSelected },
+              ]}>
+              <ThemedText type="smallBold">{index + 1}</ThemedText>
+            </View>
+            <View style={styles.featureCopy}>
+              <ThemedText type="small" themeColor="primary">
+                {feature.eyebrow}
+              </ThemedText>
+              <ThemedText type="smallBold">{feature.title}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                {feature.body}
+              </ThemedText>
+            </View>
           </View>
+        ))}
+      </ThemedView>
 
-          <ThemedView type="backgroundElement" style={styles.featureGroup}>
-            <ThemedText type="smallBold">Schedule Automator 활용 흐름</ThemedText>
-            {features.map((feature, index) => (
-              <View key={feature.title} style={styles.featureRow}>
-                <View
-                  style={[
-                    styles.step,
-                    { backgroundColor: theme.backgroundSelected },
-                  ]}>
-                  <ThemedText type="smallBold">{index + 1}</ThemedText>
-                </View>
-                <View style={styles.featureCopy}>
-                  <ThemedText type="small" themeColor="primary">
-                    {feature.eyebrow}
-                  </ThemedText>
-                  <ThemedText type="smallBold">{feature.title}</ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {feature.body}
-                  </ThemedText>
-                </View>
+      {showDevTools && (
+        <ThemedView type="backgroundElement" style={styles.devCard}>
+          <ThemedText type="smallBold">개발/검증 도구</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            상태별 UI를 실제 앱 안에서 빠르게 확인할 수 있습니다.
+          </ThemedText>
+          <Link href={'/planning-preview' as Href} asChild>
+            <Pressable
+              accessibilityLabel="계획 상태 미리보기 열기"
+              accessibilityRole="button"
+              style={({ pressed }) => [
+                styles.previewButton,
+                { backgroundColor: theme.primary },
+                pressed && styles.pressed,
+              ]}>
+              <View style={styles.previewCopy}>
+                <ThemedText type="smallBold" style={{ color: theme.primaryText }}>
+                  계획 상태 미리보기
+                </ThemedText>
+                <ThemedText type="small" style={{ color: theme.primaryText }}>
+                  샘플 데이터로 로딩·오류·완료 화면을 점검합니다.
+                </ThemedText>
               </View>
-            ))}
-          </ThemedView>
-
-          {showDevTools && (
-            <Link href={'/planning-preview' as Href} asChild>
-              <Pressable
-                accessibilityLabel="계획 상태 미리보기 열기"
-                accessibilityRole="button"
-                style={({ pressed }) => [
-                  styles.previewButton,
-                  { backgroundColor: theme.primary },
-                  pressed && styles.pressed,
-                ]}>
-                <View style={styles.previewCopy}>
-                  <ThemedText type="smallBold" style={{ color: theme.primaryText }}>
-                    계획 상태 미리보기
-                  </ThemedText>
-                  <ThemedText type="small" style={{ color: theme.primaryText }}>
-                    샘플 데이터로 로딩·오류·완료 화면을 점검합니다.
-                  </ThemedText>
-                </View>
-                <ThemedText style={{ color: theme.primaryText }}>›</ThemedText>
-              </Pressable>
-            </Link>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+              <ThemedText type="smallBold" style={{ color: theme.primaryText }}>
+                열기
+              </ThemedText>
+            </Pressable>
+          </Link>
+        </ThemedView>
+      )}
+    </TabScreenScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
-  content: {
-    gap: Spacing.three,
-    paddingBottom: Spacing.four,
-    paddingTop: Spacing.three,
-  },
+  devCard: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
   featureCopy: { flex: 1, gap: Spacing.one },
   featureGroup: {
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.two,
     gap: Spacing.three,
     padding: Spacing.three,
   },
@@ -113,18 +110,13 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.78 },
   previewButton: {
     alignItems: 'center',
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.two,
     flexDirection: 'row',
+    gap: Spacing.two,
     minHeight: 64,
     padding: Spacing.three,
   },
   previewCopy: { flex: 1, gap: Spacing.one },
-  safeArea: {
-    flex: 1,
-    maxWidth: MaxContentWidth,
-    paddingBottom: Spacing.two,
-    paddingHorizontal: Spacing.three,
-  },
   step: {
     alignItems: 'center',
     borderRadius: 22,

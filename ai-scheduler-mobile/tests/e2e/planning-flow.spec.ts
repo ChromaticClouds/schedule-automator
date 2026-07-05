@@ -4,10 +4,11 @@ const addPlanningItem = async (
   page: import('@playwright/test').Page,
   placeholder: string,
   title: string,
+  buttonLabel = '추가',
 ) => {
   const input = page.getByPlaceholder(placeholder);
   await input.fill(title);
-  await input.locator('xpath=..').getByText('추가', { exact: true }).click();
+  await input.locator('xpath=..').getByText(buttonLabel, { exact: true }).click();
   await expect(page.getByText(title, { exact: false }).first()).toBeVisible();
 };
 
@@ -18,7 +19,12 @@ test('creates planning records and reviews a schedule draft', async ({
   await expect(page.getByText('Google 계정 연결됨')).toBeVisible();
 
   await addPlanningItem(page, '주간 목표를 입력하세요', 'E2E weekly goal');
-  await addPlanningItem(page, '작업을 입력하세요', 'E2E planning task');
+  await addPlanningItem(
+    page,
+    '예: README 실행 방법 정리',
+    'E2E planning task',
+    '작업 추가',
+  );
 
   await page.getByText('초안 생성', { exact: true }).click();
   await expect(page.getByText(/초안 - Browser E2E schedule draft/)).toBeVisible();
