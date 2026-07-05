@@ -36,6 +36,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@storybook/addon-ondevice-actions": "10.4.7",
     "@storybook/addon-ondevice-backgrounds": "10.4.7",
     "@storybook/addon-ondevice-controls": "10.4.7",
@@ -48,9 +49,13 @@
   },
   "scripts": {
     "start": "expo start",
-    "storybook": "cross-env STORYBOOK_ENABLED=true expo start",
-    "storybook:ios": "cross-env STORYBOOK_ENABLED=true expo start --ios",
-    "storybook:android": "cross-env STORYBOOK_ENABLED=true expo start --android",
+    "storybook": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start",
+    "storybook:web": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:3000 expo start --web --port 7007",
+    "storybook:ios": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start --ios",
+    "storybook:android": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start --android",
+    "visual:capture": "cross-env VISUAL_MODE=capture playwright test",
+    "visual:test": "playwright test",
+    "visual:update": "playwright test --update-snapshots",
     "typecheck": "tsc --noEmit",
     "validate": "node ./scripts/validate-mobile.mjs",
     "reset-project": "node ./scripts/reset-project.js",

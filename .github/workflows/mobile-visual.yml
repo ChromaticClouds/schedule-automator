@@ -1,0 +1,51 @@
+name: Mobile visual smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: Capture planning stories
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-scheduler-mobile
+    env:
+      CI: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ai-scheduler-mobile/pnpm-lock.yaml
+
+      - name: Install mobile dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Capture planning stories
+        run: pnpm visual:capture
+
+      - name: Upload visual artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: planning-storybook-screenshots
+          path: |
+            ai-scheduler-mobile/test-results/visual
+            ai-scheduler-mobile/playwright-report
+          if-no-files-found: warn
+          retention-days: 7
