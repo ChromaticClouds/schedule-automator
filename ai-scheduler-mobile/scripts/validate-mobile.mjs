@@ -120,6 +120,7 @@ runValidation('validate-planning-state-preview.mjs', 'planning state preview val
 runValidation('validate-schedule-draft-ui.mjs', 'schedule draft UI validation failed');
 runValidation('validate-storybook.mjs', 'storybook validation failed');
 runValidation('validate-e2e.mjs', 'planning E2E validation failed');
+runValidation('validate-device-smoke.mjs', 'device smoke validation failed');
 runValidation('validate-visual-screenshots.mjs', 'visual screenshot validation failed');
 runValidation('validate-weekly-reschedule-ui.mjs', 'weekly reschedule UI validation failed');
 
