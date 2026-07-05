@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton } from './planning-controls';
 import type { ScheduleDraftRecoveryAction } from './schedule-draft-state';
 import type { ScheduleDraft } from './types';
 
@@ -35,11 +36,12 @@ export function ScheduleDraftRecoveryActionButton({
   return (
     <ThemedView style={styles.recovery}>
       {action.message && <ThemedText type="small">{action.message}</ThemedText>}
-      <Pressable disabled={busy} onPress={run} style={styles.button}>
-        <ThemedText type="smallBold">
-          {busy ? 'Working...' : action.label}
-        </ThemedText>
-      </Pressable>
+      <PlanningButton
+        disabled={busy}
+        label={busy ? 'Working...' : action.label}
+        onPress={run}
+        style={styles.button}
+      />
     </ThemedView>
   );
 }
@@ -47,7 +49,6 @@ export function ScheduleDraftRecoveryActionButton({
 const styles = StyleSheet.create({
   button: {
     alignSelf: 'flex-start',
-    backgroundColor: '#DCEBFF',
     borderRadius: 8,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,

@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton } from './planning-controls';
 import type { WeeklyRescheduleResult } from './types';
 import { weeklyRescheduleResultSummary } from './weekly-reschedule-state';
 
@@ -22,21 +23,21 @@ export function WeeklyRescheduleView({
   result,
   taskNames,
 }: WeeklyRescheduleViewProps) {
+  const busy = disabled || isPending;
+
   return (
     <ThemedView type="backgroundElement" style={styles.panel}>
       <ThemedText type="smallBold">Weekly missed-task replan</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
         Place missed tasks into the remaining days of this week.
       </ThemedText>
-      <Pressable
+      <PlanningButton
         accessibilityRole="button"
-        disabled={disabled || isPending}
+        disabled={busy}
+        label={isPending ? 'Rescheduling...' : 'Reschedule missed tasks'}
         onPress={onRun}
-        style={[styles.button, (disabled || isPending) && styles.disabled]}>
-        <ThemedText type="smallBold">
-          {isPending ? 'Rescheduling...' : 'Reschedule missed tasks'}
-        </ThemedText>
-      </Pressable>
+        style={styles.button}
+      />
       {disabled && !result && (
         <ThemedText type="small">No missed tasks are ready to replan.</ThemedText>
       )}
@@ -92,8 +93,7 @@ const formatTime = (value: string) =>
   });
 
 const styles = StyleSheet.create({
-  button: { alignSelf: 'flex-start', backgroundColor: '#DCEBFF', borderRadius: 8, padding: Spacing.two },
-  disabled: { opacity: 0.5 },
+  button: { alignSelf: 'flex-start', borderRadius: 8, padding: Spacing.two },
   panel: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
   resultGroup: { backgroundColor: 'transparent', gap: Spacing.one },
   results: { backgroundColor: 'transparent', gap: Spacing.two },

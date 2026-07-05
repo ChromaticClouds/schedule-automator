@@ -1,8 +1,13 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { BottomTabInset, Spacing } from '@/constants/theme';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { useAuthStore } from '@/features/auth/session';
 import { DailyReviewPanel } from './daily-review-panel';
@@ -18,27 +23,43 @@ export function PlanningDashboard() {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="subtitle">Weekly planning</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          Goals, tasks, and protected time for the current week.
-        </ThemedText>
-      </ThemedView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={BottomTabInset}
+      style={styles.keyboard}
+    >
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedView style={styles.header}>
+          <ThemedText type="subtitle">Weekly planning</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            Goals, tasks, and protected time for the current week.
+          </ThemedText>
+        </ThemedView>
 
-      <AuthPanel />
+        <AuthPanel />
 
-      {authenticated && <ScheduleDraftPanel />}
-      {authenticated && <DailyReviewPanel />}
-      {authenticated && <WeeklyReschedulePanel />}
-      {authenticated && <TaskSummaryPanel />}
-      {authenticated && <GoalBreakdownPanel />}
-      {authenticated && <PlanningCreateSections />}
-    </ScrollView>
+        {authenticated && <ScheduleDraftPanel />}
+        {authenticated && <DailyReviewPanel />}
+        {authenticated && <WeeklyReschedulePanel />}
+        {authenticated && <TaskSummaryPanel />}
+        {authenticated && <GoalBreakdownPanel />}
+        {authenticated && <PlanningCreateSections />}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { gap: Spacing.three, paddingTop: Spacing.three },
+  content: {
+    flexGrow: 1,
+    gap: Spacing.three,
+    paddingBottom: BottomTabInset + Spacing.six,
+    paddingTop: Spacing.three,
+  },
   header: { gap: Spacing.one },
+  keyboard: { flex: 1 },
 });

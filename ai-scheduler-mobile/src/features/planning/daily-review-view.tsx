@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton, PlanningTextInput } from './planning-controls';
 import type { Task } from './types';
 
 export type DailyReviewTaskState = 'completed' | 'missed' | undefined;
@@ -53,16 +54,19 @@ export function DailyReviewView({
           task={task}
         />
       ))}
-      <TextInput
+      <PlanningTextInput
         multiline
         onChangeText={onNotesChange}
         placeholder="Optional notes"
         style={styles.notes}
         value={notes}
       />
-      <Pressable disabled={saveIsPending} onPress={onSave} style={styles.save}>
-        <ThemedText type="smallBold">{saveIsPending ? 'Saving...' : 'Save review'}</ThemedText>
-      </Pressable>
+      <PlanningButton
+        disabled={saveIsPending}
+        label={saveIsPending ? 'Saving...' : 'Save review'}
+        onPress={onSave}
+        style={styles.save}
+      />
       {saveErrorMessage && <ThemedText type="small">{saveErrorMessage}</ThemedText>}
       {saveIsSuccess && (
         <ThemedText type="small">Review saved. Missed tasks can now be replanned.</ThemedText>
@@ -92,19 +96,13 @@ function ReviewTask({
 }
 
 function Choice({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} style={[styles.choice, active && styles.active]}>
-      <ThemedText type="smallBold">{label}</ThemedText>
-    </Pressable>
-  );
+  return <PlanningButton label={label} onPress={onPress} selected={active} />;
 }
 
 const styles = StyleSheet.create({
   actions: { backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
-  active: { backgroundColor: '#B8D8FF' },
-  choice: { backgroundColor: '#DCEBFF', borderRadius: 8, padding: Spacing.two },
-  notes: { borderColor: '#9AA0A6', borderRadius: 8, borderWidth: 1, minHeight: 64, padding: Spacing.two },
+  notes: { minHeight: 64 },
   panel: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
-  save: { alignSelf: 'flex-start', backgroundColor: '#DCEBFF', borderRadius: 8, padding: Spacing.two },
+  save: { alignSelf: 'flex-start', borderRadius: 8, padding: Spacing.two },
   task: { backgroundColor: 'transparent', gap: Spacing.one },
 });

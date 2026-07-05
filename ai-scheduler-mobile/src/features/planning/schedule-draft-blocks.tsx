@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton, PlanningTextInput } from './planning-controls';
 import type {
   ScheduleBlock,
   ScheduleBlockEditInput,
@@ -67,9 +68,8 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
         <ThemedView key={block._id} style={styles.block}>
           {editingId === block._id && form ? (
             <>
-              <TextInput
+              <PlanningTextInput
                 onChangeText={(title) => setForm({ ...form, title })}
-                style={styles.input}
                 value={form.title}
               />
               <ThemedView style={styles.timeRow}>
@@ -123,24 +123,25 @@ function BlockReadView({
 }
 
 function TimeInput({ onChange, value }: { onChange: (value: string) => void; value: string }) {
-  return <TextInput maxLength={5} onChangeText={onChange} placeholder="HH:mm" style={styles.time} value={value} />;
+  return (
+    <PlanningTextInput
+      maxLength={5}
+      onChangeText={onChange}
+      placeholder="HH:mm"
+      style={styles.time}
+      value={value}
+    />
+  );
 }
 
 function Button({ disabled, label, onPress }: { disabled: boolean; label: string; onPress: () => void }) {
-  return (
-    <Pressable disabled={disabled} onPress={onPress} style={[styles.button, disabled && styles.disabled]}>
-      <ThemedText type="smallBold">{label}</ThemedText>
-    </Pressable>
-  );
+  return <PlanningButton disabled={disabled} label={label} onPress={onPress} />;
 }
 
 const styles = StyleSheet.create({
   actions: { backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
   block: { backgroundColor: 'transparent', gap: Spacing.one },
-  button: { backgroundColor: '#DCEBFF', borderRadius: 8, padding: Spacing.two },
-  disabled: { opacity: 0.5 },
-  input: { borderColor: '#9AA0A6', borderRadius: 8, borderWidth: 1, padding: Spacing.two },
   list: { backgroundColor: 'transparent', gap: Spacing.two },
-  time: { borderColor: '#9AA0A6', borderRadius: 8, borderWidth: 1, padding: Spacing.two, width: 72 },
+  time: { width: 72 },
   timeRow: { alignItems: 'center', backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
 });

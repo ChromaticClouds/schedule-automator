@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { PlanningButton } from './planning-controls';
 import { ScheduleDraftBlocks } from './schedule-draft-blocks';
 import { ScheduleDraftRecoveryActionButton } from './schedule-draft-recovery-action';
 import {
@@ -118,12 +119,7 @@ function DraftSummary({
       {draft.warnings.map((warning) => (
         <ThemedText key={warning} type="small">Warning: {warning}</ThemedText>
       ))}
-      <ScheduleDraftBlocks
-        busy={busy}
-        draft={draft}
-        onEdit={onEdit}
-        timezone={timezone}
-      />
+      <ScheduleDraftBlocks busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />
     </ThemedView>
   );
 }
@@ -132,15 +128,18 @@ type ActionButtonProps = { disabled: boolean; label: string; onPress: () => void
 
 function ActionButton({ disabled, label, onPress }: ActionButtonProps) {
   return (
-    <Pressable disabled={disabled} onPress={onPress} style={styles.button}>
-      <ThemedText type="smallBold">{disabled ? 'Working...' : label}</ThemedText>
-    </Pressable>
+    <PlanningButton
+      disabled={disabled}
+      label={disabled ? 'Working...' : label}
+      onPress={onPress}
+      style={styles.button}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Spacing.two },
   blockList: { backgroundColor: 'transparent', gap: Spacing.two },
-  button: { alignSelf: 'flex-start', backgroundColor: '#DCEBFF', borderRadius: 8, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
+  button: { alignSelf: 'flex-start', borderRadius: 8, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
   section: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
 });

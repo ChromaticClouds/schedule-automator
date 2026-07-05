@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { GoalBreakdownFeedback } from './goal-breakdown-state';
+import { PlanningButton } from './planning-controls';
 import type { Goal } from './types';
 
 export type GoalBreakdownViewProps = {
@@ -37,16 +38,13 @@ export function GoalBreakdownView({
             <ThemedText type="small" style={styles.title}>
               {goal.title}
             </ThemedText>
-            <Pressable
+            <PlanningButton
               accessibilityRole="button"
               disabled={Boolean(busyGoalId)}
+              label={busy ? 'Generating...' : 'Break down'}
               onPress={() => onGenerate(goal._id)}
-              style={[styles.button, busyGoalId && styles.disabled]}
-            >
-              <ThemedText type="smallBold">
-                {busy ? 'Generating...' : 'Break down'}
-              </ThemedText>
-            </Pressable>
+              style={styles.button}
+            />
           </ThemedView>
         );
       })}
@@ -64,12 +62,10 @@ export function GoalBreakdownView({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#DCEBFF',
     borderRadius: 8,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
-  disabled: { opacity: 0.5 },
   panel: { borderRadius: Spacing.two, gap: Spacing.two, padding: Spacing.three },
   row: {
     alignItems: 'center',
