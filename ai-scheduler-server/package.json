@@ -2,6 +2,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
+    "e2e:start": "node ./scripts/run-e2e-server.mjs",
     "lint": "eslint .",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",

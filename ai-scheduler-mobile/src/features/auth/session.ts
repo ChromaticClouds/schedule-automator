@@ -10,6 +10,7 @@ import {
   AuthSessionResponse,
   toAuthSession,
 } from './types';
+import { loadMockAuthSession } from './mock-session';
 
 type AuthStatus = 'loading' | 'anonymous' | 'authenticated';
 type AuthState = {
@@ -66,7 +67,13 @@ export const getAuthSession = () => activeSession;
 
 export const hydrateAuthSession = async () => {
   try {
-    commitSession(await readStoredSession());
+    let session = await readStoredSession();
+    if (!session) {
+      const mockResponse = await loadMockAuthSession();
+      session = mockResponse ? toAuthSession(mockResponse) : null;
+      if (session) await writeStoredSession(session);
+    }
+    commitSession(session);
   } catch {
     commitSession(null);
   }
