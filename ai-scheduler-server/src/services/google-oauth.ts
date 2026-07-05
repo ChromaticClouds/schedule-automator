@@ -54,7 +54,7 @@ export const connectGoogleAccount = async (code: string) => {
             email: identity.email,
           },
         },
-        { new: true, runValidators: true },
+        { returnDocument: 'after', runValidators: true },
       )
     : await UserModel.findOneAndUpdate(
         { email: identity.email },
@@ -65,7 +65,7 @@ export const connectGoogleAccount = async (code: string) => {
           },
         },
         {
-          new: true,
+          returnDocument: 'after',
           runValidators: true,
           setDefaultsOnInsert: true,
           upsert: true,
@@ -103,7 +103,7 @@ export const connectGoogleAccount = async (code: string) => {
       $setOnInsert: { userId: user._id },
     },
     {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
       setDefaultsOnInsert: true,
       upsert: true,

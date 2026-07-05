@@ -29,7 +29,11 @@ export const mapScheduleError = (error: unknown): never => {
     error instanceof ScheduleLifecycleError ||
     error instanceof ScheduleRegenerateError
   ) {
-    throw new HttpError(error.message, error.statusCode, { code: error.code });
+    const external = 'details' in error ? error.details : undefined;
+    throw new HttpError(error.message, error.statusCode, {
+      code: error.code,
+      external,
+    });
   }
   if (error instanceof GoogleConnectionError) {
     throw new HttpError(error.message, error.statusCode, { code: error.code });

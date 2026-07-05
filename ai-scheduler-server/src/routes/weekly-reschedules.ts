@@ -14,6 +14,7 @@ const mapRescheduleError = (error: unknown): never => {
   if (error instanceof WeeklyRescheduleError) {
     throw new HttpError(error.message, error.statusCode, {
       code: error.code,
+      external: error.details,
     });
   }
   if (error instanceof GoogleConnectionError) {

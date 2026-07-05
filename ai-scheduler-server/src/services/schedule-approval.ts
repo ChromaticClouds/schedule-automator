@@ -116,7 +116,7 @@ export const approveScheduleDraft = async (
     },
     {
       arrayFilters: [{ 'block.status': 'draft' }],
-      new: true,
+      returnDocument: 'after',
     },
   );
   if (!draft) {

@@ -8,8 +8,8 @@ import { ScheduleDraftBlocks } from './schedule-draft-blocks';
 import { ScheduleDraftRecoveryActionButton } from './schedule-draft-recovery-action';
 import {
   canReviewScheduleDraft,
-  scheduleDraftRecoveryAction,
   scheduleDraftCalendarEventSummary,
+  scheduleDraftRecoveryAction,
   scheduleDraftStatusMessage,
 } from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
@@ -59,11 +59,15 @@ export function ScheduleDraftPanelView({
   const reviewDraft = canReviewScheduleDraft(draft) ? draft : undefined;
 
   return (
-    <ThemedView type="backgroundElement" style={styles.section}>
+    <ThemedView style={styles.section} type="backgroundElement">
       <ThemedText type="smallBold">오늘의 일정 초안</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
       {isLoading && <ThemedText type="small">초안을 불러오는 중...</ThemedText>}
-      {errorMessage && <ThemedText type="small">실패: {errorMessage}</ThemedText>}
+      {errorMessage && (
+        <ThemedText type="small" themeColor="danger">
+          실패: {errorMessage}
+        </ThemedText>
+      )}
       {recoveryAction && (
         <ScheduleDraftRecoveryActionButton
           action={recoveryAction}
@@ -113,7 +117,9 @@ function DraftSummary({ busy, draft, onEdit, timezone }: {
         <ThemedText type="small" themeColor="textSecondary">{calendarSummary}</ThemedText>
       )}
       {draft.warnings.map((warning) => (
-        <ThemedText key={warning} type="small">주의: {warning}</ThemedText>
+        <ThemedText key={warning} type="small" themeColor="danger">
+          주의: {warning}
+        </ThemedText>
       ))}
       <ScheduleDraftBlocks busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />
     </ThemedView>

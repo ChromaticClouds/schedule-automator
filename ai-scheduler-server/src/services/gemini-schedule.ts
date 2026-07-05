@@ -6,10 +6,10 @@ const blockSchema = {
   additionalProperties: false,
   properties: {
     end: { type: 'string' },
-    reason: { maxLength: 500, type: 'string' },
+    reason: { type: 'string' },
     start: { type: 'string' },
-    taskId: { pattern: '^[a-fA-F0-9]{24}$', type: 'string' },
-    title: { maxLength: 160, minLength: 1, type: 'string' },
+    taskId: { type: 'string' },
+    title: { type: 'string' },
     type: { enum: ['task', 'break'], type: 'string' },
   },
   required: ['title', 'start', 'end', 'type'],
@@ -21,7 +21,7 @@ const responseJsonSchema = {
   properties: {
     assumptions: { items: { type: 'string' }, maxItems: 12, type: 'array' },
     blocks: { items: blockSchema, maxItems: 40, minItems: 1, type: 'array' },
-    summary: { maxLength: 1000, minLength: 1, type: 'string' },
+    summary: { type: 'string' },
     warnings: { items: { type: 'string' }, maxItems: 12, type: 'array' },
   },
   required: ['summary', 'blocks'],

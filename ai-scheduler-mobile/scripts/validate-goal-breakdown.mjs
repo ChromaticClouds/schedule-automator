@@ -30,7 +30,7 @@ const errorCases = [
   [fixtures.inProgress, '아직 진행 중'],
   [fixtures.conflict, '목표가 변경'],
   [fixtures.schemaError, '올바르지 않은 작업 계획'],
-  [fixtures.providerError, 'AI 서비스를 사용할 수 없습니다'],
+  [fixtures.providerError, 'AI 서비스 요청이 실패'],
   [fixtures.persistenceError, '작업을 저장하지 못했습니다'],
   [fixtures.networkError, '네트워크를 사용할 수 없습니다'],
 ];

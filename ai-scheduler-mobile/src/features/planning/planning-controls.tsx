@@ -107,6 +107,7 @@ export function PlanningButton({
 
 const styles = StyleSheet.create({
   button: {
+    alignItems: 'center',
     borderRadius: 8,
     justifyContent: 'center',
     minHeight: 48,

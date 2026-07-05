@@ -100,7 +100,7 @@ export const saveDailyReview = async (
   const review = await DailyReviewModel.findOneAndUpdate(
     { userId, date },
     { $set: input },
-    { new: true, runValidators: true, session, upsert: true },
+    { returnDocument: 'after', runValidators: true, session, upsert: true },
   );
   const responseIds = collectReviewTaskIds(
     (await taskIdsForDate(userId, date, session)).map(String),

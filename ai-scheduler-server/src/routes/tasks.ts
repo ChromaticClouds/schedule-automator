@@ -26,7 +26,9 @@ export const registerTaskRoutes = async (app: FastifyInstance) => {
 
   app.get('/tasks', async (request) => {
     const userId = requireUserId(request);
-    return TaskModel.find({ userId }).sort({ createdAt: -1 });
+    return TaskModel.find({ status: { $ne: 'archived' }, userId }).sort({
+      createdAt: -1,
+    });
   });
 
   app.post('/tasks', async (request, reply) => {
@@ -43,7 +45,7 @@ export const registerTaskRoutes = async (app: FastifyInstance) => {
     const task = await TaskModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: body },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return task ?? notFound('Task');
@@ -55,7 +57,7 @@ export const registerTaskRoutes = async (app: FastifyInstance) => {
     const task = await TaskModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: { status: 'missed' }, $inc: { postponedCount: 1 } },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return task ?? notFound('Task');
@@ -67,7 +69,7 @@ export const registerTaskRoutes = async (app: FastifyInstance) => {
     const task = await TaskModel.findOneAndUpdate(
       { _id: id, userId },
       { $set: { status: 'archived' } },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     return task ?? notFound('Task');

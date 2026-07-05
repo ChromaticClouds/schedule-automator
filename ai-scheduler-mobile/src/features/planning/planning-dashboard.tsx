@@ -31,16 +31,15 @@ export function PlanningDashboard() {
         contentContainerStyle={styles.content}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
+        style={styles.scroll}
       >
         <ThemedView style={styles.header}>
           <ThemedText type="subtitle">주간 계획</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            이번 주 목표, 작업, 보호 시간을 한곳에서 정리하세요.
+            이번 주 목표, 작업, 보호 시간을 한 화면에서 정리하세요.
           </ThemedText>
         </ThemedView>
-
         <AuthPanel />
-
         {authenticated && <ScheduleDraftPanel />}
         {authenticated && <DailyReviewPanel />}
         {authenticated && <WeeklyReschedulePanel />}
@@ -56,9 +55,10 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     gap: Spacing.three,
-    paddingBottom: Spacing.four,
+    paddingBottom: Spacing.three,
     paddingTop: Spacing.three,
   },
   header: { gap: Spacing.one },
   keyboard: { flex: 1 },
+  scroll: { flex: 1 },
 });

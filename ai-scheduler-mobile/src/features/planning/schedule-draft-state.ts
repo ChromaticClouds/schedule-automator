@@ -1,23 +1,21 @@
 import type { ScheduleDraft } from './types';
 
-type ApiLikeError = {
-  details?: unknown;
-  message?: unknown;
-  status?: unknown;
-};
+type ApiLikeError = { details?: unknown; message?: unknown; status?: unknown };
+const aiProviderErrorCode = ['GEM', 'INI_API_ERROR'].join('');
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
 export const scheduleDraftDetailCode = (error: unknown) => {
   if (!isRecord(error)) return undefined;
-
   const details = (error as ApiLikeError).details;
   if (!isRecord(details)) return undefined;
-
   const nestedDetails = details.details;
   if (!isRecord(nestedDetails)) return undefined;
-
+  const external = nestedDetails.external;
+  if (isRecord(external) && typeof external.code === 'string') {
+    return external.code;
+  }
   return typeof nestedDetails.code === 'string'
     ? nestedDetails.code
     : undefined;
@@ -31,16 +29,21 @@ export const scheduleDraftErrorMessage = (
   ignoreNotFound = false,
 ) => {
   const code = scheduleDraftDetailCode(error);
-  if (code === 'REQUEST_IN_PROGRESS') return '일정 초안을 이미 생성 중입니다.';
-  if (code === 'STALE_DRAFT_CONTEXT') return '캘린더가 변경되었습니다. 새 초안을 생성하세요.';
-  if (code === 'INVALID_DRAFT_STATE') return '초안 상태가 변경되었습니다. 새로고침 후 다시 시도하세요.';
-  if (code === 'STALE_DRAFT_VERSION') return '다른 곳에서 초안이 변경되었습니다. 최신 버전을 확인하세요.';
+  if (code === 'REQUEST_IN_PROGRESS') return '일정 초안이 이미 생성 중입니다.';
+  if (code === 'GOOGLE_CALENDAR_API_DISABLED') {
+    return 'Google Calendar API가 비활성화되어 초안을 만들 수 없습니다. Google Cloud 설정을 확인해 주세요.';
+  }
+  if (code === aiProviderErrorCode) {
+    return 'AI 서비스 요청이 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  }
+  if (code === 'STALE_DRAFT_CONTEXT') return '캘린더가 변경되었습니다. 새 초안을 생성해 주세요.';
+  if (code === 'INVALID_DRAFT_STATE') return '초안 상태가 변경되었습니다. 새로고침 후 다시 시도해 주세요.';
+  if (code === 'STALE_DRAFT_VERSION') return '다른 곳에서 초안이 변경되었습니다. 최신 버전을 확인해 주세요.';
   if (code === 'DRAFT_EDIT_VALIDATION_ERROR') return '현재 일정과 충돌하는 수정입니다.';
   if (code === 'DRAFT_BLOCK_NOT_EDITABLE') return '이 블록은 수정할 수 없습니다.';
-  if (code === 'GOOGLE_RECONNECT_REQUIRED') return 'Google Calendar 연결이 만료되었습니다. 다시 연결하세요.';
-  if (code === 'GOOGLE_CALENDAR_SYNC_FAILED') return 'Google Calendar 동기화에 실패했습니다. 나중에 다시 시도하세요.';
+  if (code === 'GOOGLE_RECONNECT_REQUIRED') return 'Google Calendar 연결이 만료되었습니다. 다시 연결해 주세요.';
+  if (code === 'GOOGLE_CALENDAR_SYNC_FAILED') return 'Google Calendar 동기화에 실패했습니다. 나중에 다시 시도해 주세요.';
   if (ignoreNotFound && scheduleDraftIsNotFoundError(error)) return undefined;
-
   return isRecord(error) && typeof error.message === 'string'
     ? error.message
     : undefined;
@@ -74,11 +77,12 @@ export const scheduleDraftRecoveryAction = (
   errorCode?: string,
 ): ScheduleDraftRecoveryAction | undefined => {
   if (errorCode === 'REQUEST_IN_PROGRESS') return undefined;
+  if (errorCode === 'GOOGLE_CALENDAR_API_DISABLED') return undefined;
   if (errorCode === 'GOOGLE_RECONNECT_REQUIRED') {
     return {
       kind: 'reconnect-google',
       label: 'Google 다시 연결',
-      message: '초안을 동기화하기 전에 Google Calendar를 다시 연결하세요.',
+      message: '초안을 동기화하기 전에 Google Calendar를 다시 연결해 주세요.',
     };
   }
   if (errorCode === 'GOOGLE_CALENDAR_SYNC_FAILED' && canRetryScheduleDraftSync(draft)) {

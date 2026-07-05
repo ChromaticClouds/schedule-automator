@@ -6,7 +6,7 @@ const responseJsonSchema = {
   additionalProperties: false,
   properties: {
     overflowTaskIds: {
-      items: { pattern: '^[a-fA-F0-9]{24}$', type: 'string' },
+      items: { type: 'string' },
       maxItems: 40,
       type: 'array',
     },
@@ -16,10 +16,10 @@ const responseJsonSchema = {
         properties: {
           date: { format: 'date', type: 'string' },
           end: { type: 'string' },
-          reason: { maxLength: 500, minLength: 1, type: 'string' },
+          reason: { type: 'string' },
           start: { type: 'string' },
-          taskId: { pattern: '^[a-fA-F0-9]{24}$', type: 'string' },
-          title: { maxLength: 160, minLength: 1, type: 'string' },
+          taskId: { type: 'string' },
+          title: { type: 'string' },
         },
         required: ['date', 'end', 'reason', 'start', 'taskId', 'title'],
         type: 'object',
@@ -27,7 +27,7 @@ const responseJsonSchema = {
       maxItems: 40,
       type: 'array',
     },
-    summary: { maxLength: 1000, minLength: 1, type: 'string' },
+    summary: { type: 'string' },
     warnings: { items: { type: 'string' }, maxItems: 12, type: 'array' },
   },
   required: ['summary', 'placements', 'overflowTaskIds', 'warnings'],

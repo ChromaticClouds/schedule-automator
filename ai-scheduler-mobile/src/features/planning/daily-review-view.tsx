@@ -42,7 +42,11 @@ export function DailyReviewView({
       <ThemedText type="smallBold">하루 마감 리뷰</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{date}</ThemedText>
       {isLoading && <ThemedText type="small">오늘 예정된 작업을 불러오는 중...</ThemedText>}
-      {errorMessage && <ThemedText type="small">{errorMessage}</ThemedText>}
+      {errorMessage && (
+        <ThemedText type="small" themeColor="danger">
+          {errorMessage}
+        </ThemedText>
+      )}
       {tasks?.length === 0 && (
         <ThemedText type="small">아직 리뷰할 예정 작업이 없습니다. 먼저 일정 초안을 완료하세요.</ThemedText>
       )}
@@ -67,7 +71,11 @@ export function DailyReviewView({
         onPress={onSave}
         style={styles.save}
       />
-      {saveErrorMessage && <ThemedText type="small">{saveErrorMessage}</ThemedText>}
+      {saveErrorMessage && (
+        <ThemedText type="small" themeColor="danger">
+          {saveErrorMessage}
+        </ThemedText>
+      )}
       {saveIsSuccess && (
         <ThemedText type="small">리뷰가 저장되었습니다. 미룬 작업을 다시 배치할 수 있습니다.</ThemedText>
       )}

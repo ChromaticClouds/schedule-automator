@@ -32,6 +32,7 @@ export const registerTaskBreakdownRoutes = async (app: FastifyInstance) => {
       if (error instanceof TaskBreakdownError) {
         throw new HttpError(error.message, error.statusCode, {
           code: error.code,
+          external: error.details,
         });
       }
       throw error;

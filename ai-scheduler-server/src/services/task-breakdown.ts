@@ -5,30 +5,34 @@ import {
   taskBreakdownResponseSchema,
 } from '@/schemas/task-breakdown.js';
 import { geminiTaskBreakdownGenerator } from './gemini-breakdown.js';
-import type {
-  TaskBreakdownContext,
-  TaskBreakdownGenerator,
-} from './breakdown-contract.js';
+import type { TaskBreakdownContext, TaskBreakdownGenerator } from './breakdown-contract.js';
 import {
   claimTaskBreakdown,
   hashValue,
   markTaskBreakdownFailure,
 } from './breakdown-idempotency.js';
 import { persistTaskBreakdown } from './breakdown-persistence.js';
+import { classifyGeminiError, type ExternalApiErrorDetails } from './external-api-error.js';
 
 export class TaskBreakdownError extends Error {
   constructor(
     message: string,
     public readonly statusCode: number,
     public readonly code: string,
+    public readonly details?: ExternalApiErrorDetails,
   ) {
     super(message);
     this.name = 'TaskBreakdownError';
   }
 }
 
-const fail = (message: string, statusCode: number, code: string) => {
-  throw new TaskBreakdownError(message, statusCode, code);
+const fail = (
+  message: string,
+  statusCode: number,
+  code: string,
+  details?: ExternalApiErrorDetails,
+) => {
+  throw new TaskBreakdownError(message, statusCode, code, details);
 };
 
 const serializeTasks = (tasks: InstanceType<typeof TaskModel>[]) =>
@@ -89,12 +93,7 @@ export const generateTaskBreakdown = async (
   };
   const payloadHash = hashValue(JSON.stringify(context));
   const keyHash = hashValue(`${userId}:${goalId}:${idempotencyKey}`);
-  const claim = await claimTaskBreakdown(
-    userId,
-    goalId,
-    keyHash,
-    payloadHash,
-  );
+  const claim = await claimTaskBreakdown(userId, goalId, keyHash, payloadHash);
   if (claim.kind === 'conflict') {
     return fail('Idempotency key conflict', 409, 'IDEMPOTENCY_CONFLICT');
   }
@@ -108,9 +107,10 @@ export const generateTaskBreakdown = async (
   let rawOutput: unknown;
   try {
     rawOutput = await generator.generate(context);
-  } catch {
+  } catch (error) {
+    const details = classifyGeminiError(error);
     await recordFailure(claim.log._id, 'api_error');
-    return fail('Gemini request failed', 502, 'GEMINI_API_ERROR');
+    return fail('Gemini request failed', 502, details.code, details);
   }
 
   const parsed = taskBreakdownResponseSchema.safeParse(rawOutput);

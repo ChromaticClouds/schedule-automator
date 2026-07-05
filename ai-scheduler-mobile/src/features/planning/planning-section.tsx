@@ -6,29 +6,33 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 
 type PlanningSectionProps = {
-  title: string;
-  isLoading: boolean;
-  error: Error | null;
-  errorMessage: string;
+  children: ReactNode;
   empty: boolean;
   emptyMessage: string;
-  children: ReactNode;
+  error: Error | null;
+  errorMessage: string;
+  isLoading: boolean;
+  title: string;
 };
 
 export function PlanningSection({
-  title,
-  isLoading,
-  error,
-  errorMessage,
+  children,
   empty,
   emptyMessage,
-  children,
+  error,
+  errorMessage,
+  isLoading,
+  title,
 }: PlanningSectionProps) {
   return (
-    <ThemedView type="backgroundElement" style={styles.section}>
+    <ThemedView style={styles.section} type="backgroundElement">
       <ThemedText type="smallBold">{title}</ThemedText>
-      {isLoading && <ThemedText type="small">Loading...</ThemedText>}
-      {error && <ThemedText type="small">{errorMessage}</ThemedText>}
+      {isLoading && <ThemedText type="small">불러오는 중...</ThemedText>}
+      {error && (
+        <ThemedText type="small" themeColor="danger">
+          {errorMessage}
+        </ThemedText>
+      )}
       {!isLoading && !error && empty && (
         <ThemedText type="small" themeColor="textSecondary">
           {emptyMessage}
@@ -41,8 +45,8 @@ export function PlanningSection({
 
 const styles = StyleSheet.create({
   section: {
+    borderRadius: Spacing.two,
     gap: Spacing.two,
     padding: Spacing.three,
-    borderRadius: Spacing.two,
   },
 });
