@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { AiRequestLogModel, TaskModel } from '@/models/index.js';
-import type { TaskBreakdownResponse } from '@/schemas/task-breakdown.js';
+import type { TaskBreakdownResponse } from './task-breakdown.schema.js';
 
 type GoalValues = {
   _id: Types.ObjectId;

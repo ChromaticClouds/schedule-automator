@@ -3,16 +3,16 @@ import { GoalModel, TaskModel } from '@/models/index.js';
 import {
   hasOnlyAllowedParentTasks,
   taskBreakdownResponseSchema,
-} from '@/schemas/task-breakdown.js';
-import { geminiTaskBreakdownGenerator } from './gemini-breakdown.js';
+} from './task-breakdown.schema.js';
+import { geminiTaskBreakdownGenerator } from '@/services/gemini-breakdown.js';
 import type { TaskBreakdownContext, TaskBreakdownGenerator } from './breakdown-contract.js';
 import {
   claimTaskBreakdown,
-  hashValue,
   markTaskBreakdownFailure,
 } from './breakdown-idempotency.js';
 import { persistTaskBreakdown } from './breakdown-persistence.js';
-import { classifyGeminiError, type ExternalApiErrorDetails } from './external-api-error.js';
+import { classifyGeminiError, type ExternalApiErrorDetails } from '@/services/external-api-error.js';
+import { hashValue } from '@/services/breakdown-idempotency.js';
 
 export class TaskBreakdownError extends Error {
   constructor(

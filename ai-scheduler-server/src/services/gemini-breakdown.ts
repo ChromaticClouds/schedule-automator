@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { ENV } from '@/config/env.js';
-import type { TaskBreakdownGenerator } from './breakdown-contract.js';
+import type { TaskBreakdownGenerator } from '@/features/task-breakdown/breakdown-contract.js';
 
 const responseJsonSchema = {
   additionalProperties: false,

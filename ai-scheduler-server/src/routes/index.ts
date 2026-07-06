@@ -8,7 +8,7 @@ import { registerProtectedTimeRoutes } from './protected-times.js';
 import { registerScheduleDraftRoutes } from '@/features/schedule-drafts/schedule-drafts.routes.js';
 import { registerSchedulePreferenceRoutes } from './schedule-preferences.js';
 import { registerTaskRoutes } from './tasks.js';
-import { registerTaskBreakdownRoutes } from './task-breakdown.js';
+import { registerTaskBreakdownRoutes } from '@/features/task-breakdown/task-breakdown.routes.js';
 import { registerWeeklyRescheduleRoutes } from './weekly-reschedules.js';
 
 export const registerPlanningRoutes = async (

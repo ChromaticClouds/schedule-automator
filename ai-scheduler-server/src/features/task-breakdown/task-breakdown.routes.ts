@@ -3,12 +3,12 @@ import { Types } from 'mongoose';
 import {
   idempotencyKeySchema,
   taskBreakdownParamsSchema,
-} from '@/schemas/task-breakdown.js';
+} from './task-breakdown.schema.js';
 import {
   generateTaskBreakdown,
   TaskBreakdownError,
-} from '@/services/task-breakdown.js';
-import { HttpError, parseParams, requireUserId } from './http.js';
+} from './task-breakdown.js';
+import { HttpError, parseParams, requireUserId } from '@/routes/http.js';
 
 export const registerTaskBreakdownRoutes = async (app: FastifyInstance) => {
   app.post('/goals/:goalId/task-breakdown', async (request, reply) => {

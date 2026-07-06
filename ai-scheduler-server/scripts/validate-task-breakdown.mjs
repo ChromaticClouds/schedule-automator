@@ -4,12 +4,12 @@ import {
   hasOnlyAllowedParentTasks,
   idempotencyKeySchema,
   taskBreakdownResponseSchema,
-} from '../dist/schemas/task-breakdown.js';
+} from '../dist/features/task-breakdown/task-breakdown.schema.js';
 import {
   AiRequestLogModel,
   TaskModel,
 } from '../dist/models/index.js';
-import { createDeterministicTaskBreakdownGenerator } from '../dist/services/breakdown-contract.js';
+import { createDeterministicTaskBreakdownGenerator } from '../dist/features/task-breakdown/breakdown-contract.js';
 import { hashValue } from '../dist/services/breakdown-idempotency.js';
 
 const valid = {
@@ -90,7 +90,7 @@ assert.notEqual(
   hashValue('user:goal-b:request:12345678'),
 );
 const persistenceSource = readFileSync(
-  'src/services/breakdown-persistence.ts',
+  'src/features/task-breakdown/breakdown-persistence.ts',
   'utf8',
 );
 assert.equal(persistenceSource.includes('startSession'), false);
