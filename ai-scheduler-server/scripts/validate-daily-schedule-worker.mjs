@@ -7,13 +7,13 @@ import {
 
 const { ENV } = await import('../dist/config/env.js');
 const { dueScheduleDate } = await import(
-  '../dist/services/daily-schedule-helpers.js'
+  '../dist/features/daily-schedule/daily-schedule-helpers.js'
 );
 const { runDailyScheduleLoop } = await import(
-  '../dist/services/daily-schedule-loop.js'
+  '../dist/features/daily-schedule/daily-schedule-loop.js'
 );
 const { runDailyScheduleTick } = await import(
-  '../dist/services/daily-schedule-service.js'
+  '../dist/features/daily-schedule/daily-schedule-service.js'
 );
 
 assert.equal(ENV.DAILY_PLAN_JOB_ENABLED, false);
