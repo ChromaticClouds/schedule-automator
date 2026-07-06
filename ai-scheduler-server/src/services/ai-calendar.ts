@@ -1,7 +1,7 @@
 import type { calendar_v3 } from 'googleapis';
 import { ENV } from '@/config/env.js';
 import { GoogleConnectionModel } from '@/models/index.js';
-import { createGoogleCalendarClient } from './google-client.js';
+import { createGoogleCalendarClient } from '@/integrations/google/google-client.js';
 
 const maxPages = 20;
 const calendarCreationLocks = new Map<string, Promise<unknown>>();

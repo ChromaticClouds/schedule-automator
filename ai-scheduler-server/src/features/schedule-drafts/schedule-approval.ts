@@ -9,7 +9,7 @@ import { validateScheduleDraft } from './schedule-validation.js';
 import {
   createGoogleCalendarClient,
   GoogleConnectionError,
-} from '@/services/google-client.js';
+} from '@/integrations/google/google-client.js';
 import {
   createGoogleCalendarEventWriter,
   type CalendarEventWriter,

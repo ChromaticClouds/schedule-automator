@@ -7,7 +7,7 @@ import {
   rescheduleMissedTasks,
   WeeklyRescheduleError,
 } from './weekly-reschedule.js';
-import { GoogleConnectionError } from '@/services/google-client.js';
+import { GoogleConnectionError } from '@/integrations/google/google-client.js';
 import { HttpError, parseBody, requireUserId } from '@/routes/http.js';
 
 const mapRescheduleError = (error: unknown): never => {

@@ -5,7 +5,7 @@ import { listOccupiedEvents } from '@/services/calendar-events.js';
 import {
   createGoogleCalendarClient,
   GoogleConnectionError,
-} from '@/services/google-client.js';
+} from '@/integrations/google/google-client.js';
 import { HttpError, parseQuery, requireUserId } from './http.js';
 
 const mapGoogleConnectionError = (error: unknown) => {

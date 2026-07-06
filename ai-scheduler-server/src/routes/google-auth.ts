@@ -22,7 +22,7 @@ import {
 import {
   connectGoogleAccount,
   createGoogleAuthorizationUrl,
-} from '@/services/google-oauth.js';
+} from '@/integrations/google/google-oauth.js';
 import { HttpError, parseBody, parseQuery } from './http.js';
 
 const issueSession = async (

@@ -32,7 +32,7 @@ const {
   refreshGoogleAccessToken,
   requireRefreshToken,
 } = await import(
-  '../dist/services/google-client.js'
+  '../dist/integrations/google/google-client.js'
 );
 const { calendarRangeSchema } = await import(
   '../dist/schemas/calendar.js'
