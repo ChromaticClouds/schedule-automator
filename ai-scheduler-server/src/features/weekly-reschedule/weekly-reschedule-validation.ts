@@ -1,4 +1,4 @@
-import type { WeeklyRescheduleOutput } from '@/schemas/weekly-reschedule.js';
+import type { WeeklyRescheduleOutput } from './weekly-reschedule.schema.js';
 import type { WeeklyRescheduleContext } from './weekly-reschedule-contract.js';
 
 type Interval = { end: string; start: string };

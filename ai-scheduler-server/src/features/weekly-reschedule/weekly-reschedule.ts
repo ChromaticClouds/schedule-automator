@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
 import { AiRequestLogModel } from '@/models/index.js';
-import { weeklyRescheduleOutputSchema } from '@/schemas/weekly-reschedule.js';
-import { hashValue } from './breakdown-idempotency.js';
+import { weeklyRescheduleOutputSchema } from './weekly-reschedule.schema.js';
+import { hashValue } from '@/services/breakdown-idempotency.js';
 import {
   classifyGeminiError,
   type ExternalApiErrorDetails,
-} from './external-api-error.js';
-import { geminiWeeklyRescheduleGenerator } from './gemini-weekly-reschedule.js';
+} from '@/services/external-api-error.js';
+import { geminiWeeklyRescheduleGenerator } from '@/services/gemini-weekly-reschedule.js';
 import type { WeeklyRescheduleGenerator } from './weekly-reschedule-contract.js';
 import { buildWeeklyRescheduleContext } from './weekly-reschedule-context.js';
 import { claimWeeklyReschedule } from './weekly-reschedule-idempotency.js';

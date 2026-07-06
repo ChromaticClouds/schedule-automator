@@ -2,13 +2,13 @@ import type { FastifyInstance } from 'fastify';
 import {
   weeklyRescheduleIdempotencyKeySchema,
   weeklyRescheduleRequestSchema,
-} from '@/schemas/weekly-reschedule.js';
+} from './weekly-reschedule.schema.js';
 import {
   rescheduleMissedTasks,
   WeeklyRescheduleError,
-} from '@/services/weekly-reschedule.js';
+} from './weekly-reschedule.js';
 import { GoogleConnectionError } from '@/services/google-client.js';
-import { HttpError, parseBody, requireUserId } from './http.js';
+import { HttpError, parseBody, requireUserId } from '@/routes/http.js';
 
 const mapRescheduleError = (error: unknown): never => {
   if (error instanceof WeeklyRescheduleError) {

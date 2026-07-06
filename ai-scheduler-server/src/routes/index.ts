@@ -9,7 +9,7 @@ import { registerScheduleDraftRoutes } from '@/features/schedule-drafts/schedule
 import { registerSchedulePreferenceRoutes } from './schedule-preferences.js';
 import { registerTaskRoutes } from './tasks.js';
 import { registerTaskBreakdownRoutes } from '@/features/task-breakdown/task-breakdown.routes.js';
-import { registerWeeklyRescheduleRoutes } from './weekly-reschedules.js';
+import { registerWeeklyRescheduleRoutes } from '@/features/weekly-reschedule/weekly-reschedules.routes.js';
 
 export const registerPlanningRoutes = async (
   app: FastifyInstance,

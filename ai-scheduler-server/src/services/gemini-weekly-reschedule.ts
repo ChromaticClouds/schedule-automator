@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { ENV } from '@/config/env.js';
-import type { WeeklyRescheduleGenerator } from './weekly-reschedule-contract.js';
+import type { WeeklyRescheduleGenerator } from '@/features/weekly-reschedule/weekly-reschedule-contract.js';
 
 const responseJsonSchema = {
   additionalProperties: false,

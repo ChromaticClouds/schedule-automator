@@ -4,14 +4,14 @@ import { join } from 'node:path';
 import {
   weeklyRescheduleOutputSchema,
   weeklyRescheduleRequestSchema,
-} from '../dist/schemas/weekly-reschedule.js';
+} from '../dist/features/weekly-reschedule/weekly-reschedule.schema.js';
 import {
   createDeterministicWeeklyRescheduleGenerator,
   remainingWeekDates,
-} from '../dist/services/weekly-reschedule-contract.js';
+} from '../dist/features/weekly-reschedule/weekly-reschedule-contract.js';
 import {
   validateWeeklyReschedule,
-} from '../dist/services/weekly-reschedule-validation.js';
+} from '../dist/features/weekly-reschedule/weekly-reschedule-validation.js';
 
 const taskId = '507f1f77bcf86cd799439011';
 const context = {
@@ -120,7 +120,7 @@ generated.summary = 'mutated';
 assert.equal((await generator.generate(context)).summary, output.summary);
 
 const routeSource = readFileSync(
-  join(process.cwd(), 'src/routes/weekly-reschedules.ts'),
+  join(process.cwd(), 'src/features/weekly-reschedule/weekly-reschedules.routes.ts'),
   'utf8',
 );
 assert.match(routeSource, /GoogleConnectionError/);

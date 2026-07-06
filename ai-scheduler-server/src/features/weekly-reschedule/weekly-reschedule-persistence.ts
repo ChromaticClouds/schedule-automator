@@ -4,7 +4,7 @@ import {
   ScheduleDraftModel,
   TaskModel,
 } from '@/models/index.js';
-import type { WeeklyRescheduleOutput } from '@/schemas/weekly-reschedule.js';
+import type { WeeklyRescheduleOutput } from './weekly-reschedule.schema.js';
 
 const groupByDate = (output: WeeklyRescheduleOutput) => {
   const groups = new Map<string, WeeklyRescheduleOutput['placements']>();
