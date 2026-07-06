@@ -15,7 +15,7 @@ import {
   parseParams,
   parseQuery,
   requireUserId,
-} from '@/routes/http.js';
+} from '@/core/http/http.js';
 
 const mapReviewError = (error: unknown): never => {
   if (error instanceof DailyReviewError) {

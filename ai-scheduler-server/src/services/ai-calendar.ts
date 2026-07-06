@@ -1,5 +1,5 @@
 import type { calendar_v3 } from 'googleapis';
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 import { GoogleConnectionModel } from '@/models/index.js';
 import { createGoogleCalendarClient } from '@/integrations/google/google-client.js';
 

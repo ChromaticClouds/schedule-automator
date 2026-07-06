@@ -5,7 +5,7 @@ import {
   user,
 } from './daily-schedule-worker-fixtures.mjs';
 
-const { ENV } = await import('../dist/config/env.js');
+const { ENV } = await import('../dist/core/config/env.js');
 const { dueScheduleDate } = await import(
   '../dist/features/daily-schedule/daily-schedule-helpers.js'
 );

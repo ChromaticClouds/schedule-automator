@@ -5,7 +5,7 @@ import {
   objectIdParamSchema,
   updateGoalSchema,
 } from '@/schemas/planning.js';
-import { notFound, parseBody, parseParams, requireUserId } from './http.js';
+import { notFound, parseBody, parseParams, requireUserId } from '@/core/http/http.js';
 
 export const registerGoalRoutes = async (app: FastifyInstance) => {
   app.get('/goals', async (request) => {

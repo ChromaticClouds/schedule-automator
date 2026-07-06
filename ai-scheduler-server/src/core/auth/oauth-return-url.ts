@@ -1,4 +1,4 @@
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 
 const expoProtocols = new Set(['exp:', 'exps:']);
 

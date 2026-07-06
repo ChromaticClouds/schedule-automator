@@ -8,7 +8,7 @@ import {
   generateTaskBreakdown,
   TaskBreakdownError,
 } from './task-breakdown.js';
-import { HttpError, parseParams, requireUserId } from '@/routes/http.js';
+import { HttpError, parseParams, requireUserId } from '@/core/http/http.js';
 
 export const registerTaskBreakdownRoutes = async (app: FastifyInstance) => {
   app.post('/goals/:goalId/task-breakdown', async (request, reply) => {

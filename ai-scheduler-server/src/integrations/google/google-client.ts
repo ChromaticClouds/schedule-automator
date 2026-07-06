@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 import { type Types } from 'mongoose';
 import { decryptSecret, encryptSecret } from '@/core/auth/security.js';
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 import { GoogleConnectionModel } from '@/models/index.js';
 
 export class GoogleConnectionError extends Error {

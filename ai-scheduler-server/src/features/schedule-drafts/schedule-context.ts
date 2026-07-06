@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 import { ProtectedTimeModel, TaskModel, UserModel } from '@/models/index.js';
 import { listOccupiedEvents } from '@/services/calendar-events.js';
 import { createGoogleCalendarClient } from '@/integrations/google/google-client.js';

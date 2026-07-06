@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 import type { KeyValueStore } from './daily-schedule-types.js';
 
 export const hashKey = (value: string) =>

@@ -6,7 +6,7 @@ import {
   createGoogleCalendarClient,
   GoogleConnectionError,
 } from '@/integrations/google/google-client.js';
-import { HttpError, parseQuery, requireUserId } from './http.js';
+import { HttpError, parseQuery, requireUserId } from '@/core/http/http.js';
 
 const mapGoogleConnectionError = (error: unknown) => {
   if (error instanceof GoogleConnectionError) {

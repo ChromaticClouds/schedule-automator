@@ -21,7 +21,7 @@ import {
   parseParams,
   parseQuery,
   requireUserId,
-} from '@/routes/http.js';
+} from '@/core/http/http.js';
 import {
   mapScheduleError,
   requireIdempotencyKey,

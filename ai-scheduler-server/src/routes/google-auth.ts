@@ -5,7 +5,7 @@ import {
   resolveOAuthReturnUrl,
 } from '@/core/auth/oauth-return-url.js';
 import { createOAuthState, verifyOAuthState } from '@/core/auth/security.js';
-import { ENV } from '@/config/env.js';
+import { ENV } from '@/core/config/env.js';
 import {
   googleCallbackQuerySchema,
   googleStartQuerySchema,
@@ -23,7 +23,7 @@ import {
   connectGoogleAccount,
   createGoogleAuthorizationUrl,
 } from '@/integrations/google/google-oauth.js';
-import { HttpError, parseBody, parseQuery } from './http.js';
+import { HttpError, parseBody, parseQuery } from '@/core/http/http.js';
 
 const issueSession = async (
   reply: FastifyReply,

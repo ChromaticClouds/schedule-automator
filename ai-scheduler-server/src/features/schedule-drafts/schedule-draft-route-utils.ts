@@ -7,7 +7,7 @@ import { ScheduleEditError } from './schedule-edit.js';
 import { ScheduleLifecycleError } from './schedule-lifecycle.js';
 import { ScheduleRegenerateError } from './schedule-regenerate.js';
 import { GoogleConnectionError } from '@/integrations/google/google-client.js';
-import { HttpError } from '@/routes/http.js';
+import { HttpError } from '@/core/http/http.js';
 
 type RequestWithHeaders = { headers: Record<string, unknown> };
 

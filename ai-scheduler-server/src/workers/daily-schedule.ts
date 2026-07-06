@@ -1,7 +1,7 @@
 import { setTimeout as delay } from 'node:timers/promises';
 import { buildApp } from '@/app.js';
-import { ENV } from '@/config/env.js';
-import { connectMongo, disconnectMongo } from '@/db/connection.js';
+import { ENV } from '@/core/config/env.js';
+import { connectMongo, disconnectMongo } from '@/core/db/connection.js';
 import { runDailyScheduleLoop } from '@/features/daily-schedule/daily-schedule-loop.js';
 import type { KeyValueStore } from '@/features/daily-schedule/daily-schedule-types.js';
 

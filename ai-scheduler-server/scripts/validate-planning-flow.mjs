@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../dist/app.js';
-import { connectMongo, disconnectMongo } from '../dist/db/connection.js';
+import { connectMongo, disconnectMongo } from '../dist/core/db/connection.js';
 import {
   AiRequestLogModel,
   GoalModel,

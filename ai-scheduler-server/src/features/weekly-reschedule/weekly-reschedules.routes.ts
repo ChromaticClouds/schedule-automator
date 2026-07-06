@@ -8,7 +8,7 @@ import {
   WeeklyRescheduleError,
 } from './weekly-reschedule.js';
 import { GoogleConnectionError } from '@/integrations/google/google-client.js';
-import { HttpError, parseBody, requireUserId } from '@/routes/http.js';
+import { HttpError, parseBody, requireUserId } from '@/core/http/http.js';
 
 const mapRescheduleError = (error: unknown): never => {
   if (error instanceof WeeklyRescheduleError) {

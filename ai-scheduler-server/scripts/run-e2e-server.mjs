@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../dist/app.js';
-import { connectMongo, disconnectMongo } from '../dist/db/connection.js';
+import { connectMongo, disconnectMongo } from '../dist/core/db/connection.js';
 import {
   AiRequestLogModel,
   DailyReviewModel,
