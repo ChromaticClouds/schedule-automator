@@ -4,7 +4,7 @@ import {
   hasOnlyAllowedParentTasks,
   taskBreakdownResponseSchema,
 } from './task-breakdown.schema.js';
-import { geminiTaskBreakdownGenerator } from '@/services/gemini-breakdown.js';
+import { geminiTaskBreakdownGenerator } from '@/integrations/gemini/gemini-breakdown.js';
 import type { TaskBreakdownContext, TaskBreakdownGenerator } from './breakdown-contract.js';
 import {
   claimTaskBreakdown,

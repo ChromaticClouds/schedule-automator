@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { AiRequestLogModel } from '@/models/index.js';
 import { scheduleDraftOutputSchema } from './schedule-draft.schema.js';
-import { geminiScheduleGenerator } from '@/services/gemini-schedule.js';
+import { geminiScheduleGenerator } from '@/integrations/gemini/gemini-schedule.js';
 import { ScheduleDraftModel } from './schedule-draft.model.js';
 import type {
   ScheduleContextBuilder,

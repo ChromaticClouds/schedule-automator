@@ -6,7 +6,7 @@ import {
   classifyGeminiError,
   type ExternalApiErrorDetails,
 } from '@/services/external-api-error.js';
-import { geminiWeeklyRescheduleGenerator } from '@/services/gemini-weekly-reschedule.js';
+import { geminiWeeklyRescheduleGenerator } from '@/integrations/gemini/gemini-weekly-reschedule.js';
 import type { WeeklyRescheduleGenerator } from './weekly-reschedule-contract.js';
 import { buildWeeklyRescheduleContext } from './weekly-reschedule-context.js';
 import { claimWeeklyReschedule } from './weekly-reschedule-idempotency.js';

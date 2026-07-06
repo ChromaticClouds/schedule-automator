@@ -42,9 +42,9 @@ assert.deepEqual(classifyGeminiError({
 
 const unsupportedJsonSchemaKeywords = /\b(minLength|maxLength|pattern)\b/;
 for (const file of [
-  'src/services/gemini-breakdown.ts',
-  'src/services/gemini-schedule.ts',
-  'src/services/gemini-weekly-reschedule.ts',
+  'src/integrations/gemini/gemini-breakdown.ts',
+  'src/integrations/gemini/gemini-schedule.ts',
+  'src/integrations/gemini/gemini-weekly-reschedule.ts',
 ]) {
   const source = readFileSync(file, 'utf8');
   assert.equal(
