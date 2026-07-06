@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import {
   classifyGeminiError,
   classifyGoogleCalendarError,
-} from '../dist/services/external-api-error.js';
+} from '../dist/shared/errors/external-api-error.js';
 
 const calendarError = {
   response: {

@@ -10,7 +10,7 @@ import {
   TaskModel,
 } from '../dist/models/index.js';
 import { createDeterministicTaskBreakdownGenerator } from '../dist/features/task-breakdown/breakdown-contract.js';
-import { hashValue } from '../dist/services/breakdown-idempotency.js';
+import { hashValue } from '../dist/shared/idempotency/hash.js';
 
 const valid = {
   taskBreakdown: [

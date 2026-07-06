@@ -5,7 +5,7 @@ import {
   taskSummaryResponseSchema,
   type TaskSummaryQuery,
 } from '@/schemas/task-summary.js';
-import { addDays, zonedDateTime } from './schedule-time.js';
+import { addDays, zonedDateTime } from '@/shared/time/schedule-time.js';
 
 type SummaryBucket = {
   _id: string;

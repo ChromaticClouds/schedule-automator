@@ -5,7 +5,7 @@ import type {
   ScheduleDraftOutput,
 } from './schedule-draft.schema.js';
 import { buildScheduleContext } from './schedule-context.js';
-import { zonedDateTime } from '@/services/schedule-time.js';
+import { zonedDateTime } from '@/shared/time/schedule-time.js';
 import { validateScheduleDraft } from './schedule-validation.js';
 import {
   scheduleEditGuard,

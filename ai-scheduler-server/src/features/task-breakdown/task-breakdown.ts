@@ -11,8 +11,8 @@ import {
   markTaskBreakdownFailure,
 } from './breakdown-idempotency.js';
 import { persistTaskBreakdown } from './breakdown-persistence.js';
-import { classifyGeminiError, type ExternalApiErrorDetails } from '@/services/external-api-error.js';
-import { hashValue } from '@/services/breakdown-idempotency.js';
+import { classifyGeminiError, type ExternalApiErrorDetails } from '@/shared/errors/external-api-error.js';
+import { hashValue } from '@/shared/idempotency/hash.js';
 
 export class TaskBreakdownError extends Error {
   constructor(

@@ -3,7 +3,7 @@ import { ENV } from '@/config/env.js';
 import { ProtectedTimeModel, TaskModel, UserModel } from '@/models/index.js';
 import { listOccupiedEvents } from '@/services/calendar-events.js';
 import { createGoogleCalendarClient } from '@/integrations/google/google-client.js';
-import { addDays, zonedDateTime, zonedDayRange } from '@/services/schedule-time.js';
+import { addDays, zonedDateTime, zonedDayRange } from '@/shared/time/schedule-time.js';
 
 const timeValue = (value: string) => `${value}:00.000`;
 

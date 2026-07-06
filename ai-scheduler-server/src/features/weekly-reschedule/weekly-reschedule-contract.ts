@@ -40,4 +40,4 @@ export const createDeterministicWeeklyRescheduleGenerator = (
     return structuredClone(output);
   },
 });
-import { addDays } from '@/services/schedule-time.js';
+import { addDays } from '@/shared/time/schedule-time.js';

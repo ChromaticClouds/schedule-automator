@@ -10,7 +10,7 @@ import {
   TaskModel,
   UserModel,
 } from '../dist/models/index.js';
-import { zonedDateTime } from '../dist/services/schedule-time.js';
+import { zonedDateTime } from '../dist/shared/time/schedule-time.js';
 
 const runId = randomUUID();
 const userIds = [];

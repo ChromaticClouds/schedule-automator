@@ -7,12 +7,12 @@ import type {
   ScheduleContextBuilder,
   ScheduleDraftGenerator,
 } from './schedule-contract.js';
-import { hashValue } from '@/services/breakdown-idempotency.js';
+import { hashValue } from '@/shared/idempotency/hash.js';
 import {
   classifyGeminiError,
   classifyGoogleCalendarError,
   type ExternalApiErrorDetails,
-} from '@/services/external-api-error.js';
+} from '@/shared/errors/external-api-error.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { claimDailySchedule } from './schedule-idempotency.js';
 import { validateScheduleDraft } from './schedule-validation.js';
