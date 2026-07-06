@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
-import { calendarRangeSchema } from '@/schemas/calendar.js';
-import { ensureAiCalendar } from '@/services/ai-calendar.js';
-import { listOccupiedEvents } from '@/services/calendar-events.js';
+import { calendarRangeSchema } from './calendar.schema.js';
+import { ensureAiCalendar } from './ai-calendar.js';
+import { listOccupiedEvents } from './calendar-events.js';
 import {
   createGoogleCalendarClient,
   GoogleConnectionError,

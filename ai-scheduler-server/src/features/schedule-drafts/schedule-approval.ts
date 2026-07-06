@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import {
   TaskModel,
 } from '@/models/index.js';
-import { ensureAiCalendar } from '@/services/ai-calendar.js';
+import { ensureAiCalendar } from '@/features/calendar/ai-calendar.js';
 import { ScheduleDraftModel } from './schedule-draft.model.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { validateScheduleDraft } from './schedule-validation.js';
@@ -13,7 +13,7 @@ import {
 import {
   createGoogleCalendarEventWriter,
   type CalendarEventWriter,
-} from '@/services/calendar-writer.js';
+} from '@/features/calendar/calendar-writer.js';
 
 export class ScheduleApprovalError extends Error {
   constructor(

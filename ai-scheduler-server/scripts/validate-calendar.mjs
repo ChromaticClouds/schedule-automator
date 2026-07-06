@@ -22,12 +22,12 @@ const {
   resolveCalendarId,
   withAiCalendarProvisionLock,
 } = await import(
-  '../dist/services/ai-calendar.js'
+  '../dist/features/calendar/ai-calendar.js'
 );
 const {
   listOccupiedEvents,
   normalizeCalendarEvent,
-} = await import('../dist/services/calendar-events.js');
+} = await import('../dist/features/calendar/calendar-events.js');
 const {
   refreshGoogleAccessToken,
   requireRefreshToken,
@@ -35,7 +35,7 @@ const {
   '../dist/integrations/google/google-client.js'
 );
 const { calendarRangeSchema } = await import(
-  '../dist/schemas/calendar.js'
+  '../dist/features/calendar/calendar.schema.js'
 );
 
 const range = {

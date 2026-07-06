@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { ScheduleDraftDependencies } from '@/features/schedule-drafts/schedule-contract.js';
-import { registerCalendarRoutes } from './calendar.js';
+import { registerCalendarRoutes } from '@/features/calendar/calendar.routes.js';
 import { registerDailyReviewRoutes } from '@/features/daily-review/daily-reviews.routes.js';
 import { registerGoalRoutes } from './goals.js';
 import { registerGoogleAuthRoutes } from './google-auth.js';

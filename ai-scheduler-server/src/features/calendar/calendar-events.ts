@@ -1,5 +1,5 @@
 import type { calendar_v3 } from 'googleapis';
-import type { CalendarRange } from '@/schemas/calendar.js';
+import type { CalendarRange } from './calendar.schema.js';
 
 const maxPages = 20;
 
