@@ -1,17 +1,18 @@
 import { Types } from 'mongoose';
-import { AiRequestLogModel, ScheduleDraftModel } from '@/models/index.js';
-import { scheduleDraftOutputSchema } from '@/schemas/schedule-draft.js';
-import { geminiScheduleGenerator } from './gemini-schedule.js';
+import { AiRequestLogModel } from '@/models/index.js';
+import { scheduleDraftOutputSchema } from './schedule-draft.schema.js';
+import { geminiScheduleGenerator } from '@/services/gemini-schedule.js';
+import { ScheduleDraftModel } from './schedule-draft.model.js';
 import type {
   ScheduleContextBuilder,
   ScheduleDraftGenerator,
 } from './schedule-contract.js';
-import { hashValue } from './breakdown-idempotency.js';
+import { hashValue } from '@/services/breakdown-idempotency.js';
 import {
   classifyGeminiError,
   classifyGoogleCalendarError,
   type ExternalApiErrorDetails,
-} from './external-api-error.js';
+} from '@/services/external-api-error.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { claimDailySchedule } from './schedule-idempotency.js';
 import { validateScheduleDraft } from './schedule-validation.js';

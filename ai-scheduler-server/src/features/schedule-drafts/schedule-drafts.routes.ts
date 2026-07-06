@@ -6,22 +6,22 @@ import {
   scheduleBlockEditSchema,
   scheduleDraftQuerySchema,
   scheduleDraftRequestSchema,
-} from '@/schemas/schedule-draft.js';
-import { approveScheduleDraft } from '@/services/schedule-approval.js';
-import { generateDailyScheduleDraft } from '@/services/schedule-draft.js';
-import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
-import { editScheduleDraftBlock } from '@/services/schedule-edit.js';
+} from './schedule-draft.schema.js';
+import { approveScheduleDraft } from './schedule-approval.js';
+import { generateDailyScheduleDraft } from './schedule-draft.js';
+import type { ScheduleDraftDependencies } from './schedule-contract.js';
+import { editScheduleDraftBlock } from './schedule-edit.js';
 import {
   getScheduleDraft,
   rejectScheduleDraft,
-} from '@/services/schedule-lifecycle.js';
-import { regenerateScheduleDraft } from '@/services/schedule-regenerate.js';
+} from './schedule-lifecycle.js';
+import { regenerateScheduleDraft } from './schedule-regenerate.js';
 import {
   parseBody,
   parseParams,
   parseQuery,
   requireUserId,
-} from './http.js';
+} from '@/routes/http.js';
 import {
   mapScheduleError,
   requireIdempotencyKey,

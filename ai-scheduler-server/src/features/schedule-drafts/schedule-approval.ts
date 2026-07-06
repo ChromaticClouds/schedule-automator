@@ -1,19 +1,19 @@
 import { Types } from 'mongoose';
 import {
-  ScheduleDraftModel,
   TaskModel,
 } from '@/models/index.js';
-import { ensureAiCalendar } from './ai-calendar.js';
+import { ensureAiCalendar } from '@/services/ai-calendar.js';
+import { ScheduleDraftModel } from './schedule-draft.model.js';
 import { buildScheduleContext } from './schedule-context.js';
 import { validateScheduleDraft } from './schedule-validation.js';
 import {
   createGoogleCalendarClient,
   GoogleConnectionError,
-} from './google-client.js';
+} from '@/services/google-client.js';
 import {
   createGoogleCalendarEventWriter,
   type CalendarEventWriter,
-} from './calendar-writer.js';
+} from '@/services/calendar-writer.js';
 
 export class ScheduleApprovalError extends Error {
   constructor(

@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { ScheduleDraftModel } from '@/models/index.js';
+import { ScheduleDraftModel } from './schedule-draft.model.js';
 
 export class ScheduleLifecycleError extends Error {
   constructor(

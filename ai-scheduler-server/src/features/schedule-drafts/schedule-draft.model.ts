@@ -1,5 +1,5 @@
 import { Schema, model, type InferSchemaType } from 'mongoose';
-import { draftStatuses } from './constants.js';
+import { draftStatuses } from '@/models/constants.js';
 
 const scheduleBlockSchema = new Schema(
   {

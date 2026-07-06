@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
 import { ENV } from '@/config/env.js';
 import { ProtectedTimeModel, TaskModel, UserModel } from '@/models/index.js';
-import { listOccupiedEvents } from './calendar-events.js';
-import { createGoogleCalendarClient } from './google-client.js';
-import { addDays, zonedDateTime, zonedDayRange } from './schedule-time.js';
+import { listOccupiedEvents } from '@/services/calendar-events.js';
+import { createGoogleCalendarClient } from '@/services/google-client.js';
+import { addDays, zonedDateTime, zonedDayRange } from '@/services/schedule-time.js';
 
 const timeValue = (value: string) => `${value}:00.000`;
 

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { ScheduleDraftModel, TaskModel } from '@/models/index.js';
-import { buildScheduleContext } from './schedule-context.js';
+import { buildScheduleContext } from '@/features/schedule-drafts/schedule-context.js';
 import type {
   WeeklyRescheduleContext,
   WeeklyRescheduleDay,

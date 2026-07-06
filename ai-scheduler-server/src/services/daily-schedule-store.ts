@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { GoogleConnectionModel, TaskModel, UserModel } from '@/models/index.js';
-import { generateDailyScheduleDraft } from './schedule-draft.js';
+import { generateDailyScheduleDraft } from '@/features/schedule-drafts/schedule-draft.js';
 import type { DailyScheduleStore } from './daily-schedule-types.js';
 
 export const mongoDailyScheduleStore: DailyScheduleStore = {

@@ -1,11 +1,11 @@
 import { Types } from 'mongoose';
-import { ScheduleDraftModel } from '@/models/index.js';
+import { ScheduleDraftModel } from './schedule-draft.model.js';
 import type {
   ScheduleBlockEdit,
   ScheduleDraftOutput,
-} from '@/schemas/schedule-draft.js';
+} from './schedule-draft.schema.js';
 import { buildScheduleContext } from './schedule-context.js';
-import { zonedDateTime } from './schedule-time.js';
+import { zonedDateTime } from '@/services/schedule-time.js';
 import { validateScheduleDraft } from './schedule-validation.js';
 import {
   scheduleEditGuard,

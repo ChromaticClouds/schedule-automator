@@ -1,13 +1,13 @@
-import { scheduleIdempotencyKeySchema } from '@/schemas/schedule-draft.js';
+import { scheduleIdempotencyKeySchema } from './schedule-draft.schema.js';
 import {
   ScheduleApprovalError,
-} from '@/services/schedule-approval.js';
-import { ScheduleDraftError } from '@/services/schedule-draft.js';
-import { ScheduleEditError } from '@/services/schedule-edit.js';
-import { ScheduleLifecycleError } from '@/services/schedule-lifecycle.js';
-import { ScheduleRegenerateError } from '@/services/schedule-regenerate.js';
+} from './schedule-approval.js';
+import { ScheduleDraftError } from './schedule-draft.js';
+import { ScheduleEditError } from './schedule-edit.js';
+import { ScheduleLifecycleError } from './schedule-lifecycle.js';
+import { ScheduleRegenerateError } from './schedule-regenerate.js';
 import { GoogleConnectionError } from '@/services/google-client.js';
-import { HttpError } from './http.js';
+import { HttpError } from '@/routes/http.js';
 
 type RequestWithHeaders = { headers: Record<string, unknown> };
 

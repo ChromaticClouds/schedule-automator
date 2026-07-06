@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import type { ScheduleDraftOutput } from '@/schemas/schedule-draft.js';
+import type { ScheduleDraftOutput } from './schedule-draft.schema.js';
 import type { ScheduleContext } from './schedule-contract.js';
-import { addDays, zonedDateTime } from './schedule-time.js';
+import { addDays, zonedDateTime } from '@/services/schedule-time.js';
 
 type Interval = { end: string; start: string };
 

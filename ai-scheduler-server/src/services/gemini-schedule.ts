@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { ENV } from '@/config/env.js';
-import type { ScheduleDraftGenerator } from './schedule-contract.js';
+import type { ScheduleDraftGenerator } from '@/features/schedule-drafts/schedule-contract.js';
 
 const blockSchema = {
   additionalProperties: false,
