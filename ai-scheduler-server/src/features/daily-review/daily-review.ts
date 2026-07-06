@@ -1,10 +1,10 @@
 import { connection, Types, type ClientSession } from 'mongoose';
 import {
-  DailyReviewModel,
   ScheduleDraftModel,
   TaskModel,
 } from '@/models/index.js';
-import type { SaveDailyReviewInput } from '@/schemas/daily-review.js';
+import type { SaveDailyReviewInput } from './daily-review.schema.js';
+import { DailyReviewModel } from './daily-review.model.js';
 import {
   buildTaskReviewUpdates,
   collectReviewTaskIds,

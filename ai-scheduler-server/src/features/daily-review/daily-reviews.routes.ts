@@ -3,19 +3,19 @@ import {
   dailyReviewParamsSchema,
   dailyReviewQuerySchema,
   saveDailyReviewSchema,
-} from '@/schemas/daily-review.js';
+} from './daily-review.schema.js';
 import {
   DailyReviewError,
   getDailyReview,
   saveDailyReview,
-} from '@/services/daily-review.js';
+} from './daily-review.js';
 import {
   HttpError,
   parseBody,
   parseParams,
   parseQuery,
   requireUserId,
-} from './http.js';
+} from '@/routes/http.js';
 
 const mapReviewError = (error: unknown): never => {
   if (error instanceof DailyReviewError) {
