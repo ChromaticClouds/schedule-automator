@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
-import { requireVerifiedGoogleIdentity } from '@/auth/google-identity.js';
-import { encryptSecret } from '@/auth/security.js';
+import { requireVerifiedGoogleIdentity } from '@/core/auth/google-identity.js';
+import { encryptSecret } from '@/core/auth/security.js';
 import { ENV } from '@/config/env.js';
 import {
   GoogleConnectionModel,

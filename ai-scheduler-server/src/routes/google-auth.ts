@@ -3,8 +3,8 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import {
   canRedirectToOAuthReturnUrl,
   resolveOAuthReturnUrl,
-} from '@/auth/oauth-return-url.js';
-import { createOAuthState, verifyOAuthState } from '@/auth/security.js';
+} from '@/core/auth/oauth-return-url.js';
+import { createOAuthState, verifyOAuthState } from '@/core/auth/security.js';
 import { ENV } from '@/config/env.js';
 import {
   googleCallbackQuerySchema,
