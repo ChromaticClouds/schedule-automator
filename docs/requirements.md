@@ -202,6 +202,15 @@ GOOGLE_CALENDAR_EVENT_PREFIX=[AI]
 
 Support natural language and commands.
 
+The mobile app uses a chat-style composer as the primary planning input. It must:
+
+* keep the current conversation scrollable above a bottom-anchored composer
+* avoid the keyboard, home indicator, and tab bar with Safe Area handling
+* support multiline input and a 44dp-or-larger send action with an accessible label
+* show pending, success, clarification, and error responses as distinct message states
+* preserve the unsent draft while a request fails or the user navigates away
+* work at 360px, 390px, and 430px phone widths without clipped controls
+
 Commands:
 
 ```txt
@@ -232,36 +241,27 @@ Server responsibilities:
 * repair only safe and deterministic errors
 * never trust AI output directly
 
-AI output must be structured JSON.
+AI output must be structured JSON. Daily schedule generation uses a deliberately
+small extraction schema so Gemini only returns fields that the model must decide.
+The server hydrates all trusted display and persistence fields from known context.
 
-Required AI response fields:
+Required daily schedule extraction response:
 
 ```ts
-type AiScheduleDraftResponse = {
-  summary: string;
-  assumptions: string[];
-  taskBreakdown: {
-    parentTaskId?: string;
-    title: string;
-    checklist: string[];
-    estimatedMinutes: number;
-    priorityReason: string;
-  }[];
-  scheduleBlocks: {
-    taskId?: string;
-    title: string;
+type AiScheduleExtractionResponse = {
+  blocks: {
+    taskId: string;
     start: string;
     end: string;
-    reason: string;
-    energyLevel: 'low' | 'medium' | 'high';
-  }[];
-  unresolvedItems: {
-    title: string;
-    reason: string;
-    suggestedAction: 'split' | 'defer' | 'drop' | 'ask_user';
   }[];
 };
 ```
+
+The server must map `taskId` to the known task title and set the block type. It
+must generate stored summary, assumptions, and warnings from validated server
+results; Gemini must not be asked to return those fields. Goal breakdown and chat
+command parsing use separate small schemas and must not be combined with daily
+schedule extraction.
 
 Validation rules:
 
@@ -269,7 +269,7 @@ Validation rules:
 * no overlapping blocks
 * no protected time collision
 * no existing calendar event collision
-* taskId must exist if provided
+* taskId must exist in the supplied schedule context
 * total work time <= 480 minutes
 * block duration must be reasonable
 * invalid AI output must not be saved as approved
