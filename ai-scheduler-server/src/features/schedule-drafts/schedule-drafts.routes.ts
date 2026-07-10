@@ -54,6 +54,7 @@ export const registerScheduleDraftRoutes = async (
         key,
         dependencies.generator,
         dependencies.contextBuilder,
+        body.instruction,
       );
       return reply.code(result.replayed ? 200 : 201).send(result);
     } catch (error) {

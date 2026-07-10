@@ -61,6 +61,17 @@ assert.equal(
   '2026-07-03',
 );
 assert.equal(
+  scheduleDraftRequestSchema.parse({
+    date: '2026-07-03',
+    instruction: 'Keep the morning open for focused work.',
+  }).instruction,
+  'Keep the morning open for focused work.',
+);
+assert.equal(
+  scheduleDraftRequestSchema.safeParse({ date: '2026-07-03', instruction: '' }).success,
+  false,
+);
+assert.equal(
   scheduleDraftRequestSchema.safeParse({ date: '2026-02-31' }).success,
   false,
 );
