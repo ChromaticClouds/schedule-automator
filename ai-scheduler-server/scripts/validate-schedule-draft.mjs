@@ -3,12 +3,11 @@ import {
   scheduleDraftOutputSchema,
   scheduleDraftRequestSchema,
   scheduleIdempotencyKeySchema,
-} from '../dist/schemas/schedule-draft.js';
+} from '../dist/features/schedule-drafts/schedule-draft.schema.js';
 import { ScheduleDraftModel } from '../dist/models/index.js';
 import { createDeterministicCalendarEventWriter } from '../dist/features/calendar/calendar-writer.js';
-import { createDeterministicScheduleGenerator } from '../dist/services/schedule-contract.js';
 import { zonedDayRange } from '../dist/shared/time/schedule-time.js';
-import { validateScheduleDraft } from '../dist/services/schedule-validation.js';
+import { validateScheduleDraft } from '../dist/features/schedule-drafts/schedule-validation.js';
 
 const taskId = '507f1f77bcf86cd799439011';
 const context = {
@@ -59,6 +58,17 @@ assert.deepEqual(scheduleDraftOutputSchema.parse(output), output);
 assert.equal(
   scheduleDraftRequestSchema.parse({ date: '2026-07-03' }).date,
   '2026-07-03',
+);
+assert.equal(
+  scheduleDraftRequestSchema.parse({
+    date: '2026-07-03',
+    instruction: 'Keep the morning open for focused work.',
+  }).instruction,
+  'Keep the morning open for focused work.',
+);
+assert.equal(
+  scheduleDraftRequestSchema.safeParse({ date: '2026-07-03', instruction: '' }).success,
+  false,
 );
 assert.equal(
   scheduleDraftRequestSchema.safeParse({ date: '2026-02-31' }).success,
@@ -125,7 +135,7 @@ assert.equal(
   }).reason,
   'blocked_time_collision',
 );
-const fake = createDeterministicScheduleGenerator(output);
+const fake = { generate: async () => structuredClone(output) };
 const generated = await fake.generate(context);
 generated.blocks[0].title = 'mutated';
 assert.equal((await fake.generate(context)).blocks[0].title, output.blocks[0].title);

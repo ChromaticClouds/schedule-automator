@@ -5,7 +5,7 @@ import { join } from 'node:path';
 const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1');
 const readSource = (path) => readFileSync(join(root, 'src', path), 'utf8');
 const readRepo = (path) => readFileSync(join(root, '..', path), 'utf8');
-const appTabs = readSource('components/app-tabs.tsx');
+const appDrawer = readSource('components/app-drawer.tsx');
 const rootLayout = readSource('app/_layout.tsx');
 const tabLayout = readSource('app/(tabs)/_layout.tsx');
 const explore = readSource('app/(tabs)/explore.tsx');
@@ -22,8 +22,8 @@ assert.match(explore, /\/planning-preview/);
 assert.match(explore, /계획 상태 미리보기/);
 assert.match(rootLayout, /Stack\.Screen name="\(tabs\)"/);
 assert.match(rootLayout, /Stack\.Screen name="planning-preview"/);
-assert.match(tabLayout, /<AppTabs \/>/);
-assert.equal(appTabs.includes('planning-preview'), false);
+assert.match(tabLayout, /<AppDrawer \/>/);
+assert.equal(appDrawer.includes('planning-preview'), false);
 
 for (const group of [
   'Schedule draft',

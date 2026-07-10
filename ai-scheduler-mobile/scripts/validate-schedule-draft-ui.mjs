@@ -21,6 +21,14 @@ const loadTypeScriptModule = (relativePath) => {
 const state = loadTypeScriptModule(
   'src/features/planning/schedule-draft-state.ts',
 );
+const composer = readFileSync(
+  join(root, 'src/features/planning/schedule-draft-composer.tsx'),
+  'utf8',
+);
+const conversation = readFileSync(
+  join(root, 'src/features/planning/schedule-draft-conversation.tsx'),
+  'utf8',
+);
 const { scheduleDraftFixtures, scheduleDraftPanelFixtures } = loadTypeScriptModule(
   'src/features/planning/schedule-draft-fixtures.ts',
 );
@@ -122,6 +130,16 @@ for (const name of requiredFixtureNames) {
 assert.equal(scheduleDraftPanelFixtures.loading.isLoading, true);
 assert.equal(scheduleDraftPanelFixtures.empty.noDraft, true);
 assert.equal(scheduleDraftPanelFixtures.pending.busy, true);
+assert.match(composer, /Textarea/);
+assert.match(composer, /useScheduleDraftComposerStore/);
+assert.match(composer, /maxInstructionLength = 500/);
+assert.match(composer, /onGenerate\(message\)/);
+assert.match(composer, /disabled=\{busy \|\| disabled \|\| !message\}/);
+assert.match(composer, /submitInstruction\(date, message\)/);
+assert.match(conversation, /ScheduleChatMessage/);
+assert.match(conversation, /submittedInstructions/);
+assert.match(conversation, /onContentSizeChange/);
+assert.match(conversation, /ScheduleDraftComposer/);
 
 for (const status of ['draft', 'approved', 'rejected', 'expired', 'synced']) {
   assert.equal(scheduleDraftPanelFixtures[status].draft.status, status);

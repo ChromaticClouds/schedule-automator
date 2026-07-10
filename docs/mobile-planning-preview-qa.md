@@ -7,7 +7,7 @@ planning flows. In development builds, open Explore and select
 ## Access checks
 
 - Confirm the Explore screen shows `Planning state preview` when dev tools are enabled.
-- Confirm the preview route is not shown as a bottom tab.
+- Confirm the preview route is not shown in the category drawer.
 - Confirm production-like builds without dev tools show the unavailable message.
 
 ## Preview groups

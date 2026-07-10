@@ -75,6 +75,15 @@ try {
     sub: other._id.toString(),
     type: 'access',
   });
+  const noTasks = await app.inject({
+    body: { date },
+    headers: { ...authHeaders(otherToken), 'idempotency-key': `${runId}-empty` },
+    method: 'POST',
+    url: '/schedule-drafts',
+  });
+  assert.equal(noTasks.statusCode, 422);
+  assert.equal(json(noTasks).error, 'No schedulable tasks');
+  assert.equal(json(noTasks).details.code, 'NO_SCHEDULABLE_TASKS');
   const unauthorized = await app.inject({ method: 'GET', url: '/goals' });
   assert.equal(unauthorized.statusCode, 401);
   const goalResponse = await app.inject({

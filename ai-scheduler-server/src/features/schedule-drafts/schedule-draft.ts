@@ -16,7 +16,6 @@ import {
 import { buildScheduleContext } from './schedule-context.js';
 import { claimDailySchedule } from './schedule-idempotency.js';
 import { validateScheduleDraft } from './schedule-validation.js';
-
 export class ScheduleDraftError extends Error {
   constructor(
     message: string,
@@ -66,6 +65,7 @@ export const generateDailyScheduleDraft = async (
   idempotencyKey: string,
   generator: ScheduleDraftGenerator = geminiScheduleGenerator,
   contextBuilder: ScheduleContextBuilder = buildScheduleContext,
+  instruction?: string,
 ) => {
   const existing = await findActiveDraft(userId, date);
   if (existing) return { draft: existing, replayed: true };
@@ -80,6 +80,8 @@ export const generateDailyScheduleDraft = async (
     }
     throw error;
   }
+  if (!context.tasks.length) return fail('No schedulable tasks', 422, 'NO_SCHEDULABLE_TASKS');
+  if (instruction) context = { ...context, instruction };
   const payloadHash = hashValue(JSON.stringify(context));
   const idempotencyKeyHash = hashValue(`${userId}:${date}:${idempotencyKey}`);
   const claim = await claimDailySchedule(userId, idempotencyKeyHash, payloadHash);
@@ -110,7 +112,6 @@ export const generateDailyScheduleDraft = async (
     await markLog(claim.log._id, 'schema_error');
     return fail(valid.reason, 422, 'SCHEDULE_VALIDATION_ERROR');
   }
-
   try {
     const draft = await ScheduleDraftModel.create({
       assumptions: parsed.data.assumptions,

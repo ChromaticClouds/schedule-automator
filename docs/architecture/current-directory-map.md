@@ -27,9 +27,9 @@ ai-scheduler-server/src/
 
 ```txt
 ai-scheduler-mobile/src/
-  app/                      # Expo Router screens, tabs, layout
+  app/                      # Expo Router screens, drawer routes, layout
   api/                      # 공용 API client/transport
-  components/               # 공용 UI, providers, tabs, auth bootstrap
+  components/               # 공용 UI, providers, drawer, auth bootstrap
   config/                   # mobile env/config
   constants/                # theme constants
   features/
@@ -87,7 +87,7 @@ ai-scheduler-mobile/src/
 - `features/goals`: goal breakdown/create UI/state/hooks
 - `features/protected-times`: protected time form/create UI
 - `features/settings`: 현재처럼 schedule settings 소유
-- `components`: themed primitives, providers, tabs처럼 domain-neutral UI만 소유
+- `components`: themed primitives, providers, drawer처럼 domain-neutral UI만 소유
 
 ## 5. 가장 안전한 마이그레이션 순서
 

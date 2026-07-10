@@ -1,4 +1,5 @@
 const { getDefaultConfig } = require('expo/metro-config');
+const path = require('node:path');
 const { withNativeWind } = require('nativewind/metro');
 const {
   withStorybook,
@@ -7,7 +8,7 @@ const {
 const config = getDefaultConfig(__dirname);
 
 const nativeWindConfig = withNativeWind(config, {
-  input: './global.css',
+  input: path.join(__dirname, 'src/global.css'),
   inlineRem: 16,
 });
 
