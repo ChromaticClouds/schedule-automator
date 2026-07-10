@@ -205,7 +205,8 @@ Support natural language and commands.
 The mobile app uses a chat-style composer as the primary planning input. It must:
 
 * keep the current conversation scrollable above a bottom-anchored composer
-* avoid the keyboard, home indicator, and tab bar with Safe Area handling
+* avoid the keyboard, home indicator, and app chrome with Safe Area handling
+* expose planning, review, explore, and settings categories in a left drawer
 * support multiline input and a 44dp-or-larger send action with an accessible label
 * show pending, success, clarification, and error responses as distinct message states
 * preserve the unsent draft while a request fails or the user navigates away
