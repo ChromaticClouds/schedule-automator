@@ -17,6 +17,7 @@ const timeOnly = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
 export const scheduleDraftRequestSchema = z.object({
   date: isoDate,
+  instruction: boundedText(500).optional(),
 });
 
 export const scheduleDraftQuerySchema = z.object({
