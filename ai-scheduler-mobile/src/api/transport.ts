@@ -20,6 +20,14 @@ const buildUrl = (path: string) => {
   return `${ENV.API_BASE_URL}${normalizedPath}`;
 };
 
+const errorMessage = (data: unknown, fallback: string) =>
+  typeof data === 'object' &&
+  data !== null &&
+  'error' in data &&
+  typeof data.error === 'string'
+    ? data.error
+    : fallback;
+
 export const rawApiRequest = async <T>(
   path: string,
   options: ApiOptions = {},
@@ -51,7 +59,7 @@ export const rawApiRequest = async <T>(
   }
 
   if (!response.ok) {
-    throw new ApiError(response.statusText, response.status, data);
+    throw new ApiError(errorMessage(data, response.statusText), response.status, data);
   }
 
   return data as T;

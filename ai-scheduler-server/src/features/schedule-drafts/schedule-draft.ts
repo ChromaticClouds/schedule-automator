@@ -80,6 +80,7 @@ export const generateDailyScheduleDraft = async (
     }
     throw error;
   }
+  if (!context.tasks.length) return fail('No schedulable tasks', 422, 'NO_SCHEDULABLE_TASKS');
   if (instruction) context = { ...context, instruction };
   const payloadHash = hashValue(JSON.stringify(context));
   const idempotencyKeyHash = hashValue(`${userId}:${date}:${idempotencyKey}`);
@@ -111,7 +112,6 @@ export const generateDailyScheduleDraft = async (
     await markLog(claim.log._id, 'schema_error');
     return fail(valid.reason, 422, 'SCHEDULE_VALIDATION_ERROR');
   }
-
   try {
     const draft = await ScheduleDraftModel.create({
       assumptions: parsed.data.assumptions,
