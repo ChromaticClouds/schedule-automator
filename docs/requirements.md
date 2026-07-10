@@ -225,6 +225,12 @@ Commands:
 Server parses chat input into structured command payload.
 If parsing fails, return a clarification prompt.
 
+For daily schedule creation, the composer may send an optional 1-500-character
+`instruction` with `POST /schedule-drafts`. The server treats it only as a
+scheduling preference: it must not alter the AI extraction schema, task ID
+allowlist, conflict checks, or daily work limit. The mobile client preserves
+the text until a successful response replaces the empty-state composer.
+
 ## 6. AI Requirements
 
 AI provider: Gemini API.
