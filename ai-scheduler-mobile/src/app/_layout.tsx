@@ -1,6 +1,6 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { PortalHost } from '@rn-primitives/portal';
 
@@ -10,13 +10,14 @@ import { QueryProvider } from '@/components/query-provider';
 import { ToastProvider } from '@/components/toast-provider';
 import '@/config/env';
 import { Colors } from '@/constants/theme';
+import { NAV_THEME } from '@/lib/theme';
 
 import '@/global.css';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const mode = colorScheme === 'dark' ? 'dark' : 'light';
   const appTheme = Colors[mode];
   const paperBaseTheme = mode === 'dark' ? MD3DarkTheme : MD3LightTheme;
@@ -35,7 +36,7 @@ export default function RootLayout() {
   };
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={NAV_THEME[mode]}>
       <PaperProvider theme={paperTheme}>
         <QueryProvider>
           <AuthBootstrap>

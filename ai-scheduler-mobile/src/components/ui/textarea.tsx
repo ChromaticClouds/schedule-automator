@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/use-theme';
 import { Platform, TextInput } from 'react-native';
 
 function Textarea({
@@ -6,8 +7,12 @@ function Textarea({
   multiline = true,
   numberOfLines = Platform.select({ web: 2, native: 8 }), // On web, numberOfLines also determines initial height. On native, it determines the maximum height.
   placeholderClassName,
+  placeholderTextColor,
+  selectionColor,
   ...props
 }: React.ComponentProps<typeof TextInput> & React.RefAttributes<TextInput>) {
+  const theme = useTheme();
+
   return (
     <TextInput
       className={cn(
@@ -19,6 +24,8 @@ function Textarea({
         className
       )}
       placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+      placeholderTextColor={placeholderTextColor ?? theme.textSecondary}
+      selectionColor={selectionColor ?? theme.primary}
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical="top"
