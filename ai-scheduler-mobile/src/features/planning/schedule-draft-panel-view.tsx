@@ -1,27 +1,18 @@
 import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Text } from '@/components/ui/text';
 import { Spacing } from '@/constants/theme';
 import { PlanningButton } from './planning-controls';
-import { ScheduleDraftBlocks } from './schedule-draft-blocks';
+import { ScheduleDraftComposer } from './schedule-draft-composer';
 import { ScheduleDraftRecoveryActionButton } from './schedule-draft-recovery-action';
+import { ScheduleDraftSummary } from './schedule-draft-summary';
 import {
   canReviewScheduleDraft,
-  scheduleDraftCalendarEventSummary,
+  canGenerateScheduleDraft,
   scheduleDraftRecoveryAction,
-  scheduleDraftStatusMessage,
 } from './schedule-draft-state';
 import type { ScheduleBlockEditInput, ScheduleDraft } from './types';
-const draftStatusLabels: Record<ScheduleDraft['status'], string> = {
-  approved: '승인됨',
-  draft: '초안',
-  expired: '만료됨',
-  rejected: '거절됨',
-  synced: '동기화됨',
-};
 export type ScheduleDraftPanelViewProps = {
   busy: boolean;
   date: string;
@@ -32,7 +23,7 @@ export type ScheduleDraftPanelViewProps = {
   noDraft: boolean;
   onApprove: (id: string) => void;
   onEdit: (draftId: string, blockId: string, body: ScheduleBlockEditInput) => void;
-  onGenerate: () => void;
+  onGenerate: (instruction?: string) => void;
   onReconnect: () => void;
   onRegenerate: (id: string) => void;
   onReject: (id: string) => void;
@@ -56,6 +47,9 @@ export function ScheduleDraftPanelView({
 }: ScheduleDraftPanelViewProps) {
   const recoveryAction = scheduleDraftRecoveryAction(draft, noDraft, errorCode);
   const reviewDraft = canReviewScheduleDraft(draft) ? draft : undefined;
+  const showComposer =
+    canGenerateScheduleDraft(draft, noDraft) &&
+    recoveryAction?.kind !== 'reconnect-google';
   return (
     <Card className="gap-0 py-0">
       <CardContent className="gap-4 px-4 py-4">
@@ -67,7 +61,10 @@ export function ScheduleDraftPanelView({
           실패: {errorMessage}
         </ThemedText>
       )}
-      {recoveryAction && (
+      {showComposer && (
+        <ScheduleDraftComposer busy={busy} date={date} onGenerate={onGenerate} />
+      )}
+      {recoveryAction && (!showComposer || recoveryAction.kind !== 'generate') && (
         <ScheduleDraftRecoveryActionButton
           action={recoveryAction}
           busy={busy}
@@ -78,7 +75,7 @@ export function ScheduleDraftPanelView({
           onRegenerate={onRegenerate}
         />
       )}
-      {draft && <DraftSummary busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />}
+      {draft && <ScheduleDraftSummary busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />}
       {reviewDraft && (
         <ThemedView style={styles.actions}>
           <ActionButton
@@ -97,38 +94,6 @@ export function ScheduleDraftPanelView({
     </Card>
   );
 }
-function DraftSummary({ busy, draft, onEdit, timezone }: {
-  busy: boolean;
-  draft: ScheduleDraft;
-  onEdit: ScheduleDraftPanelViewProps['onEdit'];
-  timezone?: string;
-}) {
-  const statusMessage = scheduleDraftStatusMessage(draft);
-  const calendarSummary = scheduleDraftCalendarEventSummary(draft);
-  return (
-    <ThemedView style={styles.blockList}>
-      <Badge
-        className="self-start"
-        variant={draft.status === 'rejected' ? 'destructive' : 'secondary'}
-      >
-        <Text variant="small">AI 일정 제안</Text>
-      </Badge>
-      <ThemedText type="small" themeColor="textSecondary">
-        {draftStatusLabels[draft.status]} - {draft.summary ?? '요약 없음'}
-      </ThemedText>
-      {statusMessage && <ThemedText type="small">{statusMessage}</ThemedText>}
-      {calendarSummary && (
-        <ThemedText type="small" themeColor="textSecondary">{calendarSummary}</ThemedText>
-      )}
-      {draft.warnings.map((warning) => (
-        <ThemedText key={warning} type="small" themeColor="danger">
-          주의: {warning}
-        </ThemedText>
-      ))}
-      <ScheduleDraftBlocks busy={busy} draft={draft} onEdit={onEdit} timezone={timezone} />
-    </ThemedView>
-  );
-}
 type ActionButtonProps = { disabled: boolean; label: string; onPress: () => void };
 
 function ActionButton({ disabled, label, onPress }: ActionButtonProps) {
@@ -144,6 +109,5 @@ function ActionButton({ disabled, label, onPress }: ActionButtonProps) {
 
 const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Spacing.two },
-  blockList: { backgroundColor: 'transparent', gap: Spacing.two },
   button: { alignSelf: 'flex-start', borderRadius: 8, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
 });

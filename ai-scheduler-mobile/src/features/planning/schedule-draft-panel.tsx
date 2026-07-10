@@ -23,10 +23,14 @@ import {
   scheduleDraftIsNotFoundError,
 } from './schedule-draft-state';
 import { useRegenerateScheduleDraft } from './schedule-regenerate-hooks';
+import { useScheduleDraftComposerStore } from './schedule-draft-composer-state';
 
 export function ScheduleDraftPanel() {
   const { showToast } = useToast();
   const date = toScheduleDateKey();
+  const clearInstruction = useScheduleDraftComposerStore(
+    (state) => state.clearInstruction,
+  );
   const queryClient = useQueryClient();
   const draftQuery = useScheduleDraft(date);
   const preferences = useSchedulePreferences();
@@ -99,10 +103,16 @@ export function ScheduleDraftPanel() {
           onSuccess: () => toastSuccess('일정 블록을 수정했습니다.'),
         },
       ),
-    onGenerate: () =>
-      generateDraft.mutate(`schedule-draft:${date}:${Crypto.randomUUID()}`, {
+    onGenerate: (instruction) =>
+      generateDraft.mutate({
+        idempotencyKey: `schedule-draft:${date}:${Crypto.randomUUID()}`,
+        instruction,
+      }, {
         onError: (error) => toastError(error, '초안을 생성하지 못했습니다.'),
-        onSuccess: () => toastSuccess('초안을 생성했습니다.'),
+        onSuccess: () => {
+          clearInstruction(date);
+          toastSuccess('초안을 생성했습니다.');
+        },
       }),
     onReconnect: () =>
       reconnectGoogle.mutate(undefined, {
