@@ -4,7 +4,7 @@ import {
   schedulePreferencesSchema,
   updateSchedulePreferencesSchema,
 } from '@/schemas/schedule-preferences.js';
-import { notFound, parseBody, requireUserId } from './http.js';
+import { notFound, parseBody, requireUserId } from '@/core/http/http.js';
 
 const selectPreferences = {
   maxDailyWorkMinutes: 1,

@@ -6,15 +6,15 @@ import {
   decryptSecret,
   encryptSecret,
   verifyOAuthState,
-} from '../dist/auth/security.js';
+} from '../dist/core/auth/security.js';
 import {
   createCodeChallenge,
   createRefreshCredential,
   parseRefreshCredential,
   rotateRefreshCredential,
   verifyCodeChallenge,
-} from '../dist/auth/session-security.js';
-import { requireVerifiedGoogleIdentity } from '../dist/auth/google-identity.js';
+} from '../dist/core/auth/session-security.js';
+import { requireVerifiedGoogleIdentity } from '../dist/core/auth/google-identity.js';
 
 const secret = 'local-validation-secret-with-enough-entropy';
 const userId = '507f1f77bcf86cd799439011';

@@ -15,7 +15,7 @@ import {
   parseParams,
   parseQuery,
   requireUserId,
-} from './http.js';
+} from '@/core/http/http.js';
 
 export const registerTaskRoutes = async (app: FastifyInstance) => {
   app.get('/tasks/summary', async (request) => {

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../dist/app.js';
-import { connectMongo, disconnectMongo } from '../dist/db/connection.js';
+import { connectMongo, disconnectMongo } from '../dist/core/db/connection.js';
 import {
   AiRequestLogModel,
   DailyReviewModel,
@@ -10,7 +10,7 @@ import {
   TaskModel,
   UserModel,
 } from '../dist/models/index.js';
-import { zonedDateTime } from '../dist/services/schedule-time.js';
+import { zonedDateTime } from '../dist/shared/time/schedule-time.js';
 
 const runId = randomUUID();
 const userIds = [];

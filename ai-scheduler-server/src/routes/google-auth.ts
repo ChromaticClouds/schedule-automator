@@ -3,9 +3,9 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import {
   canRedirectToOAuthReturnUrl,
   resolveOAuthReturnUrl,
-} from '@/auth/oauth-return-url.js';
-import { createOAuthState, verifyOAuthState } from '@/auth/security.js';
-import { ENV } from '@/config/env.js';
+} from '@/core/auth/oauth-return-url.js';
+import { createOAuthState, verifyOAuthState } from '@/core/auth/security.js';
+import { ENV } from '@/core/config/env.js';
 import {
   googleCallbackQuerySchema,
   googleStartQuerySchema,
@@ -22,8 +22,8 @@ import {
 import {
   connectGoogleAccount,
   createGoogleAuthorizationUrl,
-} from '@/services/google-oauth.js';
-import { HttpError, parseBody, parseQuery } from './http.js';
+} from '@/integrations/google/google-oauth.js';
+import { HttpError, parseBody, parseQuery } from '@/core/http/http.js';
 
 const issueSession = async (
   reply: FastifyReply,

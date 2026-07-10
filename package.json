@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "check:architecture": "node scripts/check-architecture.mjs",
     "validate:server": "pnpm --dir ai-scheduler-server validate",
     "validate:mobile": "pnpm --dir ai-scheduler-mobile validate",
     "validate": "pnpm validate:server && pnpm validate:mobile"

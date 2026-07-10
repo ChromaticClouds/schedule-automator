@@ -26,7 +26,7 @@ const {
   rotateAuthSession,
 } = await import('../dist/services/auth-session.js');
 const { createCodeChallenge } = await import(
-  '../dist/auth/session-security.js'
+  '../dist/core/auth/session-security.js'
 );
 
 class FakeRedis {

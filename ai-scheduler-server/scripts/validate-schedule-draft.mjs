@@ -5,9 +5,9 @@ import {
   scheduleIdempotencyKeySchema,
 } from '../dist/schemas/schedule-draft.js';
 import { ScheduleDraftModel } from '../dist/models/index.js';
-import { createDeterministicCalendarEventWriter } from '../dist/services/calendar-writer.js';
+import { createDeterministicCalendarEventWriter } from '../dist/features/calendar/calendar-writer.js';
 import { createDeterministicScheduleGenerator } from '../dist/services/schedule-contract.js';
-import { zonedDayRange } from '../dist/services/schedule-time.js';
+import { zonedDayRange } from '../dist/shared/time/schedule-time.js';
 import { validateScheduleDraft } from '../dist/services/schedule-validation.js';
 
 const taskId = '507f1f77bcf86cd799439011';

@@ -3,10 +3,10 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
 import redis from '@fastify/redis';
-import { CORS_ORIGINS, ENV } from '@/config/env.js';
-import { HttpError } from '@/routes/http.js';
+import { CORS_ORIGINS, ENV } from '@/core/config/env.js';
+import { HttpError } from '@/core/http/http.js';
 import { registerPlanningRoutes } from '@/routes/index.js';
-import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
+import type { ScheduleDraftDependencies } from '@/features/schedule-drafts/schedule-contract.js';
 
 type BuildAppOptions = {
   scheduleDraftDependencies?: ScheduleDraftDependencies;

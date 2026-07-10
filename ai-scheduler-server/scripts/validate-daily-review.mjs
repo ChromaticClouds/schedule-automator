@@ -2,11 +2,11 @@ import { strict as assert } from 'node:assert';
 import {
   dailyReviewParamsSchema,
   saveDailyReviewSchema,
-} from '../dist/schemas/daily-review.js';
+} from '../dist/features/daily-review/daily-review.schema.js';
 import {
   buildTaskReviewUpdates,
   collectReviewTaskIds,
-} from '../dist/services/daily-review-transition.js';
+} from '../dist/features/daily-review/daily-review-transition.js';
 
 const first = '507f1f77bcf86cd799439011';
 const second = '507f1f77bcf86cd799439012';

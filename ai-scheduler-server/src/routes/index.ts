@@ -1,15 +1,15 @@
 import type { FastifyInstance } from 'fastify';
-import type { ScheduleDraftDependencies } from '@/services/schedule-contract.js';
-import { registerCalendarRoutes } from './calendar.js';
-import { registerDailyReviewRoutes } from './daily-reviews.js';
+import type { ScheduleDraftDependencies } from '@/features/schedule-drafts/schedule-contract.js';
+import { registerCalendarRoutes } from '@/features/calendar/calendar.routes.js';
+import { registerDailyReviewRoutes } from '@/features/daily-review/daily-reviews.routes.js';
 import { registerGoalRoutes } from './goals.js';
 import { registerGoogleAuthRoutes } from './google-auth.js';
 import { registerProtectedTimeRoutes } from './protected-times.js';
-import { registerScheduleDraftRoutes } from './schedule-drafts.js';
+import { registerScheduleDraftRoutes } from '@/features/schedule-drafts/schedule-drafts.routes.js';
 import { registerSchedulePreferenceRoutes } from './schedule-preferences.js';
 import { registerTaskRoutes } from './tasks.js';
-import { registerTaskBreakdownRoutes } from './task-breakdown.js';
-import { registerWeeklyRescheduleRoutes } from './weekly-reschedules.js';
+import { registerTaskBreakdownRoutes } from '@/features/task-breakdown/task-breakdown.routes.js';
+import { registerWeeklyRescheduleRoutes } from '@/features/weekly-reschedule/weekly-reschedules.routes.js';
 
 export const registerPlanningRoutes = async (
   app: FastifyInstance,

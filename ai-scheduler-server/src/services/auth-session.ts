@@ -6,8 +6,8 @@ import {
   parseRefreshCredential,
   rotateRefreshCredential,
   verifyCodeChallenge,
-} from '@/auth/session-security.js';
-import { ENV } from '@/config/env.js';
+} from '@/core/auth/session-security.js';
+import { ENV } from '@/core/config/env.js';
 import {
   consumeHandoffScript,
   revokeSessionScript,

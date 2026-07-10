@@ -10,6 +10,8 @@ import { ToastProvider } from '@/components/toast-provider';
 import '@/config/env';
 import { Colors } from '@/constants/theme';
 
+import '@/global.css';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

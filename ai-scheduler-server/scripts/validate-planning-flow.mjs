@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../dist/app.js';
-import { connectMongo, disconnectMongo } from '../dist/db/connection.js';
+import { connectMongo, disconnectMongo } from '../dist/core/db/connection.js';
 import {
   AiRequestLogModel,
   GoalModel,
@@ -11,7 +11,7 @@ import {
 } from '../dist/models/index.js';
 import { createDeterministicScheduleGenerator } from
   '../dist/services/schedule-contract.js';
-import { zonedDateTime } from '../dist/services/schedule-time.js';
+import { zonedDateTime } from '../dist/shared/time/schedule-time.js';
 const runId = randomUUID(), date = '2026-07-06', userIds = [];
 let app;
 const authHeaders = (token) => ({ authorization: `Bearer ${token}` });
