@@ -19,12 +19,19 @@ const openCategoryMenu = async (page: import('@playwright/test').Page) => {
     .click();
 };
 
+const selectCategory = async (
+  page: import('@playwright/test').Page,
+  name: RegExp,
+) => {
+  await page.getByRole('button', { name }).filter({ visible: true }).click();
+};
+
 test('creates planning records and reviews a schedule draft', async ({
   page,
 }) => {
   await page.goto('/');
   await openCategoryMenu(page);
-  await page.getByText('계획 관리', { exact: true }).click();
+  await selectCategory(page, /^계획 관리/);
   await expect(page.getByText('Google 계정 연결됨')).toBeVisible();
 
   await addPlanningItem(page, '주간 목표를 입력하세요', 'E2E weekly goal');
@@ -36,7 +43,7 @@ test('creates planning records and reviews a schedule draft', async ({
   );
 
   await openCategoryMenu(page);
-  await page.getByText('오늘 일정', { exact: true }).click();
+  await selectCategory(page, /^오늘 일정/);
   await page
     .getByPlaceholder('오늘 일정에 원하는 조건을 입력하세요')
     .fill('오전에는 E2E 작업에 집중하고 회의 전후 여유를 남겨줘');
