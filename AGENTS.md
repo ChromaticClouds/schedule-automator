@@ -11,6 +11,42 @@
 - Keep source and docs files under 150 lines unless approved; `AGENTS.md` has no line limit.
 - Follow `docs/issue-pr-templates.md` when opening issues or PRs.
 
+## Import Boundaries
+
+### Backend
+
+Allowed direction:
+
+features/* -> shared/*
+features/* -> integrations/*
+features/* -> core/*
+integrations/* -> core/*
+app.ts/server.ts -> features/*
+
+Disallowed:
+- core/* importing features/*
+- integrations/* importing features/*
+- one feature importing another feature's private files
+
+Allowed cross-feature access:
+- through explicit exported service functions
+- through shared types placed in shared/
+- through route registration only from app/routes index
+
+### Mobile
+
+Allowed direction:
+
+screens -> feature components/hooks/api
+components -> hooks/types/utils
+hooks -> api/types
+api -> types/config
+
+Disallowed:
+- API layer importing React components
+- generic UI importing planning-specific state
+- fixtures imported by production runtime code
+
 ## Commit Format
 Use Conventional Commit style:
 
@@ -62,46 +98,3 @@ Examples: `chore/env-split-mobile-server`, `feat/server-google-oauth`, `feat/mob
 2. Confirm there are no uncommitted changes.
 3. Ensure branch name follows the convention.
 4. Push and open a draft PR for implemented changes unless told otherwise.
-
-## Expo React Native Design Standard
-
-이 프로젝트의 UI는 Expo Go에서 실제 기기로 확인 가능한 모바일 앱 UI를 기준으로 한다.
-
-### Core Rules
-
-- 웹 DOM/CSS 기준이 아니라 React Native View/Text/Pressable/ScrollView 기준으로 설계한다.
-- hover 중심 인터랙션을 만들지 않는다.
-- 모든 주요 액션은 터치 친화적인 크기를 가진다.
-- Safe Area, notch, status bar, bottom tab, keyboard overlap을 고려한다.
-- iOS와 Android의 기본 폰트, shadow, elevation, status bar 차이를 고려한다.
-- 화면은 390px급 모바일 폭을 우선 기준으로 잡고, 태블릿 폭은 보조로 고려한다.
-- 빈 상태, 로딩 상태, 에러 상태, disabled 상태를 반드시 고려한다.
-- 스크롤 가능한 화면은 하단 CTA, 키보드, tab bar에 가리지 않게 한다.
-
-### Anti AI-Slop Rules
-
-다음 패턴을 피한다.
-
-- 의미 없는 보라/파랑 그라디언트
-- 웹 랜딩페이지 같은 과한 hero section
-- 모바일에서 너무 작은 텍스트와 터치 영역
-- 카드만 반복되는 평면적인 UI
-- 과한 shadow/elevation
-- iOS/Android에서 다르게 깨질 수 있는 임의 absolute 배치
-- Safe Area를 무시한 상단/하단 요소
-- 긴 텍스트가 잘리거나 줄바꿈이 깨지는 버튼
-- 모든 spacing을 임의 숫자로 때우는 방식
-
-### Token Rules
-
-- 색상은 semantic token을 사용한다.
-- spacing은 4px scale을 따른다.
-- radius는 토큰으로 관리한다.
-- shadow/elevation은 목적이 있을 때만 사용한다.
-- raw hex color는 금지한다. 필요하면 token으로 추가한다.
-
-### Touch Rules
-
-- 주요 버튼과 터치 요소는 최소 44~48dp 수준의 hit area를 확보한다.
-- 아이콘 버튼은 시각 크기가 작더라도 padding으로 터치 영역을 확보한다.
-- 터치 가능한 요소 사이에는 충분한 간격을 둔다.
