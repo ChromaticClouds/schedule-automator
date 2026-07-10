@@ -12,11 +12,18 @@ const addPlanningItem = async (
   await expect(page.getByText(title, { exact: false }).first()).toBeVisible();
 };
 
+const openCategoryMenu = async (page: import('@playwright/test').Page) => {
+  await page
+    .getByRole('button', { name: '카테고리 메뉴 열기' })
+    .filter({ visible: true })
+    .click();
+};
+
 test('creates planning records and reviews a schedule draft', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByLabel('카테고리 메뉴 열기').click();
+  await openCategoryMenu(page);
   await page.getByText('계획 관리', { exact: true }).click();
   await expect(page.getByText('Google 계정 연결됨')).toBeVisible();
 
@@ -28,7 +35,7 @@ test('creates planning records and reviews a schedule draft', async ({
     '작업 추가',
   );
 
-  await page.getByLabel('카테고리 메뉴 열기').click();
+  await openCategoryMenu(page);
   await page.getByText('오늘 일정', { exact: true }).click();
   await page
     .getByPlaceholder('오늘 일정에 원하는 조건을 입력하세요')
