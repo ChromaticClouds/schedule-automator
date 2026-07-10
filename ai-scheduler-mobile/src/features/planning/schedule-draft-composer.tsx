@@ -8,55 +8,62 @@ import { useScheduleDraftComposerStore } from './schedule-draft-composer-state';
 type Props = {
   busy: boolean;
   date: string;
+  disabled?: boolean;
   onGenerate: (instruction?: string) => void;
 };
 
 const maxInstructionLength = 500;
 
-export function ScheduleDraftComposer({ busy, date, onGenerate }: Props) {
+export function ScheduleDraftComposer({ busy, date, disabled, onGenerate }: Props) {
   const instruction = useScheduleDraftComposerStore(
     (state) => state.instructions[date] ?? '',
   );
   const setInstruction = useScheduleDraftComposerStore(
     (state) => state.setInstruction,
   );
+  const submitInstruction = useScheduleDraftComposerStore(
+    (state) => state.submitInstruction,
+  );
   const message = instruction.trim();
 
   const send = () => {
-    if (!message || busy) return;
+    if (!message || busy || disabled) return;
     Keyboard.dismiss();
+    submitInstruction(date, message);
     onGenerate(message);
   };
 
   return (
-    <View className="gap-3 rounded-lg border border-border bg-muted/40 p-3">
-      <View className="gap-1">
-        <Text variant="small">AI에게 일정 조건 전달</Text>
-        <Text className="text-muted-foreground text-xs">
-          예: 오전에는 집중 작업만 하고, 회의 전후로 15분의 여유를 남겨주세요.
-        </Text>
-      </View>
-      <Textarea
-        accessibilityLabel="AI 일정 요청"
-        editable={!busy}
-        maxLength={maxInstructionLength}
-        onChangeText={(value) => setInstruction(date, value)}
-        placeholder="오늘 일정에 반영할 조건을 입력하세요"
-        value={instruction}
-      />
-      <View className="flex-row items-center gap-3">
-        <Text className="flex-1 text-muted-foreground text-xs">
-          {instruction.length}/{maxInstructionLength}
-        </Text>
+    <View className="gap-1">
+      <View className="border-border bg-card flex-row items-end gap-2 rounded-3xl border p-2">
+        <Textarea
+          accessibilityLabel="AI 일정 요청"
+          className="max-h-32 min-h-11 flex-1 border-0 bg-transparent px-3 py-2 shadow-none"
+          editable={!busy && !disabled}
+          maxLength={maxInstructionLength}
+          onChangeText={(value) => setInstruction(date, value)}
+          placeholder={
+            disabled
+              ? '현재 초안을 승인하거나 거절한 뒤 새 요청을 보낼 수 있어요'
+              : '오늘 일정에 원하는 조건을 입력하세요'
+          }
+          value={instruction}
+        />
         <Button
           accessibilityLabel="AI 일정 요청 보내기"
-          disabled={busy || !message}
+          className="h-11 rounded-full px-4"
+          disabled={busy || disabled || !message}
           onPress={send}
           size="lg"
         >
-          <Text variant="small">{busy ? '생성 중...' : '보내기'}</Text>
+          <Text variant="small">{busy ? '생성 중' : '전송'}</Text>
         </Button>
       </View>
+      {instruction.length >= 450 && (
+        <Text className="px-3 text-right text-muted-foreground text-xs">
+          {instruction.length}/{maxInstructionLength}
+        </Text>
+      )}
     </View>
   );
 }

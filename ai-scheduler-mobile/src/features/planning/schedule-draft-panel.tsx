@@ -4,10 +4,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast-provider';
 import { signInWithGoogle } from '@/features/auth/oauth';
 import { useSchedulePreferences } from '@/features/settings/hooks';
-import {
-  ScheduleDraftPanelView,
-  type ScheduleDraftPanelViewProps,
-} from './schedule-draft-panel-view';
+import { ScheduleDraftConversation } from './schedule-draft-conversation';
+import type { ScheduleDraftPanelViewProps } from './schedule-draft-panel-view';
 import {
   planningKeys,
   useApproveScheduleDraft,
@@ -142,5 +140,5 @@ export function ScheduleDraftPanel() {
       }),
     timezone: preferences.data?.timezone,
   };
-  return <ScheduleDraftPanelView {...props} />;
+  return <ScheduleDraftConversation {...props} />;
 }

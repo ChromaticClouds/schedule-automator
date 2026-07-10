@@ -24,7 +24,7 @@ type ScrollProps = FrameProps & {
 export function TabScreenFrame({ children }: FrameProps) {
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
+      <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
         {children}
       </SafeAreaView>
     </ThemedView>
