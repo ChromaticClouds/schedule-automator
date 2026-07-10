@@ -75,11 +75,12 @@ export const getScheduleDraft = (date?: string) =>
 export const generateScheduleDraft = (
   date: string,
   idempotencyKey: string,
+  instruction?: string,
 ) =>
   apiRequest<ScheduleDraftResult>('/schedule-drafts', {
     method: 'POST',
     headers: { 'Idempotency-Key': idempotencyKey },
-    body: { date },
+    body: { date, ...(instruction ? { instruction } : {}) },
   });
 
 export const approveScheduleDraft = (id: string) =>

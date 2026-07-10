@@ -87,8 +87,10 @@ export const useCreateProtectedTime = () => {
 export const useGenerateScheduleDraft = (date: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (idempotencyKey: string) =>
-      generateScheduleDraft(date, idempotencyKey),
+    mutationFn: ({ idempotencyKey, instruction }: {
+      idempotencyKey: string;
+      instruction?: string;
+    }) => generateScheduleDraft(date, idempotencyKey, instruction),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: planningKeys.scheduleDraft(date),
