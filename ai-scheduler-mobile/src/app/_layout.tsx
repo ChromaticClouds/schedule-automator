@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { PortalHost } from '@rn-primitives/portal';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { AuthBootstrap } from '@/components/auth-bootstrap';
@@ -44,6 +45,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="planning-preview" />
               </Stack>
+              <PortalHost />
             </ToastProvider>
           </AuthBootstrap>
         </QueryProvider>

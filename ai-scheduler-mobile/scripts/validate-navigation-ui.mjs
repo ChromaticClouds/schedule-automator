@@ -39,7 +39,10 @@ assert.match(settingsView, /accessibilityLiveRegion="polite"/);
 assert.match(protectedRow, /validProtectedTimeRange/);
 assert.match(protectedRow, /12:00–13:00/);
 assert.match(controls, /accessibilityRole="button"/);
-assert.match(controls, /selectedButtonText: theme\.text/);
+assert.match(controls, /components\/ui\/button/);
+assert.match(controls, /components\/ui\/input/);
+assert.match(controls, /size="lg"/);
+assert.match(controls, /variant={selected \? 'secondary' : 'default'}/);
 
 assert.match(tabScreen, /edges={\['top', 'left', 'right'\]}/);
 assert.match(home, /TabScreenFrame/);

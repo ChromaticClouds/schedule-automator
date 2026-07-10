@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Card } from '@/components/ui/card';
 import { Spacing } from '@/constants/theme';
 import { PlanningButton, PlanningTextInput } from './planning-controls';
 import type { ScheduleBlock, ScheduleBlockEditInput, ScheduleDraft } from './types';
@@ -63,7 +64,7 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
   return (
     <ThemedView style={styles.list}>
       {draft.blocks.map((block) => (
-        <ThemedView key={block._id} style={styles.block}>
+        <Card key={block._id} className="gap-2 rounded-lg px-3 py-3 shadow-none">
           {editingId === block._id && form ? (
             <>
               <PlanningTextInput
@@ -96,7 +97,7 @@ export function ScheduleDraftBlocks({ busy, draft, onEdit, timezone }: Props) {
             editingId !== block._id && (
               <Button disabled={busy || Boolean(editingId)} label="수정" onPress={() => begin(block)} />
             )}
-        </ThemedView>
+        </Card>
       ))}
     </ThemedView>
   );
@@ -132,7 +133,6 @@ function Button({ disabled, label, onPress }: { disabled: boolean; label: string
 
 const styles = StyleSheet.create({
   actions: { backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
-  block: { backgroundColor: 'transparent', gap: Spacing.one },
   list: { backgroundColor: 'transparent', gap: Spacing.two },
   time: { width: 72 },
   timeRow: { alignItems: 'center', backgroundColor: 'transparent', flexDirection: 'row', gap: Spacing.two },
